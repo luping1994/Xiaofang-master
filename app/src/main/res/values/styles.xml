@@ -35,4 +35,8 @@
         <item name="android:windowEnterAnimation">@anim/menushow</item>
         <item name="android:windowExitAnimation">@anim/menuhide</item>
     </style>
+
+    <style name="MyDialogTheme" parent="Animation.AppCompat.Dialog">
+
+    </style>
 </resources>

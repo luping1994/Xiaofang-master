@@ -23,14 +23,11 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.base.BaseAdapter;
 import com.suntrans.xiaofang.base.BaseViewHolder;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.suntrans.xiaofang.R.id.state;
 
 /**
  * Created by Looney on 2016/12/1.
@@ -99,8 +96,6 @@ public class CompanyInfo_activity extends AppCompatActivity implements View.OnCl
         fab3.setOnClickListener(this);
 
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

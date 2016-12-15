@@ -39,4 +39,5 @@ dependencies {
     compile files('libs/AMap_Search_V3.6.1_20161122.jar')
     compile 'com.github.clans:fab:1.6.4'
     compile project(':zxing-android-embedded')
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
 }

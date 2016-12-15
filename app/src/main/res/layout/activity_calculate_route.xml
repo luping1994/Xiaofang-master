@@ -24,6 +24,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
+                android:id="@+id/ll_car"
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:gravity="center">
@@ -36,6 +37,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_walk"
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:gravity="center">

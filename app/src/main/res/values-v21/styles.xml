@@ -28,4 +28,9 @@
     </style>
 
     <dimen name="spacing_large">16dp</dimen>
+
+    <style name="MyDialogTheme" >
+
+    </style>
+
 </resources>

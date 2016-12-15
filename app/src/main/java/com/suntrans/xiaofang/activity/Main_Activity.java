@@ -344,6 +344,11 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
         if (resultCode==300){
              result = data.getStringExtra("result");
             UiUtils.showToast(this,result);
+            Intent intent = new Intent();
+            intent.putExtra("url",result);
+            intent.setClass(this,CompanyInfo_activity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }else {
             IntentResult result1 = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             if (result1 != null) {
@@ -352,16 +357,17 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
                 } else {
                     LogUtil.i(result1.getContents());
                     UiUtils.showToast(this,result1.getContents());
+                    Intent intent = new Intent();
+                    intent.putExtra("url",result);
+                    intent.setClass(this,CompanyInfo_activity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
             } else {
                 super.onActivityResult(requestCode, resultCode, data);
             }
         }
-        Intent intent = new Intent();
-        intent.putExtra("url",result);
-        intent.setClass(this,CompanyInfo_activity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
     }
 
     private LatLng mMyLocation;//我当前的坐标
