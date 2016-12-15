@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:elevation="3dp"
+    android:layout_width="match_parent"
+    android:layout_height="75dp">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:gravity="center|left"
+                    android:textColor="@color/gray"
+                    android:text="新增单位名称:xxxxxxxxxxx"
+                    android:layout_width="match_parent"
+                    android:layout_height="19dp" />
+                <TextView
+                    android:gravity="center|left"
+                    android:textColor="@color/gray"
+                    android:text="录入人姓名:老王"
+                    android:layout_width="match_parent"
+                    android:layout_height="19dp" />
+                <TextView
+                    android:gravity="center|left"
+                    android:textColor="@color/gray"
+                    android:text="录入时间:2015年"
+                    android:layout_width="match_parent"
+                    android:layout_height="19dp" />
+            </LinearLayout>
+
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/state"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:textColor="#FF0000"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="待审核"/>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

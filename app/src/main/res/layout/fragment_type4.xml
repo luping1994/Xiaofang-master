@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:text="确认添加"
+        android:layout_alignParentBottom="true"
+        />
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bg_color"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*单位名称"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*单位地址"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="获取当前位置" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*志愿消防队联系人"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*联系电话"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*消防队人数"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="人"
+                    android:textSize="@dimen/text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*车辆配置情况"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@null"
+                    android:gravity="left|start"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*装备配置情况"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@null"
+                    android:gravity="left|start"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*所属区"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+                <Spinner
+                    android:entries="@array/area"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*所属中队"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+                <Spinner
+                    android:entries="@array/area"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

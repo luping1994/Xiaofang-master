@@ -1,0 +1,42 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+
+    defaultConfig {
+        applicationId "com.suntrans.xiaofang"
+        minSdkVersion 16
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+//    sourceSets{
+//        main {
+//            jniLibs.srcDir = ['jnilibs'];
+//        }
+//    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile files('libs/Android_Map3D_SDK_V4.1.2_20161104.jar')
+    compile files('libs/AMap_Location_V3.1.0_20161027.jar')
+    compile files('libs/Msc.jar')
+    compile files('libs/AMapNavi_1.9.4_AMapLocation_3.1.0_20161201.jar')
+    compile files('libs/AMap_Search_V3.6.1_20161122.jar')
+    compile 'com.github.clans:fab:1.6.4'
+    compile project(':zxing-android-embedded')
+}

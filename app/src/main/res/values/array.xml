@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="city">
+        <item>武汉市</item>
+
+    </string-array>
+    <string-array name="area">
+        <item>江汉区</item>
+        <item>硚口区</item>
+        <item>汉阳区</item>
+        <item>武昌区</item>
+        <item>洪山区</item>
+        <item>青山区</item>
+    </string-array>
+
+    <string-array name="sheqv">
+        <item>江汉区</item>
+        <item>硚口区</item>
+        <item>汉阳区</item>
+        <item>武昌区</item>
+        <item>洪山区</item>
+        <item>青山区</item>
+    </string-array>
+
+    <string-array name="dadui">
+        <item>江汉大队</item>
+        <item>硚口大队</item>
+        <item>汉阳大队</item>
+        <item>武昌大队</item>
+        <item>洪山大队</item>
+        <item>青山大队</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/ll"
+    android:padding="20dp"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:textSize="19sp"
+        android:gravity="center|left"
+        android:textColor="@color/balck"
+        android:text="广州三川有限公司"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="match_parent"
+        android:textSize="19sp"
+        android:gravity="center|left"
+        android:textColor="@color/balck"
+        android:text="广州市白云区"
+        android:layout_height="wrap_content" />
+</LinearLayout>
