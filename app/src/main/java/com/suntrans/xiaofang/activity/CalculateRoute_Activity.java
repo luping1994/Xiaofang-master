@@ -31,13 +31,13 @@ import com.amap.api.navi.model.AimLessModeStat;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.navi.view.RouteOverLay;
-
 import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.bean.StrategyBean;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.Utils;
+import com.suntrans.xiaofang.views.WaitDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +52,8 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
     private static final float ROUTE_SELECTED_TRANSPARENCY = 1F;
     private ImageView imageViewCar;
     private ImageView imageViewWalk;
+    private LinearLayout llCar;
+    private LinearLayout llWalk;
     /**
      * 导航对象(单例)
      */
@@ -151,6 +153,7 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
      */
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
+        dialog.dismiss();
         cleanRouteOverlay();
         driveLayout.setVisibility(View.VISIBLE);
         HashMap<Integer, AMapNaviPath> paths = mAMapNavi.getNaviPaths();
@@ -170,6 +173,7 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
      */
     @Override
     public void onCalculateRouteSuccess() {
+        dialog.dismiss();
         AMapNaviPath path = mAMapNavi.getNaviPath();
         cleanRouteOverlay();
         mAMap.moveCamera(CameraUpdateFactory.changeTilt(0));
@@ -230,16 +234,22 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
     }
 
     private int navState = 1;//1为驾车模式,2为步行模式
-
+    WaitDialog dialog ;
     private void initView() {
+        dialog= new WaitDialog(CalculateRoute_Activity.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog.setWaitText(getString(R.string.loading));
+        dialog.setCancelable(false);
+        llCar = (LinearLayout) findViewById(R.id.ll_car);
+        llWalk = (LinearLayout) findViewById(R.id.ll_walk);
         imageViewCar = (ImageView) findViewById(R.id.car);
         imageViewWalk = (ImageView) findViewById(R.id.walk);
         backLineLayout = (LinearLayout) findViewById(R.id.back);
         backLineLayout.setOnClickListener(this);
-        imageViewCar.setOnClickListener(new View.OnClickListener() {
+        llCar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (navState == 2) {
+                    dialog.show();
                     imageViewCar.setImageResource(R.drawable.ic_car_press);
                     imageViewWalk.setImageResource(R.drawable.ic_walk);
                     navState = 1;
@@ -250,10 +260,11 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
 
             }
         });
-        imageViewWalk.setOnClickListener(new View.OnClickListener() {
+        llWalk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (navState == 1) {
+                    dialog.show();
                     imageViewCar.setImageResource(R.drawable.ic_car);
                     imageViewWalk.setImageResource(R.drawable.ic_walk_press);
                     navState = 2;
