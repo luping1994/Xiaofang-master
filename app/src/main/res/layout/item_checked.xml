@@ -20,23 +20,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/name"
+                    android:textSize="20sp"
                     android:gravity="center|left"
                     android:textColor="@color/gray"
-                    android:text="新增单位名称:xxxxxxxxxxx"
+                    android:text="单位名称:xxxxxxxxxxx"
                     android:layout_width="match_parent"
-                    android:layout_height="19dp" />
-                <TextView
-                    android:gravity="center|left"
-                    android:textColor="@color/gray"
-                    android:text="录入人姓名:老王"
-                    android:layout_width="match_parent"
-                    android:layout_height="19dp" />
-                <TextView
-                    android:gravity="center|left"
-                    android:textColor="@color/gray"
-                    android:text="录入时间:2015年"
-                    android:layout_width="match_parent"
-                    android:layout_height="19dp" />
+                    android:layout_height="wrap_content" />
+                <!--<TextView-->
+                    <!--android:gravity="center|left"-->
+                    <!--android:textColor="@color/gray"-->
+                    <!--android:text="录入人姓名:老王"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="19dp" />-->
+                <!--<TextView-->
+                    <!--android:gravity="center|left"-->
+                    <!--android:textColor="@color/gray"-->
+                    <!--android:text="录入时间:2015年"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="19dp" />-->
             </LinearLayout>
 
         </RelativeLayout>

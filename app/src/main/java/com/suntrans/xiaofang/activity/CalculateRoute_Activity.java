@@ -1,6 +1,7 @@
 package com.suntrans.xiaofang.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
@@ -34,8 +36,9 @@ import com.amap.api.navi.view.RouteOverLay;
 import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.bean.StrategyBean;
+import com.suntrans.xiaofang.model.StrategyBean;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.suntrans.xiaofang.views.WaitDialog;
 
@@ -54,6 +57,7 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
     private ImageView imageViewWalk;
     private LinearLayout llCar;
     private LinearLayout llWalk;
+    private ProgressDialog dialog1;
     /**
      * 导航对象(单例)
      */
@@ -89,6 +93,8 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
     private TextView mRouteTextDistanceOne, mRouteTextDistanceTwo, mRouteTextDistanceThree;
     private TextView mCalculateRouteOverView;
     private ImageView mImageTraffic, mImageStrategy;
+    private LatLng from;
+    private LatLng to;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +141,7 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
      * 驾车路径规划计算
      */
     private void calculateDriveRoute(int i) {
+        dialog1.show();
         try {
             strategyFlag = mAMapNavi.strategyConvert(mStrategyBean.isCongestion(), mStrategyBean.isCost(), mStrategyBean.isAvoidhightspeed(), mStrategyBean.isHightspeed(), true);
         } catch (Exception e) {
@@ -153,7 +160,6 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
      */
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
-        dialog.dismiss();
         cleanRouteOverlay();
         driveLayout.setVisibility(View.VISIBLE);
         HashMap<Integer, AMapNaviPath> paths = mAMapNavi.getNaviPaths();
@@ -164,6 +170,7 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
             }
         }
         setRouteLineTag(paths, ints);
+        dialog1.dismiss();
     }
 
 
@@ -173,7 +180,6 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
      */
     @Override
     public void onCalculateRouteSuccess() {
-        dialog.dismiss();
         AMapNaviPath path = mAMapNavi.getNaviPath();
         cleanRouteOverlay();
         mAMap.moveCamera(CameraUpdateFactory.changeTilt(0));
@@ -190,6 +196,7 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
             timeCost =  (int)time+"小时";
         }
         mCalculateRouteOverView.setText("距离您"+dis+"米"+" 大约需要"+timeCost);
+        dialog1.dismiss();
     }
 
     /**
@@ -219,8 +226,8 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
      * 导航初始化
      */
     private void initNavi() {
-        LatLng from = ((LatLng) getIntent().getParcelableExtra("from"));
-        LatLng to = ((LatLng) getIntent().getParcelableExtra("to"));
+        from = ((LatLng) getIntent().getParcelableExtra("from"));
+        to = ((LatLng) getIntent().getParcelableExtra("to"));
         mStrategyBean = new StrategyBean(false, false, false, false);
         LogUtil.i("起始点坐标:" + from.latitude + "终点坐标:" + to.latitude);
         startLatlng = new NaviLatLng(from.latitude, from.longitude);
@@ -236,6 +243,9 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
     private int navState = 1;//1为驾车模式,2为步行模式
     WaitDialog dialog ;
     private void initView() {
+        dialog1 = new ProgressDialog(this);
+        dialog1.setMessage("计算路径中,请稍候..");
+        dialog1.setCancelable(false);
         dialog= new WaitDialog(CalculateRoute_Activity.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         dialog.setWaitText(getString(R.string.loading));
         dialog.setCancelable(false);
@@ -248,8 +258,9 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
         llCar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (navState == 2) {
-                    dialog.show();
+                    dialog1.show();
                     imageViewCar.setImageResource(R.drawable.ic_car_press);
                     imageViewWalk.setImageResource(R.drawable.ic_walk);
                     navState = 1;
@@ -264,7 +275,12 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
             @Override
             public void onClick(View v) {
                 if (navState == 1) {
-                    dialog.show();
+                    double distance = AMapUtils.calculateLineDistance(from, to);
+                    if (distance>10000){
+                        UiUtils.showToast(CalculateRoute_Activity.this,"路途太远建议驾车");
+                        return;
+                    }
+                    dialog1.show();
                     imageViewCar.setImageResource(R.drawable.ic_car);
                     imageViewWalk.setImageResource(R.drawable.ic_walk_press);
                     navState = 2;

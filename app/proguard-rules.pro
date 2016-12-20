@@ -41,7 +41,7 @@
 
  # 保持哪些类不被混淆
 -keep public class * extends android.app.Fragment
-#-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
 -keep public class * extends android.content.BroadcastReceiver
@@ -51,7 +51,7 @@
 -keep public class com.android.vending.licensing.ILicensingService
  #如果有引用v4包可以添加下面这行
 -keep public class * extends android.support.v4.app.Fragment
-
+-keep class **.R$*{*;}
 #忽略警告
 -ignorewarning
 #apk 包内所有 class 的内部结构
@@ -76,7 +76,7 @@
     -keep class com.amap.api.navi.**{*;}
     -keep class com.autonavi.**{*;}
 #我的
-    -keep class com.suntrans.xiaofang.bean.**{*;}
+    -keep class com.suntrans.xiaofang.model.**{*;}
     -dontwarn android.support.**
 
 
@@ -123,3 +123,41 @@
                 -keepclassmembers class **.R$* {
                     public static <fields>;
                 }
+
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+
+-dontwarn javax.annotation.**
+-dontwarn javax.inject.**
+# OkHttp3
+-dontwarn okhttp3.logging.**
+-keep class okhttp3.internal.**{*;}
+-dontwarn okio.**
+# Retrofit
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+# RxJava RxAndroid
+-dontwarn sun.misc.**
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+    long producerIndex;
+    long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
+
+# Gson
+-keep class com.google.gson.stream.** { *; }
+-keepattributes EnclosingMethod

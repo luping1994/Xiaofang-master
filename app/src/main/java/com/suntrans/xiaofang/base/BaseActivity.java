@@ -2,12 +2,9 @@ package com.suntrans.xiaofang.base;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.suntrans.xiaofang.R;
 
@@ -25,13 +22,19 @@ public abstract class BaseActivity extends AppCompatActivity  {
         setContentView(getLayoutId());
         setupToolbar();
         setUpView();
-        setUpData();
     }
 
     protected void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
 
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpData();
     }
 
     protected abstract int getLayoutId();

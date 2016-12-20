@@ -41,10 +41,14 @@
         android:theme="@style/MyAppTheme">
         <meta-data android:name="com.amap.api.v2.apikey" android:value="80c6f6b6cf6bcc5d5998dec1142461fc">
         </meta-data>
+        <activity android:name=".activity.WelcomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <activity android:name=".activity.Main_Activity">
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+        <activity android:name=".activity.Main_Activity"/>
         <activity android:name=".activity.Search_activity" android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity android:name=".activity.Personal_activity"/>
         <activity android:name=".activity.CompanyInfo_activity"/>
@@ -55,13 +59,11 @@
         <activity android:name=".activity.EditInfo_activity"/>
         <service android:name="com.amap.api.location.APSService"></service>
         <activity android:name=".activity.RouteNavi_Activity"/>
-        <activity android:name=".activity.Login_Activity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity android:name=".activity.Login_Activity">
+
         </activity>
+
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="portrait"

@@ -65,6 +65,7 @@ public class Add_activity  extends AppCompatActivity{
                 break;
         }
         intent.setClass(this,Add_detail_activity.class);
+        intent.putExtra("location",getIntent().getParcelableExtra("location"));
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }

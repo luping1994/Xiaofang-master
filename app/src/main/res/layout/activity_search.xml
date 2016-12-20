@@ -75,16 +75,17 @@
                 android:layout_weight="1" />
 
             <ImageView
-                android:id="@+id/image_voice"
+                android:id="@+id/search"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_keyboard_voice_grey_500_24dp" />
+                android:src="@drawable/ic_search_grey_500_36dp" />
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
     <android.support.v7.widget.RecyclerView
+        android:scrollbars="vertical"
         android:id="@+id/recycleview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

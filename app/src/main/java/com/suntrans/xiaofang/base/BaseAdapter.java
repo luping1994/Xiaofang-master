@@ -16,6 +16,9 @@ public abstract class BaseAdapter<M, H extends BaseViewHolder<M>> extends Recycl
     protected List<M> dataList;
     protected OnItemClickListener<H> listener;
 
+
+
+
     /**
      * 设置数据,并设置点击回调接口
      *

@@ -28,11 +28,11 @@
         app:showAsAction="never"
         android:title="@string/menu_scan" />
 
-    <item
-        android:icon="@drawable/ic_add"
-        android:id="@+id/pulldata"
-        app:showAsAction="never"
-        android:title="@string/menu_pulldata" />
+    <!--<item-->
+        <!--android:icon="@drawable/ic_add"-->
+        <!--android:id="@+id/pulldata"-->
+        <!--app:showAsAction="never"-->
+        <!--android:title="@string/menu_pulldata" />-->
 
     <item
         android:icon="@drawable/ic_help"

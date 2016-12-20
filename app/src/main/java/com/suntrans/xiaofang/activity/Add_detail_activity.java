@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.amap.api.maps.model.LatLng;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.fragment.Type1_fragment;
 import com.suntrans.xiaofang.fragment.Type2_fragment;
@@ -27,7 +28,7 @@ public class Add_detail_activity extends AppCompatActivity {
     private FrameLayout content;
     private Fragment[] fragments;
     private String[] title = {"添加社会单位","添加消防中队","添加政府专职小型站","添加社区消防室"};
-
+    public LatLng latLng;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +39,7 @@ public class Add_detail_activity extends AppCompatActivity {
 
     private void setupToolBar() {
         type = getIntent().getIntExtra("type",1);
+        latLng = getIntent().getParcelableExtra("location");
         StatusBarCompat.compat(this, Color.rgb(0x2f, 0x9d, 0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);

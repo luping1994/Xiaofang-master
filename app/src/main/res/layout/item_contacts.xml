@@ -33,6 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
+                    android:id="@+id/mobile"
                     android:text="159xxxxxxxx"
                     android:textColor="@color/balck"
                     android:layout_width="match_parent"

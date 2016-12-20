@@ -132,7 +132,6 @@ public class PullData_activity extends AppCompatActivity implements View.OnClick
                 super(itemView);
                 cb = (CheckBox) itemView.findViewById(R.id.ckeckbox);
                 name = (TextView) itemView.findViewById(R.id.name);
-                imageView = (ImageView) itemView.findViewById(R.id.image_voice);
             }
 
 

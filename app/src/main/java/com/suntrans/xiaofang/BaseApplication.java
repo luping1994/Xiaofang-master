@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,25 +27,16 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-//        CrashReport.initCrashReport(getApplicationContext(), "900055973", true);//初始化腾讯bug分析工具
+        CrashReport.initCrashReport(getApplicationContext(), "7d01f61d8c", true);//初始化腾讯bug分析工具
         application=this;
         mainTid=android.os.Process.myTid();
         mHandler=new Handler();
-//        EZOpenSDK.initLib(this,appKey,"");//初始化萤石视频sdk
-        boolean frist = getSharedPreferences().getBoolean("isFristCome",true);
-        //假如是第一次启动app则保存ip地址,首次穷默认为内网ip
-        if (frist){
 
-            getSharedPreferences().edit().putBoolean("isFristCome",false).commit();
-            getSharedPreferences().edit().putString("sixIpAddress","192.168.1.15").commit();
-            getSharedPreferences().edit().putInt("sixPort",2000).commit();
-
-            getSharedPreferences().edit().putString("chunkouIpAddress","192.168.1.213").commit();
-            getSharedPreferences().edit().putInt("chunkouPort",8000).commit();
-        }
 
 
     }
+
+
     public static SharedPreferences getSharedPreferences(){
         if (msharedPreferences==null){
             msharedPreferences = getApplication().getSharedPreferences("config", Context.MODE_PRIVATE);
@@ -54,9 +46,7 @@ public class BaseApplication extends Application {
     public static Context getApplication() {
         return application;
     }
-    public static Application getApplication1() {
-        return application;
-    }
+
     public static int getMainTid() {
         return mainTid;
     }
@@ -103,7 +93,6 @@ public class BaseApplication extends Application {
 
             } catch (IOException e) {
                 e.printStackTrace();
-
             }
 
             finally {
@@ -121,9 +110,7 @@ public class BaseApplication extends Application {
             }
 
         }
-
         return file.getPath();
-
     }
 
 }

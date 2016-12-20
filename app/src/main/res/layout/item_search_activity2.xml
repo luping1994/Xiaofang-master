@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:background="@color/white"
     android:id="@+id/ll"
-    android:layout_height="50dp">
+    android:layout_height="35dp">
     <TextView
+        android:id="@+id/value"
         android:layout_width="match_parent"
-        android:textSize="20sp"
-        android:text="添加单位"
+        android:textSize="15sp"
+        android:text="无搜索结果"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textColor="#ff0000"
+        android:textColor="#808080"
         android:layout_height="match_parent" />
 </LinearLayout>
