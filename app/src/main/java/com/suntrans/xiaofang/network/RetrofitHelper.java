@@ -3,7 +3,7 @@ package com.suntrans.xiaofang.network;
 import android.util.Log;
 
 import com.suntrans.xiaofang.BaseApplication;
-import com.suntrans.xiaofang.service.Api;
+import com.suntrans.xiaofang.api.Api;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 

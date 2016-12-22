@@ -22,6 +22,7 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.google.common.collect.ImmutableMap;
+import com.suntrans.xiaofang.BaseApplication;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.Add_detail_activity;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
@@ -42,6 +43,7 @@ import retrofit2.Response;
 
 /**
  * Created by Looney on 2016/12/13.
+ * 增加社会单位fragment
  */
 
 public class Type1_fragment extends Fragment {
@@ -147,7 +149,7 @@ public class Type1_fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 progressDialog.show();
-                GeocodeSearch geocodeSearch = new GeocodeSearch(getActivity());
+                GeocodeSearch geocodeSearch = new GeocodeSearch(BaseApplication.getApplication());
                 RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(((Add_detail_activity) getActivity()).latLng.latitude, ((Add_detail_activity) getActivity()).latLng.longitude), 200, GeocodeSearch.AMAP);
                 geocodeSearch.getFromLocationAsyn(query);
                 geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
@@ -438,9 +440,7 @@ public class Type1_fragment extends Fragment {
         RetrofitHelper.getApi().createCompany(map).enqueue(new Callback<AddCompanyResult>() {
             @Override
             public void onResponse(Call<AddCompanyResult> call, Response<AddCompanyResult> response) {
-                System.out.println("message" + response.message());
-                System.out.println("body" + response.body());
-                System.out.println("raw" + response.raw());
+
                 AddCompanyResult result = response.body();
                 try {
                     if (result != null) {
@@ -463,12 +463,5 @@ public class Type1_fragment extends Fragment {
 
     }
 
-    private boolean isValid(String str) {
-        if (str != null) {
-            str = str.replace(" ", "");
-            if (!TextUtils.equals("", str))
-                return true;
-        }
-        return false;
-    }
+
 }

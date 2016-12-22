@@ -14,9 +14,11 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextWatcher;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,12 +40,11 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 /**
  * Created by Looney on 2016/11/24.
  */
 
-public class Search_activity extends AppCompatActivity   {
+public class Search_activity extends AppCompatActivity  {
     private RecyclerView recyclerView;
     private SearchView searchView;
     private ImageView imageView;
@@ -63,6 +64,7 @@ public class Search_activity extends AppCompatActivity   {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         setupToolbar();
+        editText = (EditText) findViewById(R.id.tx_search);
         imageView1 = (ImageView) findViewById(R.id.back);
         search = (ImageView) findViewById(R.id.search);
         search.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +72,18 @@ public class Search_activity extends AppCompatActivity   {
             public void onClick(View v) {
                 String text =editText.getText().toString();
                 searchCompany(text);
+            }
+        });
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                switch (actionId){
+                    case EditorInfo.IME_ACTION_SEARCH:
+                        String text =editText.getText().toString();
+                        searchCompany(text);
+                        break;
+                }
+                return false;
             }
         });
         imageView1.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +100,6 @@ public class Search_activity extends AppCompatActivity   {
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new RecyclerViewDivider(this,LinearLayoutManager.VERTICAL));
 //        searchView.setOnQueryTextListener(this);
-        editText = (EditText) findViewById(R.id.tx_search);
         dialog = new ProgressDialog(this);
         dialog.setCancelable(false);
         dialog.setTitle("正在搜索...");
@@ -103,6 +116,8 @@ public class Search_activity extends AppCompatActivity   {
 
 
     Handler handler = new Handler();
+
+
 
     class MyAdapter extends RecyclerView.Adapter {
 
@@ -164,7 +179,7 @@ public class Search_activity extends AppCompatActivity   {
                         Intent intent = new Intent();
                         intent.putExtra("companyID",datas.get(position).get(0)+"#0");
                         intent.putExtra("name",datas.get(position).get(1));
-                        intent.setClass(Search_activity.this,CompanyInfo_activity.class);
+                        intent.setClass(Search_activity.this,InfoDetail_activity.class);
                         startActivity(intent);
                     }
                 });

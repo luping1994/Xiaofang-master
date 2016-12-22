@@ -51,12 +51,12 @@
         <activity android:name=".activity.Main_Activity"/>
         <activity android:name=".activity.Search_activity" android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity android:name=".activity.Personal_activity"/>
-        <activity android:name=".activity.CompanyInfo_activity"/>
+        <activity android:name=".activity.InfoDetail_activity"/>
         <activity android:name=".activity.Add_detail_activity" android:windowSoftInputMode="stateHidden|adjustNothing"/>
         <activity android:name=".activity.Help_activity"/>
         <activity android:name=".activity.PullData_activity"/>
         <activity android:name=".activity.CalculateRoute_Activity"/>
-        <activity android:name=".activity.EditInfo_activity"/>
+        <activity android:name=".activity.EditCompanyInfo_activity"/>
         <service android:name="com.amap.api.location.APSService"></service>
         <activity android:name=".activity.RouteNavi_Activity"/>
 
@@ -72,6 +72,9 @@
         <activity android:name=".activity.Check_Activity"/>
         <activity android:name=".activity.Add_activity"/>
         <activity android:name=".activity.Check_detail_Activity"/>
+        <activity android:name=".activity.EditFireroomInfo_activity"/>
+        <activity android:name=".activity.EditFirestationnfo_activity"/>
+        <activity android:name=".activity.EditFiregoupinfo_activity"/>
     </application>
 
 </manifest>

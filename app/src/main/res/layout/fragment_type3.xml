@@ -38,6 +38,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/name"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -67,6 +68,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/addr"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -81,6 +83,34 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="获取当前位置" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginLeft="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+                <EditText
+                    android:inputType="numberDecimal"
+                    android:textSize="14sp"
+                    android:id="@+id/lng"
+                    android:text="114.341014"
+                    android:textColor="@color/border"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <EditText
+                    android:inputType="numberDecimal"
+                    android:textSize="14sp"
+                    android:id="@+id/lat"
+                    android:text="30.547186"
+                    android:textColor="@color/border"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
             </LinearLayout>
 
             <LinearLayout
@@ -101,6 +131,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/area"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -136,6 +167,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/phone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -174,7 +206,7 @@
                     android:text="现役："
                     android:textSize="@dimen/text_size" />
                 <EditText
-
+                    android:id="@+id/servingnum"
                     android:layout_width="40dp"
                     android:layout_height="match_parent"
                     android:gravity="left|center"
@@ -195,6 +227,7 @@
                     android:text="专职："
                     android:textSize="@dimen/text_size" />
                 <EditText
+                    android:id="@+id/fulltimenum"
                     android:layout_width="40dp"
                     android:layout_height="match_parent"
                     android:gravity="left|center"
@@ -230,6 +263,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/carnum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -266,6 +300,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/cardisp"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:background="@null"
@@ -293,6 +328,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/waterweight"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -330,6 +366,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/soapweight"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -348,41 +385,6 @@
                     android:textSize="@dimen/text_size" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="1px"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/infoitem_pading"
-                android:paddingRight="@dimen/infoitem_pading">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="*车载干粉总量"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
-
-                <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:gravity="left|center"
-                    android:hint="请输入"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="吨"
-                    android:textSize="@dimen/text_size" />
-            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -400,6 +402,7 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
                 <Spinner
+                    android:id="@+id/district"
                     android:entries="@array/area"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -429,12 +432,13 @@
                     android:textSize="@dimen/text_size"
                     android:id="@+id/textView4" />
 
-                <Spinner
-                    android:entries="@array/area"
+                <EditText
+                    android:id="@+id/street"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_weight="1"
+                    android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
@@ -456,12 +460,13 @@
                     android:text="*所属社区"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
-                <Spinner
-                    android:entries="@array/area"
+                <EditText
+                    android:id="@+id/community"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_weight="1"
+                    android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
@@ -483,12 +488,13 @@
                     android:text="*所属大队"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
-                <Spinner
-                    android:entries="@array/dadui"
+                <EditText
+                    android:id="@+id/group"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_weight="1"
+                    android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
@@ -498,6 +504,7 @@
     </ScrollView>
 
     <Button
+        android:id="@+id/commit_station"
         android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="45dp"

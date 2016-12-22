@@ -12,12 +12,10 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 
 import com.suntrans.xiaofang.BaseApplication;
 
@@ -35,6 +33,7 @@ public class UiUtils {
 		mToast.setText(str);
 		mToast.show();
 	}
+
 
 	/**
 	 * 获取到字符数组

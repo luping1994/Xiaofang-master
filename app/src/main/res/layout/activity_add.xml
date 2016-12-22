@@ -37,7 +37,7 @@
 
                 <RadioButton
                     android:id="@+id/type2"
-                    android:text="消防中队"
+                    android:text="社区消防室"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
@@ -49,7 +49,7 @@
 
                 <RadioButton
                     android:id="@+id/type4"
-                    android:text="社区消防室"
+                    android:text="消防中队"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <!--<RadioButton-->

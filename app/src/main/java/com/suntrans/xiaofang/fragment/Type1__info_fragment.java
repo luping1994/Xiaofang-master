@@ -1,8 +1,11 @@
 package com.suntrans.xiaofang.fragment;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -12,8 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.activity.CompanyInfo_activity;
+import com.suntrans.xiaofang.activity.CalculateRoute_Activity;
+import com.suntrans.xiaofang.activity.InfoDetail_activity;
+import com.suntrans.xiaofang.activity.EditCompanyInfo_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
@@ -28,14 +35,20 @@ import retrofit2.Response;
 
 /**
  * Created by Looney on 2016/12/13.
+ * 社会单位详情fragment
  */
 
-public class Type1__info_fragment extends Fragment {
+public class Type1__info_fragment extends Fragment implements View.OnClickListener {
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
     private MyAdapter myAdapter;
     private CompanyDetailnfo data;
+
+    private FloatingActionMenu menuRed;
+    private FloatingActionButton fab1;
+    private FloatingActionButton fab2;
+    private FloatingActionButton fab3;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,6 +64,16 @@ public class Type1__info_fragment extends Fragment {
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(myAdapter);
         recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(),LinearLayoutManager.VERTICAL));
+        menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
+        menuRed.setClosedOnTouchOutside(true);
+        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
+        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
+        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
+
+
+        fab1.setOnClickListener(this);
+        fab2.setOnClickListener(this);
+        fab3.setOnClickListener(this);
 
     }
 
@@ -284,7 +307,7 @@ public class Type1__info_fragment extends Fragment {
 
     public CompanyDetailnfo myInfo;
     private void getData() {
-        RetrofitHelper.getApi().getCompanyDetail(((CompanyInfo_activity)getActivity()).companyId).enqueue(new Callback<CompanyDetailnfoResult>() {
+        RetrofitHelper.getApi().getCompanyDetail(((InfoDetail_activity)getActivity()).companyId).enqueue(new Callback<CompanyDetailnfoResult>() {
             @Override
             public void onResponse(Call<CompanyDetailnfoResult> call, Response<CompanyDetailnfoResult> response) {
                 CompanyDetailnfoResult result = response.body();
@@ -344,4 +367,60 @@ public class Type1__info_fragment extends Fragment {
         datas.get(31).put(1,info.remark);
         myAdapter.notifyDataSetChanged();
     }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.fab1:
+                final AlertDialog.Builder builder =new AlertDialog.Builder(getActivity());
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog =builder.create();
+                dialog.setTitle("确定删除该单位?");
+                dialog.show();
+                break;
+            case R.id.fab2:
+                Intent intent = new Intent();
+                intent.setClass(getActivity(),EditCompanyInfo_activity.class);
+                intent.putExtra("title",((InfoDetail_activity)getActivity()).title);
+                intent.putExtra("id",((InfoDetail_activity)getActivity()).companyId);
+                intent.putExtra("info",myInfo);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+            case R.id.fab3:
+                Intent intent1 = new Intent();
+                intent1.setClass(getActivity(),CalculateRoute_Activity.class);
+                if (getActivity().getIntent().getParcelableExtra("from")==null){
+                    final AlertDialog.Builder builder1 =new AlertDialog.Builder(getActivity());
+                    builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog dialog1 =builder1.create();
+                    dialog1.setTitle("单位未添加地理坐标,无法导航!");
+                    dialog1.show();
+                    break;
+                }
+                intent1.putExtra("from",getActivity().getIntent().getParcelableExtra("from"));
+                intent1.putExtra("to",getActivity().getIntent().getParcelableExtra("to"));
+                startActivity(intent1);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+        }
+    }
+
 }

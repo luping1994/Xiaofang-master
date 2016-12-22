@@ -67,6 +67,9 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp" />
             <EditText
+                android:inputType="text"
+                android:singleLine="true"
+                android:imeOptions="actionSearch"
                 android:background="@null"
                 android:hint="搜索单位"
                 android:id="@+id/tx_search"

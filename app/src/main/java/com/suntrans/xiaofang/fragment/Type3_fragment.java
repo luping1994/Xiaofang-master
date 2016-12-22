@@ -1,164 +1,234 @@
 package com.suntrans.xiaofang.fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 
+import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
+import com.suntrans.xiaofang.model.firestation.AddFireStationResult;
+import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Looney on 2016/12/13.
+ * 政府专职小型站添加fragment
  */
 
 public class Type3_fragment extends Fragment {
-    private ArrayList<HashMap<String,String>> datas = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private LinearLayoutManager manager;
-    private MyAdapter adapter;
+    Map<String, String> map;
+    @BindView(R.id.name)
+    EditText name;
+    @BindView(R.id.addr)
+    EditText addr;
+    @BindView(R.id.area)
+    EditText area;
+    @BindView(R.id.phone)
+    EditText phone;
+    @BindView(R.id.servingnum)
+    EditText servingnum;
+    @BindView(R.id.fulltimenum)
+    EditText fulltimenum;
+
+    @BindView(R.id.carnum)
+    EditText carnum;
+    @BindView(R.id.cardisp)
+    EditText cardisp;
+    @BindView(R.id.waterweight)
+    EditText waterweight;
+    @BindView(R.id.soapweight)
+    EditText soapweight;
+
+    @BindView(R.id.street)
+    EditText street;
+    @BindView(R.id.community)
+    EditText community;
+    @BindView(R.id.group)
+    EditText group;
+    @BindView(R.id.scroll)
+    ScrollView scroll;
+    @BindView(R.id.commit_station)
+    Button commitStation;
+    @BindView(R.id.district)
+    Spinner district;
+    @BindView(R.id.lng)
+    EditText lng;
+    @BindView(R.id.lat)
+    EditText lat;
+    private AlertDialog dialog;
+
+    private String district1;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_type3, container, false);
+        ButterKnife.bind(this, view);
 
-        return inflater.inflate(R.layout.fragment_type3,container,false);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        initData();
-//        recyclerView = (RecyclerView)view.findViewById(R.id.recycleview);
-//        recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.VERTICAL));
-//        manager = new LinearLayoutManager(getContext());
-//        adapter = new MyAdapter();
-//        recyclerView.setLayoutManager(manager);
-//        recyclerView.setAdapter(adapter);
+        initData();
+
     }
 
     private void initData() {
-        HashMap<String,String> map = new HashMap<>();
-        map.put("property","名称");
-        map.put("value","null");
-        datas.add(map);
+        district.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                district1 = getResources().getStringArray(R.array.area)[position];
+            }
 
-        HashMap<String,String> map2 = new HashMap<>();
-        map2.put("property","地址");
-        map2.put("value","null");
-        datas.add(map2);
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-        HashMap<String,String> map3 = new HashMap<>();
-        map3.put("property","消防队站联系电话");
-        map3.put("value","null");
-        datas.add(map3);
-
-        HashMap<String,String> map4 = new HashMap<>();
-        map4.put("property","消防队员人数");
-        map4.put("value","null");
-        datas.add(map4);
-
-        HashMap<String,String> map5 = new HashMap<>();
-        map5.put("property","消防车总数");
-        map5.put("value","null");
-        datas.add(map5);
-
-        HashMap<String,String> map6 = new HashMap<>();
-        map6.put("property","消防车辆配置情况");
-        map6.put("value","null");
-        datas.add(map6);
-
-        HashMap<String,String> map7 = new HashMap<>();
-        map7.put("property","车载水总量（吨");
-        map7.put("value","null");
-        datas.add(map7);
-
-        HashMap<String,String> map8 = new HashMap<>();
-        map8.put("property","车载干粉总量（吨）");
-        map8.put("value","null");
-        datas.add(map8);
-
-        HashMap<String,String> map9 = new HashMap<>();
-        map9.put("property","所属区");
-        map9.put("value","null");
-        datas.add(map9);
-
-        HashMap<String,String> map10 = new HashMap<>();
-        map10.put("property","所属大队");
-        map10.put("value","null");
-        datas.add(map10);
-
+            }
+        });
     }
 
-    class MyAdapter extends RecyclerView.Adapter {
 
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v;
-            if (viewType == 0) {
-                v = LayoutInflater.from(getActivity()).inflate(R.layout.item_add, parent, false);
-                return new ViewHolder1(v);
-            } else {
-                return null;
-            }
+    @OnClick(R.id.commit_station)
+    public void onClick() {
+        addCommit();
+    }
+
+    private void addCommit() {
+        map = null;
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        String name1 = name.getText().toString();
+        String addr1 = addr.getText().toString();
+        String lng1 = lng.getText().toString();
+        String lat1 = lat.getText().toString();
+
+
+        String area1 = area.getText().toString();
+        String phone1 = phone.getText().toString();
+        String servingnum1 = servingnum.getText().toString();
+        String fulltimenum1 = fulltimenum.getText().toString();
+        String carnum1 = carnum.getText().toString();
+        String cardisp1 = cardisp.getText().toString();
+        String waterweight1 = waterweight.getText().toString();
+        String soapweight1 = soapweight.getText().toString();
+
+        String street1 = street.getText().toString();
+        String community1 = community.getText().toString();
+        String group1 = group.getText().toString();
+
+        if (Utils.isVaild(name1)) {
+            builder.put("name", name1.replace(" ", ""));
         }
 
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof MyAdapter.ViewHolder2) {
-                ((ViewHolder2) holder).setData(position);
-            } else {
-                ((ViewHolder1) holder).setData(position);
-            }
+        if (Utils.isVaild(addr1)) {
+            builder.put("addr", addr1.replace(" ", ""));
+        }
+        if (Utils.isVaild(lng1)) {
+            builder.put("lng", lng1.replace(" ", ""));
+        }
+        if (Utils.isVaild(lat1)) {
+            builder.put("lat", lat1.replace(" ", ""));
+        }
+        if (Utils.isVaild(area1)) {
+            builder.put("area", area1.replace(" ", ""));
         }
 
-        @Override
-        public int getItemCount() {
-            return datas.size();
+        if (Utils.isVaild(phone1)) {
+            builder.put("phone", phone1.replace(" ", ""));
+        }
+        if (Utils.isVaild(servingnum1)) {
+            builder.put("servingnum", servingnum1.replace(" ", ""));
         }
 
-        @Override
-        public int getItemViewType(int position) {
-            return 0;
+        if (Utils.isVaild(fulltimenum1)) {
+            builder.put("fulltimenum", fulltimenum1.replace(" ", ""));
+        }
+        if (Utils.isVaild(carnum1)) {
+            builder.put("carnum", carnum1.replace(" ", ""));
         }
 
-        class ViewHolder1 extends RecyclerView.ViewHolder {
-            TextView property;
-            EditText value;
-            public ViewHolder1(View itemView) {
-                super(itemView);
-                property = (TextView) itemView.findViewById(R.id.property);
-                value = (EditText) itemView.findViewById(R.id.value);
-            }
-
-            public void setData(int position) {
-                property.setText(datas.get(position).get("property"));
-            }
+        if (Utils.isVaild(cardisp1)) {
+            builder.put("cardisp", cardisp1.replace(" ", ""));
+        }
+        if (Utils.isVaild(waterweight1)) {
+            builder.put("waterweight", waterweight1.replace(" ", ""));
         }
 
-        class ViewHolder2 extends RecyclerView.ViewHolder {
-            ImageView imageView;
-            TextView name;
-            TextView value;
-
-            public ViewHolder2(View itemView) {
-                super(itemView);
-                value = (TextView) itemView.findViewById(R.id.value);
-                name = (TextView) itemView.findViewById(R.id.name);
-                imageView = (ImageView) itemView.findViewById(R.id.image);
-            }
-
-            public void setData(int position) {
-
-            }
+        if (Utils.isVaild(soapweight1)) {
+            builder.put("soapweight", soapweight1.replace(" ", ""));
         }
+        builder.put("district", district1);
+
+        if (Utils.isVaild(street1)) {
+            builder.put("street", street1.replace(" ", ""));
+        }
+        if (Utils.isVaild(community1)) {
+            builder.put("community", community1.replace(" ", ""));
+        }
+        if (Utils.isVaild(group1)) {
+            builder.put("group", group1.replace(" ", ""));
+        }
+        map = builder.build();
+
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey().toString();
+            String value = entry.getValue().toString();
+            System.out.println(key + "," + value);
+        }
+        RetrofitHelper.getApi().createStation(map)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<AddFireStationResult>() {
+                    @Override
+                    public void onCompleted() {
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onNext(AddFireStationResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                String result1 = result.result;
+
+                                dialog = new AlertDialog.Builder(getActivity())
+                                        .setMessage(result1)
+                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                getActivity().finish();
+                                            }
+                                        })
+                                        .create();
+                                dialog.show();
+                            }
+                        }
+                    }
+                });
+
     }
 }

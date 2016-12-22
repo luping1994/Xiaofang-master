@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -235,6 +236,15 @@ public class Utils {
                     }
                 }
             }
+        }
+        return false;
+    }
+
+    public static boolean isVaild(String value){
+        if (value != null) {
+            value = value.replace(" ", "");
+            if (!TextUtils.equals("", value))
+                return true;
         }
         return false;
     }
