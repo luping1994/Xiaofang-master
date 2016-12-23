@@ -12,10 +12,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -53,6 +55,14 @@ import com.google.zxing.integration.android.IntentResult;
 import com.lidroid.xutils.util.LogUtils;
 import com.suntrans.xiaofang.BaseApplication;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.add.Add_activity;
+import com.suntrans.xiaofang.activity.add.Add_detail_activity;
+import com.suntrans.xiaofang.activity.check.Check_Activity;
+import com.suntrans.xiaofang.activity.others.CameraScan_Activity;
+import com.suntrans.xiaofang.activity.others.Help_activity;
+import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
+import com.suntrans.xiaofang.activity.others.Personal_activity;
+import com.suntrans.xiaofang.activity.others.Search_activity;
 import com.suntrans.xiaofang.model.company.CompanyList;
 import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.model.fireroom.FireComponentGeneralInfo;
@@ -160,6 +170,7 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setTitle("单位总览");
+        toolbar.setLogo(R.mipmap.ic_launcher);
         cardView = (CardView) findViewById(R.id.search_cardview);
         cardView.setOnClickListener(this);
         setSupportActionBar(toolbar);
@@ -394,6 +405,7 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
             case R.id.search_cardview:
                 Intent intent = new Intent();
                 intent.setClass(Main_Activity.this, Search_activity.class);
+                intent.putExtra("from", mLocMarker.getPosition());
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
@@ -607,10 +619,27 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        MenuInflater inflater = new MenuInflater(this);
+        inflater.inflate(R.menu.menu_main, menu);
+        setIconEnable(menu,true);  //  就是这一句使图标能显示
+        return super.onCreateOptionsMenu(menu);
     }
+    private void setIconEnable(Menu menu, boolean enable)
+    {
+        try
+        {
+            Class<?> clazz = Class.forName("android.support.v7.view.menu.MenuBuilder");
+            Method m = clazz.getDeclaredMethod("setOptionalIconsVisible", boolean.class);
+            m.setAccessible(true);
 
+            //MenuBuilder实现Menu接口，创建菜单时，传进来的menu其实就是MenuBuilder对象(java的多态特征)
+            m.invoke(menu, enable);
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -653,22 +682,24 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
     }
 
     //重写此方法解决icon不显示问题
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (menu != null) {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
-                try {
-                    Method m = menu.getClass().getDeclaredMethod(
-                            "setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                } catch (NoSuchMethodException e) {
-                } catch (Exception e) {
-                }
-            }
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        if (menu != null) {
+//            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+//                try {
+//                    Method m = menu.getClass().getDeclaredMethod(
+//                            "setOptionalIconsVisible", Boolean.TYPE);
+//                    m.setAccessible(true);
+//                    m.invoke(menu, true);
+//                } catch (NoSuchMethodException e) {
+//                } catch (Exception e) {
+//                }
+//            }
+//        }
+//        return super.onPrepareOptionsMenu(menu);
+//    }
+
+
 
     @Override
     protected void onResume() {
@@ -759,7 +790,6 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
             @Override
             public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
                 CompanyListResult result = response.body();
-           
                 if (result == null) {
                     UiUtils.showToast(BaseApplication.getApplication(), "获取服务器单位信息数据失败!");
                     return;
@@ -851,7 +881,6 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
                             return;
                         }
                         if (list.status.equals("1")){
-
                                 List<FireComponentGeneralInfo> lists = list.result;
                                 for (FireComponentGeneralInfo info : lists) {
                                     if (info.lat == null || info.lng == null) {
@@ -939,9 +968,7 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
 
                             List<FireComponentGeneralInfo> lists = list.result;
                             for (FireComponentGeneralInfo info : lists) {
-                                if (info.lat == null || info.lng == null) {
-                                    continue;
-                                }
+                                if (info.lat != null || info.lng != null||!TextUtils.equals("",String.valueOf(info.lat))||!TextUtils.equals("",String.valueOf(info.lng))) {
                                 LogUtils.i("小型站"+info.toString());
                                 double lat = Double.valueOf(info.lat);
                                 double lng = Double.valueOf(info.lng);
@@ -954,6 +981,7 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
                                         .snippet(info.id + "#" + FIRESTATION )
                                         .icon(BitmapDescriptorFactory.fromBitmap(firestationBitmap));
                                 fireStationOptions.add(markerOptions);
+                                }
                             }
 
                         }else {
@@ -985,7 +1013,7 @@ public class Main_Activity extends AppCompatActivity implements LocationSource, 
             if (!a) {
                 Marker mar = aMap.addMarker(fireStationOptions.get(i));
                 fireStationMarkers.add(mar);
-                LogUtils.i("小型站添加成功");
+//                LogUtils.i("小型站添加成功");
                     mar.setVisible(true);
             }
 

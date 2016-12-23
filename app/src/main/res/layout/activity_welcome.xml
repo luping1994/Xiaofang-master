@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context="com.suntrans.xiaofang.activity.Login_Activity">
+    tools:context="com.suntrans.xiaofang.activity.others.Login_Activity">
     <LinearLayout
         android:layout_centerInParent="true"
         android:orientation="vertical"
@@ -32,14 +32,22 @@
             android:text="消防安全网格化管理平台"/>
     </LinearLayout>
 
-
     <TextView
+        android:layout_above="@+id/tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:text="技术支持@"/>
+    <TextView
+        android:id="@+id/tv"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:layout_marginBottom="20dp"
         android:text="@string/company_name"/>
 </RelativeLayout>

@@ -4,24 +4,27 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.amap.api.maps.model.LatLng;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.activity.CalculateRoute_Activity;
-import com.suntrans.xiaofang.activity.InfoDetail_activity;
-import com.suntrans.xiaofang.activity.EditCompanyInfo_activity;
-import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
+import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
+import com.suntrans.xiaofang.activity.edit.EditCompanyInfo_activity;
+import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
+import com.suntrans.xiaofang.fragment.infodetail_parts.DetailInfoFragment;
+import com.suntrans.xiaofang.fragment.infodetail_parts.EventFragment;
+import com.suntrans.xiaofang.fragment.infodetail_parts.SuperviseFragment;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
@@ -40,213 +43,103 @@ import retrofit2.Response;
 
 public class Type1__info_fragment extends Fragment implements View.OnClickListener {
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private LinearLayoutManager manager;
-    private MyAdapter myAdapter;
-    private CompanyDetailnfo data;
+
+//    private RecyclerView recyclerView;
+//    private LinearLayoutManager manager;
+//    private MyAdapter myAdapter;
+//    private CompanyDetailnfo data;
 
     private FloatingActionMenu menuRed;
     private FloatingActionButton fab1;
     private FloatingActionButton fab2;
     private FloatingActionButton fab3;
+
+
+    private TabLayout tabLayout;
+    private ViewPager pager;
+    private DetailInfoFragment detailInfoFragment0;
+    private EventFragment eventFragment;
+    private SuperviseFragment superviseFragment;
+
+
+    LatLng to ;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        initData();
-        return inflater.inflate(R.layout.fragment_info_type1_backup, container, false);
+        return inflater.inflate(R.layout.fragment_info_type1, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
-        manager = new LinearLayoutManager(getActivity());
-        myAdapter = new MyAdapter();
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(myAdapter);
-        recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(),LinearLayoutManager.VERTICAL));
+
+
+//        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
+//        manager = new LinearLayoutManager(getActivity());
+//        myAdapter = new MyAdapter();
+//        recyclerView.setLayoutManager(manager);
+//        recyclerView.setAdapter(myAdapter);
+//        recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.VERTICAL));
+//
+
+
         menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
         menuRed.setClosedOnTouchOutside(true);
         fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
         fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
         fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
 
-
         fab1.setOnClickListener(this);
         fab2.setOnClickListener(this);
         fab3.setOnClickListener(this);
+        pager = (ViewPager) view.findViewById(R.id.pager);
+        tabLayout = (TabLayout) view.findViewById(R.id.tablayout);
+
+        PagerAdapter adapter = new PagerAdapter(getChildFragmentManager());
+        pager.setAdapter(adapter);
+        pager.setOffscreenPageLimit(2);
+        tabLayout.setupWithViewPager(pager);
 
     }
+    class PagerAdapter extends FragmentStatePagerAdapter {
+        String[] titles = new String[]{"单位信息","单位事件","单位监督"};
+        public PagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-    private void initData() {
-        SparseArray<String> array = new SparseArray<>();
-        array.put(0, "单位名称");
-        array.put(1, "--");
-        datas.add(array);
+        @Override
+        public Fragment getItem(int position) {
 
-        SparseArray<String> array1 = new SparseArray<>();
-        array1.put(0, "单位地址");
-        array1.put(1, "--");
-        datas.add(array1);
+            switch (position) {
+                case 0:
+                    if (detailInfoFragment0==null)
+                    detailInfoFragment0 = new DetailInfoFragment();
+                    return detailInfoFragment0;
+                case 1:
+                    if (eventFragment==null){
+                        eventFragment = new EventFragment();
+                    }
+                    return eventFragment;
+                case 2:
+                    if (superviseFragment==null){
+                        superviseFragment = new SuperviseFragment();
+                    }
+                    return superviseFragment;
+                default:
+                    return null;
+            }
+        }
 
-        SparseArray<String> array2 = new SparseArray<>();
-        array2.put(0, "消防管辖");
-        array2.put(1, "--");
-        datas.add(array2);
+        @Override
+        public int getCount() {
+            return titles.length;
+        }
 
-
-        SparseArray<String> array3 = new SparseArray<>();
-        array3.put(0, "火灾危险性");
-        array3.put(1, "--");
-        datas.add(array3);
-
-        SparseArray<String> array4 = new SparseArray<>();
-        array4.put(0, "建筑面积");
-        array4.put(1, "--");
-        datas.add(array4);
-
-        SparseArray<String> array5 = new SparseArray<>();
-        array5.put(0, "安全出口数");
-        array5.put(1, "--");
-        datas.add(array5);
-
-        SparseArray<String> array6 = new SparseArray<>();
-        array6.put(0, "疏散楼梯数");
-        array6.put(1, "--");
-        datas.add(array6);
-
-        SparseArray<String> array7 = new SparseArray<>();
-        array7.put(0, "自动消防设施");
-        array7.put(1, "--");
-        datas.add(array7);
-
-        SparseArray<String> array8 = new SparseArray<>();
-        array8.put(0, "单位属性");
-        array8.put(1, "--");
-        datas.add(array8);
-
-        SparseArray<String> array9 = new SparseArray<>();
-        array9.put(0, "法定代表人");
-        array9.put(1, "--");
-        datas.add(array9);
-
-        SparseArray<String> array10 = new SparseArray<>();
-        array10.put(0, "法定代表人身份证");
-        array10.put(1, "--");
-        datas.add(array10);
-
-
-        SparseArray<String> array11 = new SparseArray<>();
-        array11.put(0, "法定代表人电话");
-        array11.put(1, "--");
-        datas.add(array11);
-
-        SparseArray<String> array12 = new SparseArray<>();
-        array12.put(0, "消防安全管理人");
-        array12.put(1, "--");
-        datas.add(array12);
-        SparseArray<String> array13 = new SparseArray<>();
-        array13.put(0, "消防安全管理人身份证");
-        array13.put(1, "--");
-        datas.add(array13);
-
-
-        SparseArray<String> array14= new SparseArray<>();
-        array14.put(0, "消防安全管理人电话");
-        array14.put(1, "--");
-        datas.add(array14);
-
-        SparseArray<String> array15 = new SparseArray<>();
-        array15.put(0, "消防安全责任人");
-        array15.put(1, "--");
-        datas.add(array15);
-
-
-        SparseArray<String> array16 = new SparseArray<>();
-        array16.put(0, "消防安全责任人身份证");
-        array16.put(1, "--");
-        datas.add(array16);
-
-        SparseArray<String> array17 = new SparseArray<>();
-        array17.put(0, "消防安全责任人电话");
-        array17.put(1, "--");
-        datas.add(array17);
-
-        SparseArray<String> array18 = new SparseArray<>();
-        array18.put(0, "组织机构代码");
-        array18.put(1, "--");
-        datas.add(array18);
-
-
-        SparseArray<String> array19 = new SparseArray<>();
-        array19.put(0, "上级单位");
-        array19.put(1, "--");
-        datas.add(array19);
-
-        SparseArray<String> array20 = new SparseArray<>();
-        array20.put(0, "单位成立时间");
-        array20.put(1, "--");
-        datas.add(array20);
-
-
-        SparseArray<String> array21 = new SparseArray<>();
-        array21.put(0, "单位电话");
-        array21.put(1, "--");
-        datas.add(array21);
-
-        SparseArray<String> array22 = new SparseArray<>();
-        array22.put(0, "职工人数");
-        array22.put(1, "--");
-        datas.add(array22);
-
-        SparseArray<String> array23 = new SparseArray<>();
-        array23.put(0, "占地面积");
-        array23.put(1, "--");
-        datas.add(array23);
-
-        SparseArray<String> array24 = new SparseArray<>();
-        array24.put(0, "单位专职（志愿）消防员数");
-        array24.put(1, "--");
-        datas.add(array24);
-
-
-        SparseArray<String> array25 = new SparseArray<>();
-        array25.put(0, "消防车道数");
-        array25.put(1, "--");
-        datas.add(array25);
-
-        SparseArray<String> array26 = new SparseArray<>();
-        array26.put(0, "消防电梯数");
-        array26.put(1, "--");
-        datas.add(array26);
-
-
-
-        SparseArray<String> array27 = new SparseArray<>();
-        array27.put(0, "消防车道类型");
-        array27.put(1, "--");
-        datas.add(array27);
-
-        SparseArray<String> array28 = new SparseArray<>();
-        array28.put(0, "避难层数");
-        array28.put(1, "--");
-        datas.add(array28);
-
-        SparseArray<String> array29 = new SparseArray<>();
-        array29.put(0, "避难层位置");
-        array29.put(1, "--");
-        datas.add(array29);
-
-        SparseArray<String> array30 = new SparseArray<>();
-        array30.put(0, "单位毗邻情况");
-        array30.put(1, "--");
-        datas.add(array30);
-
-        SparseArray<String> array31 = new SparseArray<>();
-        array31.put(0, "备注");
-        array31.put(1, "--");
-        datas.add(array31);
-
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles[position];
+        }
     }
+
 
     @Override
     public void onResume() {
@@ -254,126 +147,52 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
         getData();
     }
 
-    class MyAdapter extends RecyclerView.Adapter {
 
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v;
-
-            v = LayoutInflater.from(getActivity()).inflate(R.layout.item_cominfo, parent, false);
-            return new ViewHolder1(v);
-
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-            ((ViewHolder1) holder).setData(position);
-        }
-
-        @Override
-        public int getItemCount() {
-            return datas.size();
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            return 0;
-        }
-
-
-        class ViewHolder1 extends RecyclerView.ViewHolder {
-            TextView name;
-            TextView value;
-
-            public ViewHolder1(View itemView) {
-                super(itemView);
-                value = (TextView) itemView.findViewById(R.id.value);
-                name = (TextView) itemView.findViewById(R.id.name);
-            }
-
-            public void setData(int position) {
-                if (position==datas.size()){
-                    value.setGravity(Gravity.CENTER|Gravity.LEFT);
-
-                }else {
-                    value.setGravity(Gravity.CENTER|Gravity.RIGHT);
-                }
-                name.setText(datas.get(position).get(0));
-                value.setText(datas.get(position).get(1));
-            }
-        }
-    }
 
     public CompanyDetailnfo myInfo;
+    //获取单位详情信息
     private void getData() {
-        RetrofitHelper.getApi().getCompanyDetail(((InfoDetail_activity)getActivity()).companyId).enqueue(new Callback<CompanyDetailnfoResult>() {
+        RetrofitHelper.getApi().getCompanyDetail(((InfoDetail_activity) getActivity()).companyId).enqueue(new Callback<CompanyDetailnfoResult>() {
             @Override
             public void onResponse(Call<CompanyDetailnfoResult> call, Response<CompanyDetailnfoResult> response) {
                 CompanyDetailnfoResult result = response.body();
-                if (result!=null){
-                    if (!result.status.equals("0")){
+                if (result != null) {
+                    if (!result.status.equals("0")) {
                         CompanyDetailnfo info = result.info;
-                        myInfo=info;
-                        System.out.println(info.toString());
-                        refreshView(info);
+                        if (info.lat!=null||info.lng!=null){
+                            try {
+                                to = new LatLng(Double.valueOf(info.lat),Double.valueOf(info.lng));
+                            }catch (Exception e){
+                                to=null;
+                            }
+                        }
+                        myInfo = info;
+//                        System.out.println(info.toString());
+                        detailInfoFragment0.setData(info);
+                        eventFragment.setId(info.id);
+                        superviseFragment.setId(info.id);
+
+
                     }
-                }else {
-                    UiUtils.showToast(getActivity(),"请求失败!");
+                } else {
+                    UiUtils.showToast(getActivity(), "请求失败!");
                 }
             }
-
 
 
             @Override
             public void onFailure(Call<CompanyDetailnfoResult> call, Throwable t) {
-                UiUtils.showToast(getActivity(),"请求失败!");
+                UiUtils.showToast(getActivity(), "请求失败!");
             }
         });
-    }
-
-    private void refreshView(CompanyDetailnfo info) {
-        datas.get(0).put(1,info.name);//名字
-        datas.get(1).put(1,info.addr);//地址
-        datas.get(2).put(1,info.incharge==null?"--":info.incharge);
-        datas.get(3).put(1,info.dangerlevel==null?"--":(info.dangerlevel.equals("1")?"火灾高危单位":"一般消防安全重点单位"));
-        datas.get(4).put(1,info.buildarea==null?"--":info.buildarea+"平方米");
-        datas.get(5).put(1,info.exitnum==null?"--":info.exitnum+"个");
-        datas.get(6).put(1,info.stairnum==null?"--":info.stairnum+"人");
-        datas.get(7).put(1,info.hasfacility==null?"--":info.hasfacility.equals("1")?"有":"没有");
-        datas.get(8).put(1,info.mainattribute+info.subattribute);
-        datas.get(9).put(1,info.artiname==null?"--":info.artiname);
-        datas.get(10).put(1,info.artiid==null?"--":info.artiid);
-        datas.get(11).put(1,info.artiphone==null?"--":info.artiphone);
-        datas.get(12).put(1,info.managername==null?"--":info.managername);
-        datas.get(13).put(1,info.managerid==null?"--":info.managerid);
-        datas.get(14).put(1,info.managerphone==null?"--":info.managerphone);
-        datas.get(15).put(1,info.responname==null?"--":info.responname);
-        datas.get(16).put(1,info.responid==null?"--":info.responid);
-        datas.get(17).put(1,info.responphone==null?"--":info.responphone);
-        datas.get(18).put(1,info.orgid==null?"--":info.orgid);
-        datas.get(19).put(1,info.leaderdepart==null?"--":info.leaderdepart);
-        datas.get(20).put(1,info.foundtime==null?"--":info.foundtime);
-        datas.get(21).put(1,info.phone==null?"--":info.phone);
-        datas.get(22).put(1,info.staffnum+"人");
-        datas.get(23).put(1,info.area==null?"--":info.area+"平方米");
-        datas.get(24).put(1,info.firemannum==null?"--":info.firemannum+"人");
-        datas.get(25).put(1,info.lanenum==null?"--":info.lanenum+"个");
-        datas.get(26).put(1,info.elevatornum==null?"--":info.elevatornum+"个");
-        datas.get(27).put(1,info.elevatornum);//数据库暂无该字段
-        datas.get(28).put(1,info.refugenum==null?"--":info.refugenum+"个");
-        datas.get(29).put(1,info.refugepos==null?"--":info.refugepos+"");
-        datas.get(30).put(1,"东:"+info.east+"\n"+"西:"+info.west+"\n"+"南:"+info.south+"\n"+"北:"+info.north);
-        datas.get(31).put(1,info.remark);
-        myAdapter.notifyDataSetChanged();
     }
 
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.fab1:
-                final AlertDialog.Builder builder =new AlertDialog.Builder(getActivity());
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -386,37 +205,37 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
                         dialog.dismiss();
                     }
                 });
-                AlertDialog dialog =builder.create();
+                AlertDialog dialog = builder.create();
                 dialog.setTitle("确定删除该单位?");
                 dialog.show();
                 break;
             case R.id.fab2:
                 Intent intent = new Intent();
-                intent.setClass(getActivity(),EditCompanyInfo_activity.class);
-                intent.putExtra("title",((InfoDetail_activity)getActivity()).title);
-                intent.putExtra("id",((InfoDetail_activity)getActivity()).companyId);
-                intent.putExtra("info",myInfo);
+                intent.setClass(getActivity(), EditCompanyInfo_activity.class);
+                intent.putExtra("title", ((InfoDetail_activity) getActivity()).title);
+                intent.putExtra("id", ((InfoDetail_activity) getActivity()).companyId);
+                intent.putExtra("info", myInfo);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
             case R.id.fab3:
                 Intent intent1 = new Intent();
-                intent1.setClass(getActivity(),CalculateRoute_Activity.class);
-                if (getActivity().getIntent().getParcelableExtra("from")==null){
-                    final AlertDialog.Builder builder1 =new AlertDialog.Builder(getActivity());
+                intent1.setClass(getActivity(), CalculateRoute_Activity.class);
+                if (getActivity().getIntent().getParcelableExtra("from") == null||to==null) {
+                    final AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
                     builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
                         }
                     });
-                    AlertDialog dialog1 =builder1.create();
+                    AlertDialog dialog1 = builder1.create();
                     dialog1.setTitle("单位未添加地理坐标,无法导航!");
                     dialog1.show();
                     break;
                 }
-                intent1.putExtra("from",getActivity().getIntent().getParcelableExtra("from"));
-                intent1.putExtra("to",getActivity().getIntent().getParcelableExtra("to"));
+                intent1.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
+                intent1.putExtra("to", to);
                 startActivity(intent1);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;

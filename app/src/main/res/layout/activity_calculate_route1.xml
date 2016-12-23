@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey"
-    tools:context=".activity.CalculateRoute_Activity">
+    tools:context=".activity.mapnav.CalculateRoute_Activity">
 
     <Button
         android:id="@+id/calculate_route_start_navi"

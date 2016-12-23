@@ -4,6 +4,8 @@ import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
 import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.model.company.CompanyPassResult;
+import com.suntrans.xiaofang.model.event.EventDetailResult;
+import com.suntrans.xiaofang.model.event.EventListResult;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.model.firegroup.FireGroupDetailResult;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
@@ -11,8 +13,11 @@ import com.suntrans.xiaofang.model.fireroom.FireComponentGeneralInfoList;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailResult;
 import com.suntrans.xiaofang.model.firestation.AddFireStationResult;
 import com.suntrans.xiaofang.model.firestation.FireStationDetailResult;
+import com.suntrans.xiaofang.model.license.AddLicenseResult;
 import com.suntrans.xiaofang.model.login.LoginInfo;
 import com.suntrans.xiaofang.model.personal.UserInfoResult;
+import com.suntrans.xiaofang.model.supervise.SuperviseDetailResult;
+import com.suntrans.xiaofang.model.supervise.SuperviseListResult;
 
 import java.util.Map;
 
@@ -30,11 +35,12 @@ import rx.Observable;
 public interface Api {
     /**
      * 登录api
-     * @param grant_type 默认填password
-     * @param client_id 默认填6
+     *
+     * @param grant_type    默认填password
+     * @param client_id     默认填6
      * @param client_secret 默认填test
-     * @param username 账号
-     * @param password 密码
+     * @param username      账号
+     * @param password      密码
      * @return
      */
     @FormUrlEncoded
@@ -44,7 +50,7 @@ public interface Api {
                           @Field("client_secret") String client_secret,
                           @Field("username") String username,
                           @Field("password") String password
-                          );
+    );
 
     /**
      * 查询个人信息api
@@ -56,8 +62,9 @@ public interface Api {
 
     /**
      * 根据坐标以及范围查找单位信息
-     * @param lng 中心点的经度
-     * @param Lat 中心点的纬度
+     *
+     * @param lng     中心点的经度
+     * @param Lat     中心点的纬度
      * @param lngbias
      * @param latbias
      * @return
@@ -71,6 +78,7 @@ public interface Api {
 
     /**
      * 获取等待审核的单位
+     *
      * @param id
      * @return
      */
@@ -79,9 +87,9 @@ public interface Api {
     Call<CompanyListResult> getCompanyCheck(@Field("id") String id);
 
 
-
     /**
      * 获取等待审核的单位详情
+     *
      * @param id
      * @return
      */
@@ -91,6 +99,7 @@ public interface Api {
 
     /**
      * 获取公司详情
+     *
      * @param id
      * @return
      */
@@ -101,27 +110,28 @@ public interface Api {
 
     /**
      * 添加公司信息
+     *
      * @param info
      * @return
      */
     @FormUrlEncoded
     @POST("/api/v1/company/create")
-    Call<AddCompanyResult> createCompany(@FieldMap Map<String,String> info);
+    Call<AddCompanyResult> createCompany(@FieldMap Map<String, String> info);
 
     /**
      * 更新公司信息
+     *
      * @param info
      * @return
      */
     @FormUrlEncoded
     @POST("/api/v1/company/update")
-    Call<AddCompanyResult> updateCompany(@FieldMap Map<String,String> info);
-
-
+    Call<AddCompanyResult> updateCompany(@FieldMap Map<String, String> info);
 
 
     /**
      * 根据关键词查询公司信息
+     *
      * @param name
      * @return
      */
@@ -130,7 +140,6 @@ public interface Api {
     Call<CompanyListResult> queryCompany(@Field("name") String name);
 
     /**
-     *
      * @param id
      * @return
      */
@@ -140,7 +149,8 @@ public interface Api {
 
 
     /**
-     *社会单位通过
+     * 社会单位通过
+     *
      * @param id
      * @return
      */
@@ -150,7 +160,8 @@ public interface Api {
 
 
     /**
-     *获取消防室一定范围内的记录
+     * 获取消防室一定范围内的记录
+     *
      * @param
      * @return
      */
@@ -160,7 +171,8 @@ public interface Api {
                                                              @Field("lat") String lat);
 
     /**
-     *获取小型站一定范围内的记录
+     * 获取小型站一定范围内的记录
+     *
      * @param
      * @return
      */
@@ -170,7 +182,8 @@ public interface Api {
                                                                 @Field("lat") String lat);
 
     /**
-     *获取消防大队一定范围内的记录
+     * 获取消防大队一定范围内的记录
+     *
      * @param
      * @return
      */
@@ -181,12 +194,13 @@ public interface Api {
 
     /**
      * 新增设去消防室
+     *
      * @param map
      * @return
      */
     @FormUrlEncoded
     @POST("/api/v1/fireroom/create")
-    Observable<AddFireRoomResult> createFireRoom(@FieldMap Map<String,String> map);
+    Observable<AddFireRoomResult> createFireRoom(@FieldMap Map<String, String> map);
 
 
     @FormUrlEncoded
@@ -195,15 +209,12 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("/api/v1/fireroom/update")
-    Observable<AddFireRoomResult> updateFireRoom(@FieldMap Map<String,String> map);
-
-
-
+    Observable<AddFireRoomResult> updateFireRoom(@FieldMap Map<String, String> map);
 
 
     @FormUrlEncoded
     @POST("/api/v1/firestation/create")
-    Observable<AddFireStationResult> createStation(@FieldMap Map<String,String> map);
+    Observable<AddFireStationResult> createStation(@FieldMap Map<String, String> map);
 
 
     @FormUrlEncoded
@@ -212,13 +223,12 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("/api/v1/firestation/update")
-    Observable<AddFireStationResult> updateFireStation(@FieldMap Map<String,String> map);
-
+    Observable<AddFireStationResult> updateFireStation(@FieldMap Map<String, String> map);
 
 
     @FormUrlEncoded
     @POST("/api/v1/firegroup/create")
-    Observable<AddFireGroupResult> createGroup(@FieldMap Map<String,String> map);
+    Observable<AddFireGroupResult> createGroup(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
     @POST("/api/v1/firegroup/detail")
@@ -226,7 +236,117 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("/api/v1/firegroup/update")
-    Observable<AddFireGroupResult> updateFireGroup(@FieldMap Map<String,String> map);
+    Observable<AddFireGroupResult> updateFireGroup(@FieldMap Map<String, String> map);
+
+
+    /**
+     * 行政许可建审查
+     *
+     * @param map
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/create")
+    Observable<AddLicenseResult> createLicense(@FieldMap Map<String, String> map);
+
+    /**
+     * 删除行政许可
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/delete")
+    Observable<AddLicenseResult> deleteLicense(@Field("id") String id);
+
+    /**
+     * 一定范围内的行政许可建筑
+     *
+     * @param lng
+     * @param lat
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/range")
+    Observable<FireComponentGeneralInfoList> getLicenseList(@Field("lng") String lng,
+                                                            @Field("lat") String lat);
+
+
+    /**
+     * 一定范围内的行政许可建筑
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/detail")
+    Observable<FireComponentGeneralInfoList> getLicenseDetailInfo(@Field("id") String id);
+
+    /**
+     * 验收接口
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/complete")
+    Observable<AddLicenseResult> completeLicense(@Field("id") String id);
+
+
+    /**
+     * 开业前接口
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/complete")
+    Observable<AddLicenseResult> openLicense(@Field("id") String id,
+                                             @Field("time") String time,
+                                             @Field("isqualified") String isqualified,
+                                             @Field("number") String number);
+
+    /**
+     *
+     *根据单位id获取事件
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/event/search")
+    Observable<EventListResult> getEventList(@Field("id") String id);
+
+
+    /**
+     *
+     *根据单位id获取事件
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/event/detail")
+    Observable<EventDetailResult> getEventDetail(@Field("id") String id);
+
+
+    /**
+     *
+     *根据单位id获取监督
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/issued/search")
+    Observable<SuperviseListResult> getSuperviseList(@Field("id") String id);
+
+    /**
+     *
+     *根据单位id获取监督详情
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/issued/detail")
+    Observable<SuperviseDetailResult> getSuperviseDetail(@Field("id") String id);
 
 }
 

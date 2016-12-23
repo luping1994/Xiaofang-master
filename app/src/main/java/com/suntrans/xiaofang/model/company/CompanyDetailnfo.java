@@ -7,7 +7,11 @@ import java.io.Serializable;
  */
 
 public class CompanyDetailnfo implements Serializable{
-    public   String id;
+
+    public  String lat;
+    public  String lng;
+
+    public  String id;
     public  String company_id;//公司在系统中的id
     public  String name;//公司名称
     public  String addr;//公司地址

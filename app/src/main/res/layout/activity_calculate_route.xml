@@ -7,7 +7,7 @@
     android:background="@color/colorPrimaryDark"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".activity.CalculateRoute_Activity">
+    tools:context=".activity.mapnav.CalculateRoute_Activity">
 
     <RelativeLayout
         android:layout_width="match_parent"

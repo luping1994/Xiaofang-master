@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.suntrans.xiaofang.BaseApplication;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.others.Login_Activity;
 import com.suntrans.xiaofang.model.personal.UserInfo;
 import com.suntrans.xiaofang.model.personal.UserInfoResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;

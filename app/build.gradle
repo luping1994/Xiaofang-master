@@ -15,6 +15,8 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            zipAlignEnabled true
         }
     }
 //    sourceSets{
@@ -54,4 +56,6 @@ dependencies {
     compile 'com.tencent.bugly:crashreport:latest.release'
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 }

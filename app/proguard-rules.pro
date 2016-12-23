@@ -80,49 +80,6 @@
     -dontwarn android.support.**
 
 
-                # Keep names - Native method names. Keep all native class/method names.
-                -keepclasseswithmembers,allowshrinking class * {
-                    native <methods>;
-                }
-
-                #保持自定义控件类不被混淆
-                -keepclasseswithmembers class * {
-                    public <init>(android.content.Context, android.util.AttributeSet);
-                }
-
-                #保持自定义控件类不被混淆
-                -keepclassmembers class * extends android.app.Activity {
-                   public void *(android.view.View);
-                }
-
-                #保持 Parcelable 不被混淆
-                -keep class * implements android.os.Parcelable {
-                  public static final android.os.Parcelable$Creator *;
-                }
-
-                #保持 Serializable 不被混淆
-                -keepnames class * implements java.io.Serializable
-
-                #保持 Serializable 不被混淆并且enum 类也不被混淆
-                -keepclassmembers class * implements java.io.Serializable {
-                    static final long serialVersionUID;
-                    private static final java.io.ObjectStreamField[] serialPersistentFields;
-                    !static !transient <fields>;
-                    !private <fields>;
-                    !private <methods>;
-                    private void writeObject(java.io.ObjectOutputStream);
-                    private void readObject(java.io.ObjectInputStream);
-                    java.lang.Object writeReplace();
-                    java.lang.Object readResolve();
-                }
-                -keepclassmembers class * {
-                    public void *ButtonClicked(android.view.View);
-                }
-
-                #不混淆资源类
-                -keepclassmembers class **.R$* {
-                    public static <fields>;
-                }
 
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
@@ -157,6 +114,8 @@
 -keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
     rx.internal.util.atomic.LinkedQueueNode consumerNode;
 }
+
+
 
 # Gson
 -keep class com.google.gson.stream.** { *; }

@@ -52,11 +52,12 @@
                     android:text="消防中队"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-                <!--<RadioButton-->
-                    <!--android:id="@+id/type5"-->
-                    <!--android:text="行政许可单位"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content" />-->
+
+                <RadioButton
+                    android:id="@+id/type5"
+                    android:text="行政许可"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </RadioGroup>
         </LinearLayout>
 
