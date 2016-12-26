@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/content1"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_weight="1"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,6 +46,7 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="text"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
@@ -76,6 +77,7 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="text"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
 
@@ -84,6 +86,42 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="获取当前位置" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="经纬度:" />
+
+                <EditText
+                    android:id="@+id/lng"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:hint="经度"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/border"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/lat"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:hint="纬度"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/border"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -100,12 +138,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*消防管辖"
+                    android:text="消防管辖"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
-                    android:inputType="number"
                     android:id="@+id/incharge"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -114,6 +151,7 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="number"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
@@ -156,16 +194,16 @@
                         android:text="一般消防安全重点单位" />
 
                     <!--<RadioButton-->
-                        <!--android:id="@+id/dangerlevel3"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:text="十小场所" />-->
+                    <!--android:id="@+id/dangerlevel3"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="十小场所" />-->
 
                     <!--<RadioButton-->
-                        <!--android:id="@+id/dangerlevel4"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:text="其他非重点单位" />-->
+                    <!--android:id="@+id/dangerlevel4"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="其他非重点单位" />-->
                 </RadioGroup>
             </RelativeLayout>
 
@@ -182,7 +220,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*建筑面积"
+                    android:text="建筑面积"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -196,6 +234,7 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="numberDecimal"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
 
@@ -220,12 +259,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*安全出口数"
+                    android:text="安全出口数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
-                    android:inputType="number"
                     android:id="@+id/exitnum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -234,6 +272,7 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="number"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
 
@@ -258,7 +297,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*疏散楼梯数"
+                    android:text="疏散楼梯数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -271,6 +310,7 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="number"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
 
@@ -295,9 +335,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*自动消防设施"
+                    android:text="自动消防设施"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
+
                 <RadioGroup
                     android:id="@+id/hasfacility"
                     android:layout_width="match_parent"
@@ -324,20 +365,21 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_gravity="center"
                 android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
-                android:paddingRight="@dimen/infoitem_pading">
+                android:paddingRight="@dimen/infoitem_pading"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*单位属性"
+                    android:text="单位属性"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -352,16 +394,18 @@
                     android:hint="国家机关"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
+
                 <ImageView
-                    android:src="@drawable/ic_right_arrow"
-                    android:layout_gravity="center"
                     android:layout_width="24dp"
-                    android:layout_height="24dp" />
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_right_arrow" />
             </LinearLayout>
+
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -371,11 +415,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*法定代表人"
+                    android:text="法定代表人"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/artiname"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -383,16 +428,16 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="textPersonName"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1"
-                    android:id="@+id/artiname" />
+                    android:textSize="@dimen/text_size1" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -407,6 +452,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/artiid"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -420,9 +466,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -437,6 +483,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="phone"
                     android:id="@+id/artiphone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -448,10 +495,11 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
+
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -466,6 +514,8 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="textPersonName"
+                    android:id="@+id/managername"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -474,13 +524,13 @@
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1"
-                    android:id="@+id/managername" />
+                    android:textSize="@dimen/text_size1" />
             </LinearLayout>
+
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -495,6 +545,8 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
+                    android:id="@+id/managerid"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -503,14 +555,13 @@
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1"
-                    android:id="@+id/managerid" />
+                    android:textSize="@dimen/text_size1" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -525,6 +576,8 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="phone"
+                    android:id="@+id/managerphone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -533,14 +586,13 @@
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1"
-                    android:id="@+id/managerphone" />
+                    android:textSize="@dimen/text_size1" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -555,6 +607,8 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="textPersonName"
+                    android:id="@+id/responname"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -563,13 +617,13 @@
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1"
-                    android:id="@+id/responname" />
+                    android:textSize="@dimen/text_size1" />
             </LinearLayout>
+
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -584,6 +638,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:id="@+id/responid"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -592,14 +647,13 @@
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1"
-                    android:id="@+id/responid" />
+                    android:textSize="@dimen/text_size1" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -614,6 +668,8 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="phone"
+                    android:id="@+id/responphone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -622,13 +678,13 @@
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1"
-                    android:id="@+id/responphone" />
+                    android:textSize="@dimen/text_size1" />
             </LinearLayout>
+
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -656,9 +712,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -674,6 +730,7 @@
 
                 <EditText
 
+                    android:id="@+id/leaderdepart"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -682,15 +739,14 @@
                     android:gravity="left|center"
                     android:hint="请输入"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1"
-                    android:id="@+id/leaderdepart" />
+                    android:textSize="@dimen/text_size1" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
-
                 android:layout_width="match_parent"
+
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -704,7 +760,8 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
-                <EditText
+                <TextView
+
                     android:id="@+id/foundtime"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -712,16 +769,16 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:gravity="left|center"
-                    android:hint="请输入"
+                    android:hint="请选择"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
-
                 android:layout_width="match_parent"
+
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -736,6 +793,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="phone"
                     android:id="@+id/phone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -749,9 +807,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -766,6 +824,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/straffnum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -786,9 +845,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -803,6 +862,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="numberDecimal"
                     android:id="@+id/area"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -821,10 +881,11 @@
                     android:text="平方米"
                     android:textSize="@dimen/text_size" />
             </LinearLayout>
+
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -839,6 +900,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/lanenum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -859,9 +921,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -876,6 +938,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/elevatornum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -940,10 +1003,11 @@
                         android:text="尽头式消防车道" />
                 </RadioGroup>
             </RelativeLayout>
+
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -958,6 +1022,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/refugenum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -978,9 +1043,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="1px"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
@@ -995,6 +1060,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/refugepos"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -1039,10 +1105,11 @@
                         android:textSize="@dimen/text_size" />
 
                     <EditText
-                        android:layout_marginLeft="10dp"
+                        android:inputType="text"
                         android:id="@+id/east"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
+                        android:layout_marginLeft="10dp"
                         android:layout_weight="1"
                         android:background="@null"
                         android:gravity="left|start"
@@ -1067,11 +1134,11 @@
                         android:textSize="@dimen/text_size" />
 
                     <EditText
-                        android:layout_marginLeft="10dp"
-
                         android:id="@+id/south"
+                        android:inputType="text"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
+                        android:layout_marginLeft="10dp"
                         android:layout_weight="1"
                         android:background="@null"
                         android:gravity="left|start"
@@ -1079,6 +1146,7 @@
                         android:textColor="@color/balck"
                         android:textSize="@dimen/text_size1" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
@@ -1094,17 +1162,19 @@
                         android:textSize="@dimen/text_size" />
 
                     <EditText
+                        android:inputType="text"
                         android:id="@+id/west"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
+                        android:layout_marginLeft="10dp"
                         android:layout_weight="1"
                         android:background="@null"
                         android:gravity="left|start"
                         android:hint="请输入"
-                        android:layout_marginLeft="10dp"
                         android:textColor="@color/balck"
                         android:textSize="@dimen/text_size1" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
@@ -1120,18 +1190,20 @@
                         android:textSize="@dimen/text_size" />
 
                     <EditText
+                        android:inputType="text"
                         android:id="@+id/north"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
+                        android:layout_marginLeft="10dp"
                         android:layout_weight="1"
                         android:background="@null"
                         android:gravity="left|start"
                         android:hint="请输入"
-                        android:layout_marginLeft="10dp"
                         android:textColor="@color/balck"
                         android:textSize="@dimen/text_size1" />
                 </LinearLayout>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -1150,6 +1222,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/marker"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"

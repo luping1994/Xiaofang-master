@@ -5,7 +5,7 @@ import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
-import com.suntrans.xiaofang.BaseApplication;
+import com.suntrans.xiaofang.App;
 
 /**
  * Created by Looney on 2016/12/22.
@@ -15,7 +15,7 @@ public class AddrUtils {
     private static String addr;
     public static String getAddr(LatLonPoint point){
 
-        GeocodeSearch geocodeSearch = new GeocodeSearch(BaseApplication.getApplication());
+        GeocodeSearch geocodeSearch = new GeocodeSearch(App.getApplication());
         RegeocodeQuery query = new RegeocodeQuery(point, 200, GeocodeSearch.AMAP);
         geocodeSearch.getFromLocationAsyn(query);
         geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {

@@ -1,5 +1,9 @@
 package com.suntrans.xiaofang.activity.add;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,11 +16,12 @@ import android.widget.FrameLayout;
 
 import com.amap.api.maps.model.LatLng;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.fragment.editinfo.Type1_fragment;
-import com.suntrans.xiaofang.fragment.editinfo.Type2_fragment;
-import com.suntrans.xiaofang.fragment.editinfo.Type3_fragment;
-import com.suntrans.xiaofang.fragment.editinfo.Type4_fragment;
-import com.suntrans.xiaofang.fragment.editinfo.Type5_fragment;
+import com.suntrans.xiaofang.fragment.addinfo.Type1_fragment;
+import com.suntrans.xiaofang.fragment.addinfo.Type2_fragment;
+import com.suntrans.xiaofang.fragment.addinfo.Type3_fragment;
+import com.suntrans.xiaofang.fragment.addinfo.Type4_fragment;
+import com.suntrans.xiaofang.fragment.addinfo.Type5_fragment;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 
 /**
@@ -55,6 +60,10 @@ public class Add_detail_activity extends AppCompatActivity {
     }
 
     private void initView() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.suntrans.addr.RECEIVE");
+        registerReceiver(broadcastReceiver,filter);
+
         content = (FrameLayout) findViewById(R.id.content);
 
         switch (type){
@@ -90,4 +99,22 @@ public class Add_detail_activity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(broadcastReceiver);
+        super.onDestroy();
+    }
+
+    public LatLng myLocation;//我当前的位置
+    public String myaddr;//我的位置描述
+    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            myLocation = intent.getParcelableExtra("myLocation");
+            myaddr = intent.getStringExtra("addrdes");
+
+        }
+    };
 }

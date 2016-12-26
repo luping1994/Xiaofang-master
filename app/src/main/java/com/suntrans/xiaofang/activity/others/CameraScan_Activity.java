@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -48,6 +49,7 @@ public class CameraScan_Activity extends AppCompatActivity implements DecoratedB
     private DecoratedBarcodeView mDBV;
     private Button switchFlashlightButton;
     RelativeLayout action_bar;
+    private LinearLayout back;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +73,13 @@ public class CameraScan_Activity extends AppCompatActivity implements DecoratedB
     }
 
     private void initView() {
+        back = (LinearLayout) findViewById(R.id.back_btn_id);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         action_bar = (RelativeLayout) findViewById(R.id.action_bar_id);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, UiUtils.dip2px(50));
         int statebarHeight = StatusBarCompat.getStatusBarHeight(this);

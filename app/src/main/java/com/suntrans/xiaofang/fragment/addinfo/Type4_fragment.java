@@ -1,4 +1,4 @@
-package com.suntrans.xiaofang.fragment.editinfo;
+package com.suntrans.xiaofang.fragment.addinfo;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -11,14 +11,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 
 import com.google.common.collect.ImmutableMap;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 
 import java.util.Map;
@@ -65,9 +68,14 @@ public class Type4_fragment extends Fragment {
     ScrollView scroll;
     @BindView(R.id.commit_group)
     Button commitGroup;
+    @BindView(R.id.getposition)
+    Button getposition;
+    @BindView(R.id.content1)
+    LinearLayout content1;
     private String district1;
     Map<String, String> map;
     private AlertDialog dialog;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -89,12 +97,49 @@ public class Type4_fragment extends Fragment {
 
             }
         });
+        getposition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String lat2 = App.getSharedPreferences().getString("lat", "-1");
+                String lng2 = App.getSharedPreferences().getString("lng", "-1");
+                String addr2 = App.getSharedPreferences().getString("addr", "-1");
+                if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
+                    UiUtils.showToast(App.getApplication(), "获取地址失败");
+                    return;
+                }
+                lng.setText(lng2);
+                lat.setText(lat2);
+                addr.setText(addr2);
+//                if (((Add_detail_activity)getActivity()).myLocation!=null){
+//                    lng.setText(((Add_detail_activity)getActivity()).myLocation.longitude+"");
+//                    lat.setText(((Add_detail_activity)getActivity()).myLocation.latitude+"");
+//                    addr.setText(((Add_detail_activity)getActivity()).myaddr);
+//                }else {
+//                    Snackbar.make(scroll,"获取当前地址失败",Snackbar.LENGTH_SHORT).show();
+//                }
+            }
+        });
     }
 
 
     @OnClick(R.id.commit_group)
     public void onClick() {
-        addCommit();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加单位吗")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        addCommit();
+
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+        builder.create().show();
     }
 
 
@@ -180,6 +225,7 @@ public class Type4_fragment extends Fragment {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        UiUtils.showToast(App.getApplication(),"服务器内部错误");
                     }
 
                     @Override
@@ -199,7 +245,7 @@ public class Type4_fragment extends Fragment {
                                         .create();
                                 dialog.show();
                             }
-                        }else {
+                        } else {
                             LogUtil.i("失败了！！！！！！！！！！！！！！！");
                         }
                     }

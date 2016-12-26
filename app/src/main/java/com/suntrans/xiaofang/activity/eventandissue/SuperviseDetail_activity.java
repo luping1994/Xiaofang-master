@@ -10,15 +10,19 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.adapter.PicAdapter;
 import com.suntrans.xiaofang.model.supervise.ResultSup;
+import com.suntrans.xiaofang.model.supervise.Supervise;
 import com.suntrans.xiaofang.model.supervise.SuperviseDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -29,6 +33,16 @@ import rx.schedulers.Schedulers;
 
 public class SuperviseDetail_activity extends AppCompatActivity {
 
+    @BindView(R.id.companyname)
+    TextView companyname;
+    @BindView(R.id.contents)
+    TextView contents;
+    @BindView(R.id.name)
+    TextView name;
+    @BindView(R.id.creat_at)
+    TextView creatAt;
+    @BindView(R.id.state)
+    TextView state;
     private Toolbar toolbar;
     private String id;
     private RecyclerView recyclerView_before;
@@ -47,18 +61,19 @@ public class SuperviseDetail_activity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acticity_supervisedetail);
+        ButterKnife.bind(this);
+        initData();
         setupToolBar();
         initView();
     }
 
     private void initView() {
-        datas= new ArrayList<>();
         url_before = new ArrayList<>();
         url_after = new ArrayList<>();
         recyclerView_before = (RecyclerView) findViewById(R.id.recycleview_before);
         manager_before = new LinearLayoutManager(this);
         manager_before.setOrientation(LinearLayoutManager.HORIZONTAL);
-        adapter_before = new PicAdapter(url_before,this);
+        adapter_before = new PicAdapter(url_before, this);
         recyclerView_before.setLayoutManager(manager_before);
         recyclerView_before.setAdapter(adapter_before);
 
@@ -66,13 +81,45 @@ public class SuperviseDetail_activity extends AppCompatActivity {
         recyclerView_after = (RecyclerView) findViewById(R.id.recycleview_after);
         manager_after = new LinearLayoutManager(this);
         manager_after.setOrientation(LinearLayoutManager.HORIZONTAL);
-        adapter_after = new PicAdapter(url_after,this);
+        adapter_after = new PicAdapter(url_after, this);
         recyclerView_after.setLayoutManager(manager_after);
         recyclerView_after.setAdapter(adapter_after);
 
 
-
     }
+
+    private void initData() {
+        datas = new ArrayList<>();
+        SparseArray<String> array = new SparseArray<>();
+        array.put(0, "地点:");
+        array.put(1, "");
+        datas.add(array);
+
+        SparseArray<String> array1 = new SparseArray<>();
+        array1.put(0, "监督内容:");
+        array1.put(1, "");
+        datas.add(array1);
+        SparseArray<String> array2 = new SparseArray<>();
+        array2.put(0, "录入人:");
+        array2.put(1, "");
+        datas.add(array2);
+
+        SparseArray<String> array3 = new SparseArray<>();
+        array3.put(0, "录入时间:");
+        array3.put(1, "");
+        datas.add(array3);
+
+        SparseArray<String> array4 = new SparseArray<>();
+        array4.put(0, "处理情况:");
+        array4.put(1, "");
+        datas.add(array4);
+//
+//        SparseArray<String> array5 = new SparseArray<>();
+//        array5.put(0, "处理情况:");
+//        array5.put(1, "");
+//        datas.add(array5);
+    }
+
 
     private void setupToolBar() {
         id = getIntent().getStringExtra("id");
@@ -102,7 +149,7 @@ public class SuperviseDetail_activity extends AppCompatActivity {
         getData();
     }
 
-    private void getData(){
+    private void getData() {
         RetrofitHelper.getApi().getSuperviseDetail(id)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -126,19 +173,40 @@ public class SuperviseDetail_activity extends AppCompatActivity {
                 });
     }
 
+    private final String TAG = "SuperviseDetail_activity";
+    private ArrayList<String> vedio_url;
+
 
     private void refreshView(SuperviseDetailResult result) {
-        ResultSup data= result.result;
-        for (String s:
-             data.imgs) {
+        ResultSup data = result.result;
+        Supervise supervise = data.item;
+        System.out.println(supervise.toString());
+
+        datas.get(0).put(1, supervise.company_name);
+        datas.get(1).put(1, "   " + supervise.contents);
+        datas.get(2).put(1, supervise.user_id);
+        datas.get(3).put(1, supervise.created_at);
+        datas.get(4).put(1, supervise.is_done.equals("1")?"已处理":"未处理");
+
+        refreshlayout();
+        for (String s :
+                data.imgs) {
             url_after.add(s);
         }
 
-        for (String s:
+        for (String s :
                 data.imgraws) {
             url_before.add(s);
         }
         adapter_before.notifyDataSetChanged();
         adapter_after.notifyDataSetChanged();
+    }
+
+    private void refreshlayout() {
+        companyname.setText(datas.get(0).get(0) + datas.get(0).get(1));
+        contents.setText(datas.get(1).get(1));
+        name.setText(datas.get(2).get(0) + datas.get(2).get(1));
+        creatAt.setText(datas.get(3).get(0) + datas.get(3).get(1));
+        state.setText(datas.get(4).get(0) + datas.get(4).get(1));
     }
 }

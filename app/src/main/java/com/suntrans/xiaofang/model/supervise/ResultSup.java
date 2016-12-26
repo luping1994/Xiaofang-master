@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class ResultSup {
 
-    Supervise item;
+    public Supervise item;
     public List<String> imgs;
     public List<String> imgraws;
 

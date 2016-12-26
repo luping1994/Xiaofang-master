@@ -35,6 +35,7 @@ import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.navi.view.RouteOverLay;
 import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.StrategyBean;
 import com.suntrans.xiaofang.utils.LogUtil;
@@ -277,7 +278,7 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
                 if (navState == 1) {
                     double distance = AMapUtils.calculateLineDistance(from, to);
                     if (distance>10000){
-                        UiUtils.showToast(CalculateRoute_Activity.this,"路途太远建议驾车");
+                        UiUtils.showToast(App.getApplication(),"路途太远建议驾车");
                         return;
                     }
                     dialog1.show();

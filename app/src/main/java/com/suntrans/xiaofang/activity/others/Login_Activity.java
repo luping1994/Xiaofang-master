@@ -9,12 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.suntrans.xiaofang.BaseApplication;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.Main_Activity;
 import com.suntrans.xiaofang.model.login.LoginInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.views.EditView;
 
@@ -35,8 +34,8 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
         login = (Button) findViewById(R.id.login);
         ed_account = (EditView) findViewById(R.id.account);
         ed_password = (EditView) findViewById(R.id.password);
-//        ed_account.setText(BaseApplication.getSharedPreferences().getString("username",""));
-//        ed_password.setText(BaseApplication.getSharedPreferences().getString("password",""));
+//        ed_account.setText(App.getSharedPreferences().getString("username",""));
+//        ed_password.setText(App.getSharedPreferences().getString("password",""));
         login.setOnClickListener(this);
         dialog= new ProgressDialog(this,R.style.MyDialogTheme);
         dialog.setMessage("登陆中..");
@@ -55,11 +54,11 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
         switch (v.getId()){
             case R.id.login:{
                 if (username.equals("")){
-                    UiUtils.showToast(Login_Activity.this,"帐号不能为空!");
+                    UiUtils.showToast(App.getApplication(),"帐号不能为空!");
                     return;
                 }
                 if (password.equals("")){
-                    UiUtils.showToast(Login_Activity.this,"密码不能为空!");
+                    UiUtils.showToast(App.getApplication(),"密码不能为空!");
                     return;
                 }
                 dialog.show();
@@ -69,18 +68,18 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
                         dialog.dismiss();
                         LoginInfo info = response.body();
                         if (info==null){
-                            UiUtils.showToast(Login_Activity.this,"登录失败");
+                            UiUtils.showToast(App.getApplication(),"登录失败");
                             return;
                         }
                         if (info.error.equals("invalid_client")||info.error.equals("invalid_credentials")){
-                            UiUtils.showToast(Login_Activity.this,"帐号或密码错误le!");
+                            UiUtils.showToast(App.getApplication(),"帐号或密码错误le!");
                             return;
                         }
-                        LogUtil.i(info.access_token);
-                        SharedPreferences.Editor editor= BaseApplication.getSharedPreferences().edit();
+                        SharedPreferences.Editor editor= App.getSharedPreferences().edit();
                         editor.putString("expires_in",info.expires_in);
                         editor.putString("access_token",info.access_token);
                         editor.putString("refresh_token",info.refresh_token);
+                        editor.putLong("firsttime", System.currentTimeMillis());
                         editor.commit();
                         startActivity(new Intent(Login_Activity.this, Main_Activity.class));
                         finish();
@@ -89,8 +88,7 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onFailure(Call<LoginInfo> call, Throwable t) {
                         dialog.dismiss();
-                        UiUtils.showToast(Login_Activity.this,"帐号或密码错误!");
-                        System.out.println(t);
+                        UiUtils.showToast(App.getApplication(),"网络连接失败!");
                     }
                 });
 //

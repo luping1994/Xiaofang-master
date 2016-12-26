@@ -1,7 +1,11 @@
 package com.suntrans.xiaofang.activity.edit;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,8 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
+import com.amap.api.maps.model.LatLng;
 import com.google.common.collect.ImmutableMap;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailInfo;
@@ -58,6 +65,12 @@ public class EditFireroomInfo_activity extends AppCompatActivity {
     EditText name;
     @BindView(R.id.scroll)
     ScrollView scroll;
+    @BindView(R.id.lng)
+    EditText lng;
+    @BindView(R.id.lat)
+    EditText lat;
+    @BindView(R.id.textView2)
+    TextView textView2;
     private Toolbar toolbar;
     private EditText txName;
     private FireRoomDetailInfo info;
@@ -74,13 +87,51 @@ public class EditFireroomInfo_activity extends AppCompatActivity {
     }
 
     private void initView() {
-//        txName = (EditText) findViewById(R.id.name);
-//        txName.setText(getIntent().getStringExtra("title"));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.suntrans.addr.RECEIVE");
+        registerReceiver(broadcastReceiver,filter);
+
         info = (FireRoomDetailInfo) getIntent().getSerializableExtra("info");
-        id = getIntent().getStringExtra("id");
+
     }
 
 
+    public void getLocation(View view) {
+//        if (myLocation == null) {
+//            Snackbar.make(scroll, "获取当前地址失败", Snackbar.LENGTH_SHORT).show();
+//            return;
+//        }
+//        lat.setText(myLocation.latitude + "");
+//        lng.setText(myLocation.longitude + "");
+//        addr.setText(myaddr);
+        String lat2 = App.getSharedPreferences().getString("lat", "-1");
+        String lng2 = App.getSharedPreferences().getString("lng", "-1");
+        String addr2 = App.getSharedPreferences().getString("addr", "-1");
+        if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
+            UiUtils.showToast(App.getApplication(), "获取地址失败");
+            return;
+        }
+        lng.setText(lng2);
+        lat.setText(lat2);
+        addr.setText(addr2);
+
+    }
+
+    public LatLng myLocation;//我当前的位置
+    public String myaddr;//我的位置描述
+    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            myLocation = intent.getParcelableExtra("myLocation");
+            myaddr = intent.getStringExtra("addrdes");
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(broadcastReceiver);
+        super.onDestroy();
+    }
     private void initData() {
         name.setText(info.name);
         addr.setText(info.addr);
@@ -147,7 +198,7 @@ public class EditFireroomInfo_activity extends AppCompatActivity {
             UiUtils.showToast(UiUtils.getContext(), "带*号的项目不不能为空!");
             return;
         }
-        String name1 = name.getText().toString().replace(" ","");
+        String name1 = name.getText().toString().replace(" ", "");
         String addr1 = addr.getText().toString();
         String contact1 = contact.getText().toString();
         String phone1 = phone.getText().toString();
@@ -156,37 +207,37 @@ public class EditFireroomInfo_activity extends AppCompatActivity {
         String equipdisp1 = equipdisp.getText().toString();
         String district1 = district.getText().toString();
         String group1 = group.getText().toString();
-        builder.put("name",name1.replace(" ",""));
-        builder.put("addr",addr1.replace(" ",""));
-        builder.put("id",id);
+        builder.put("name", name1.replace(" ", ""));
+        builder.put("addr", addr1.replace(" ", ""));
+        builder.put("id", info.id);
 
-        if (Utils.isVaild(contact1)){
-            builder.put("contact",contact1.replace(" ",""));
+        if (Utils.isVaild(contact1)) {
+            builder.put("contact", contact1.replace(" ", ""));
         }
 
-        if (Utils.isVaild(phone1)){
-            builder.put("phone",phone1.replace(" ",""));
+        if (Utils.isVaild(phone1)) {
+            builder.put("phone", phone1.replace(" ", ""));
         }
 
 
-        if (Utils.isVaild(membernum1)){
-            builder.put("membernum",membernum1.replace(" ",""));
+        if (Utils.isVaild(membernum1)) {
+            builder.put("membernum", membernum1.replace(" ", ""));
         }
 
-        if (Utils.isVaild(cardisp1)){
-            builder.put("cardisp",cardisp1.replace(" ",""));
+        if (Utils.isVaild(cardisp1)) {
+            builder.put("cardisp", cardisp1.replace(" ", ""));
         }
 
-        if (Utils.isVaild(equipdisp1)){
-            builder.put("equipdisp",equipdisp1.replace(" ",""));
+        if (Utils.isVaild(equipdisp1)) {
+            builder.put("equipdisp", equipdisp1.replace(" ", ""));
         }
 
-        if (Utils.isVaild(district1)){
-            builder.put("district",district1.replace(" ",""));
+        if (Utils.isVaild(district1)) {
+            builder.put("district", district1.replace(" ", ""));
         }
 
-        if (Utils.isVaild(group1)){
-            builder.put("group",group1.replace(" ",""));
+        if (Utils.isVaild(group1)) {
+            builder.put("group", group1.replace(" ", ""));
         }
 
 

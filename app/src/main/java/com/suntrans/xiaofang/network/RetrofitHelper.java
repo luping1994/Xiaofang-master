@@ -2,7 +2,7 @@ package com.suntrans.xiaofang.network;
 
 import android.util.Log;
 
-import com.suntrans.xiaofang.BaseApplication;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.api.Api;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
@@ -77,7 +77,7 @@ public class RetrofitHelper {
         Interceptor netInterceptor = new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
-                String header = BaseApplication.getSharedPreferences().getString("access_token","-1");
+                String header = App.getSharedPreferences().getString("access_token","-1");
                 header = "Bearer "+header;
                 LogUtil.i(header);
                 Request original = chain.request();
@@ -109,7 +109,7 @@ public class RetrofitHelper {
     static class CacheInterceptor implements Interceptor {
         @Override
         public Response intercept(Chain chain) throws IOException {
-            String header = BaseApplication.getSharedPreferences().getString("access_token","-1");
+            String header = App.getSharedPreferences().getString("access_token","-1");
             header = "Bearer "+header;
             Request request = chain.request();//获取请求
             //这里就是说判读我们的网络条件，要是有网络的话我么就直接获取网络上面的数据，要是没有网络的话我么就去缓存里面取数据

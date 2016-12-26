@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.suntrans.xiaofang.BaseApplication;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.eventandissue.EventDetail_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
@@ -31,13 +31,6 @@ import rx.schedulers.Schedulers;
  */
 
 public class EventFragment extends Fragment {
-
-//
-//    public static EventFragment newInstance() {
-//        EventFragment eventFragment = new EventFragment();
-//        return eventFragment;
-//    }
-
 
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
@@ -66,7 +59,7 @@ public class EventFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        recyclerView.addItemDecoration(new RecyclerViewDivider(BaseApplication.getApplication(), LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new RecyclerViewDivider(App.getApplication(), LinearLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 

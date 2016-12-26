@@ -116,6 +116,9 @@
 }
 
 
+-dontwarn com.pgyersdk.**
+-keep class com.pgyersdk.** { *; }
+
 
 # Gson
 -keep class com.google.gson.stream.** { *; }

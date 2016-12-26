@@ -25,6 +25,7 @@ public class FireStationDetailInfo implements Serializable{
     public String street;
     public String community;
     public String group;
+    public String cmystate;
 
     @Override
     public String toString() {

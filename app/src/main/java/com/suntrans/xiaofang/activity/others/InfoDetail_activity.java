@@ -10,10 +10,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.fragment.Type1__info_fragment;
-import com.suntrans.xiaofang.fragment.Type2__info_fragment;
-import com.suntrans.xiaofang.fragment.Type3__info_fragment;
-import com.suntrans.xiaofang.fragment.Type4__info_fragment;
+import com.suntrans.xiaofang.fragment.infodetail.Type1__info_fragment;
+import com.suntrans.xiaofang.fragment.infodetail.Type2__info_fragment;
+import com.suntrans.xiaofang.fragment.infodetail.Type3__info_fragment;
+import com.suntrans.xiaofang.fragment.infodetail.Type4__info_fragment;
+import com.suntrans.xiaofang.fragment.infodetail.Type5__info_fragment;
 import com.suntrans.xiaofang.model.company.UnitInfo;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 
@@ -85,7 +86,10 @@ public class InfoDetail_activity extends AppCompatActivity {
             case 3:
                 Type4__info_fragment type4__info_fragment = new Type4__info_fragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type4__info_fragment).commit();
+                break;
             case 4:
+                Type5__info_fragment type5__info_fragment = new Type5__info_fragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type5__info_fragment).commit();
                 break;
         }
 
@@ -107,6 +111,7 @@ public class InfoDetail_activity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 
 }

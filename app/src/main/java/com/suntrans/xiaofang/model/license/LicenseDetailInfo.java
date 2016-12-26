@@ -7,58 +7,49 @@ import java.io.Serializable;
  */
 
 public class LicenseDetailInfo implements Serializable{
-    public String name;
     public String id;
-    public String addr;
-    public String lng;
-    public String lat;
-    public String contact;
-    public String phone;
-    public String membernum;
-    public String cardisp;
-    public String equipdisp;
-    public String district;
-    public String group;
-    public String created_at;
+    public String user_id;
+    public String building_id;
+    public String completetime;
+    public String cisqualified;
+    public String cnumber;
+    public String opentime;
+    public String oisqualified;
+    public String onumber;
+    public String status;
     public String updated_at;
+    public String created_at;
     public String deleted_at;
+    public Building building;
 
-    @Override
-    public String toString() {
-        return "FireRoomDetailInfo{" +
-                "name='" + name + '\'' +
-                ", id='" + id + '\'' +
-                ", addr='" + addr + '\'' +
-                ", lng='" + lng + '\'' +
-                ", lat='" + lat + '\'' +
-                ", contact='" + contact + '\'' +
-                ", phone='" + phone + '\'' +
-                ", membernum='" + membernum + '\'' +
-                ", cardisp='" + cardisp + '\'' +
-                ", equipdisp='" + equipdisp + '\'' +
-                ", district='" + district + '\'' +
-                ", group='" + group + '\'' +
-                ", created_at='" + created_at + '\'' +
-                ", updated_at='" + updated_at + '\'' +
-                ", deleted_at='" + deleted_at + '\'' +
-                '}';
-    }
+
 
 /*
-     "id": 1,
-        "name": "花水街东民社区",
-        "addr": "花楼水塔街东民社区",
-        "lng": null,
-        "lat": null,
-        "contact": "",
-        "phone": "",
-        "membernum": "10",
-        "cardisp": "消防摩托车ATLM250-2  1辆 ",
-        "equipdisp": "灭火器 MF/ABC2 20具   消防斧 大斧 1把    强光手电筒YD-900 3只   消火栓扳手 地上、地下 1个            消防水带13-65-20 10盘   消防水枪QZ3.5/7.5 2支         6米两节拉梯 承征 1把          战斗服（含头盔及战斗靴）4套                      救生绳Zj8x15m  4根       ",
-        "district": "江汉",
-        "group": "江汉",
-        "created_at": null,
-        "updated_at": null,
-        "deleted_at": null
+     "id":20,
+        "user_id":"1",
+        "building_id":"16",
+        "completetime":null,
+        "cisqualified":null,
+        "cnumber":null,
+        "opentime":null,
+        "oisqualified":null,
+        "onumber":null,
+        "status":"1",
+        "updated_at":"2016-12-20 03:42:10",
+        "created_at":"2016-12-20 03:42:10",
+        "deleted_at":null,
+        "building":{
+            "id":16,
+            "user_id":null,
+            "name":"柳帅7",
+            "addraddr":"珞珈山巅",
+            "lng":"114.359747",
+            "lat":"30.542620",
+            "leader":"柳帅",
+            "phone":"123124123",
+            "updated_at":"2016-12-20 03:42:10",
+            "created_at":"2016-12-20 03:42:10",
+            "deleted_at":null
+
      */
 }

@@ -33,7 +33,7 @@
        android:orientation="vertical">
 
       <com.suntrans.xiaofang.views.EditView
-          android:background="@color/white"
+          android:background="@drawable/bg_login_edit"
           android:hint="@string/login_account"
           android:layout_width="match_parent"
           android:layout_marginRight="20dp"
@@ -47,7 +47,7 @@
           android:layout_height="30dp" />
       <com.suntrans.xiaofang.views.EditView
           android:id="@+id/password"
-          android:background="@color/white"
+          android:background="@drawable/bg_login_edit"
           android:hint="@string/logon_mima"
           android:inputType="textPassword"
           android:layout_width="match_parent"
@@ -75,7 +75,7 @@
        android:layout_height="wrap_content"
        android:gravity="center"
        android:textColor="@color/white"
-       android:textSize="20sp"
+       android:textSize="15sp"
        android:layout_marginBottom="20dp"
        android:text="@string/company_name"/>
 </RelativeLayout>

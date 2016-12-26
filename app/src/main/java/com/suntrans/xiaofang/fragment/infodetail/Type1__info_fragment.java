@@ -1,4 +1,4 @@
-package com.suntrans.xiaofang.fragment;
+package com.suntrans.xiaofang.fragment.infodetail;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,13 +18,15 @@ import android.view.ViewGroup;
 import com.amap.api.maps.model.LatLng;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.activity.edit.EditCompanyInfo_activity;
+import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.fragment.infodetail_parts.DetailInfoFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.EventFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.SuperviseFragment;
+import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
@@ -35,6 +37,9 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -175,14 +180,14 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
 
                     }
                 } else {
-                    UiUtils.showToast(getActivity(), "请求失败!");
+                    UiUtils.showToast(App.getApplication(), "请求失败!");
                 }
             }
 
 
             @Override
             public void onFailure(Call<CompanyDetailnfoResult> call, Throwable t) {
-                UiUtils.showToast(getActivity(), "请求失败!");
+                UiUtils.showToast(App.getApplication(), "请求失败!");
             }
         });
     }
@@ -196,7 +201,7 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                            delete();
                     }
                 });
                 builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -213,8 +218,9 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), EditCompanyInfo_activity.class);
                 intent.putExtra("title", ((InfoDetail_activity) getActivity()).title);
-                intent.putExtra("id", ((InfoDetail_activity) getActivity()).companyId);
                 intent.putExtra("info", myInfo);
+//                intent.putExtra("id", ((InfoDetail_activity) getActivity()).companyId);
+//                intent.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
@@ -240,6 +246,50 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
         }
+    }
+
+    private void delete() {
+        RetrofitHelper.getApi().deleteCompany(myInfo.id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<AddCompanyResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(AddCompanyResult result) {
+                        AlertDialog.Builder builder= new AlertDialog.Builder(getActivity());
+                        if (result!=null){
+                            if (result.status.equals("1")){
+                                builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        getActivity().finish();
+                                    }
+                                });
+                                builder.create().show();
+                            }else {
+                                builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                });
+                                builder.create().show();
+                            }
+                        }else {
+                            UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                        }
+                    }
+                });
     }
 
 }

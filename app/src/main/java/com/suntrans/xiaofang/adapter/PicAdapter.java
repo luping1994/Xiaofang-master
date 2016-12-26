@@ -42,7 +42,7 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.ViewHolder1> {
 
     @Override
     public int getItemCount() {
-        return datas.size();
+        return datas.size()==0?1:datas.size();
     }
 
     class ViewHolder1 extends RecyclerView.ViewHolder{
@@ -53,6 +53,15 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.ViewHolder1> {
         }
 
         public void setdata(int position) {
+            if (datas.size()==0){
+                Glide.with(context)
+                        .load(R.drawable.nopic)
+                        .centerCrop()
+                        .override(UiUtils.dip2px(95),UiUtils.dip2px(95))
+                        .placeholder(R.drawable.nopic)
+                        .into(imageView);
+                return;
+            }
             Glide.with(context)
                     .load(datas.get(position))
                     .centerCrop()

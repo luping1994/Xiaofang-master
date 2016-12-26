@@ -1,4 +1,4 @@
-package com.suntrans.xiaofang.fragment.editinfo;
+package com.suntrans.xiaofang.fragment.addinfo;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -13,14 +13,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.common.collect.ImmutableMap;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.firestation.AddFireStationResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 
 import java.util.Map;
@@ -77,6 +81,14 @@ public class Type3_fragment extends Fragment {
     EditText lng;
     @BindView(R.id.lat)
     EditText lat;
+    @BindView(R.id.getposition)
+    Button getposition;
+    @BindView(R.id.textView3)
+    TextView textView3;
+    @BindView(R.id.textView4)
+    TextView textView4;
+    @BindView(R.id.content1)
+    LinearLayout content1;
     private AlertDialog dialog;
 
     private String district1;
@@ -108,12 +120,34 @@ public class Type3_fragment extends Fragment {
 
             }
         });
+        getposition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String lat2 = App.getSharedPreferences().getString("lat", "-1");
+                String lng2 = App.getSharedPreferences().getString("lng", "-1");
+                String addr2 = App.getSharedPreferences().getString("addr", "-1");
+                if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
+                    UiUtils.showToast(App.getApplication(), "获取地址失败");
+                    return;
+                }
+                lng.setText(lng2);
+                lat.setText(lat2);
+                addr.setText(addr2);
+//                if (((Add_detail_activity)getActivity()).myLocation!=null){
+//                    lng.setText(((Add_detail_activity)getActivity()).myLocation.longitude+"");
+//                    lat.setText(((Add_detail_activity)getActivity()).myLocation.latitude+"");
+//                    addr.setText(((Add_detail_activity)getActivity()).myaddr);
+//                }else {
+//                    Snackbar.make(scroll,"获取当前地址失败",Snackbar.LENGTH_SHORT).show();
+//                }
+            }
+        });
     }
 
 
     @OnClick(R.id.commit_station)
     public void onClick() {
-        AlertDialog.Builder  builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加单位吗")
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加单位吗")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -205,6 +239,7 @@ public class Type3_fragment extends Fragment {
         if (Utils.isVaild(group1)) {
             builder.put("group", group1.replace(" ", ""));
         }
+
         map = builder.build();
 
         for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -231,7 +266,7 @@ public class Type3_fragment extends Fragment {
                     public void onNext(AddFireStationResult result) {
                         if (result != null) {
                             LogUtil.i(result.status);
-                            if (TextUtils.equals("1",result.status)) {
+                            if (TextUtils.equals("1", result.status)) {
                                 String result1 = result.result;
                                 LogUtil.i("resultweikong添加失败");
 
@@ -250,10 +285,10 @@ public class Type3_fragment extends Fragment {
                                     public void run() {
                                         dialog.show();
                                     }
-                                },500);
-                            }else {
+                                }, 500);
+                            } else {
                             }
-                        }else {
+                        } else {
                             LogUtil.i("添加失败");
                         }
                     }

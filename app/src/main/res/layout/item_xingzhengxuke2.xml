@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+
+    android:layout_height="50dp"
+    android:background="@color/bg_color"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/infoitem_pading"
+    android:paddingRight="@dimen/infoitem_pading">
+
+    <TextView
+        android:id="@+id/item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|left"
+        android:text="*建筑名称"
+        android:textColor="@color/secondtextcolor"
+        android:textSize="@dimen/text_size" />
+</LinearLayout>
+

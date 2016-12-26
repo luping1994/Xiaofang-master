@@ -33,4 +33,22 @@ public class RecordNew {
     public String lat;
     public String created_at;
     public String updated_at;
+
+    @Override
+    public String toString() {
+        return "RecordNew{" +
+                "id='" + id + '\'' +
+                ", event_id='" + event_id + '\'' +
+                ", user_path='" + user_path + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", to_uid='" + to_uid + '\'' +
+                ", contents='" + contents + '\'' +
+                ", video_path='" + video_path + '\'' +
+                ", location='" + location + '\'' +
+                ", lng='" + lng + '\'' +
+                ", lat='" + lat + '\'' +
+                ", created_at='" + created_at + '\'' +
+                ", updated_at='" + updated_at + '\'' +
+                '}';
+    }
 }

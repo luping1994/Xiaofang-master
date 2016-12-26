@@ -4,7 +4,7 @@ buildscript {
     repositories {
         jcenter()
         maven { url 'https://jitpack.io' }  // for sdk-manager-plugin
-
+//        maven { url "https://raw.githubusercontent.com/Pgyer/mvn_repo_pgyer/master" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.3'

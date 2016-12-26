@@ -9,6 +9,7 @@ public class FireComponentGeneralInfo {
     public String name;
     public String lng;
     public String lat;
+    public String addr;
 
     @Override
     public String toString() {

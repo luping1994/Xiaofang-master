@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.model.company.CompanyList;
@@ -40,6 +41,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 /**
  * Created by Looney on 2016/11/24.
  */
@@ -59,11 +61,13 @@ public class Search_activity extends AppCompatActivity  {
     private ImageView search;
 
     private ProgressDialog dialog;
+    private int type ;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         setupToolbar();
+        type = getIntent().getIntExtra("type",0);
         editText = (EditText) findViewById(R.id.tx_search);
         imageView1 = (ImageView) findViewById(R.id.back);
         search = (ImageView) findViewById(R.id.search);
@@ -71,7 +75,7 @@ public class Search_activity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 String text =editText.getText().toString();
-                searchCompany(text);
+                search(text);
             }
         });
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -80,7 +84,7 @@ public class Search_activity extends AppCompatActivity  {
                 switch (actionId){
                     case EditorInfo.IME_ACTION_SEARCH:
                         String text =editText.getText().toString();
-                        searchCompany(text);
+                        search(text);
                         break;
                 }
                 return false;
@@ -180,9 +184,10 @@ public class Search_activity extends AppCompatActivity  {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent();
-                        intent.putExtra("companyID",datas.get(position).get(0)+"#0");
+                        intent.putExtra("companyID",datas.get(position).get(0)+"#"+type);
                         intent.putExtra("name",datas.get(position).get(1));
                         intent.putExtra("from",getIntent().getParcelableExtra("from"));
+//                        companyType = getIntent().getStringExtra("companyID").split("#")[1];
 //                        intent.putExtra("to",to);
                         intent.setClass(Search_activity.this,InfoDetail_activity.class);
                         startActivity(intent);
@@ -212,8 +217,26 @@ public class Search_activity extends AppCompatActivity  {
         }
     }
 
-    private void searchCompany(String text){
+    private void search(String text){
         dialog.show();
+        switch (type){
+
+            case 1:
+                searchRoom(text);
+                break;
+            case 2:
+                searchStation(text);
+                break;
+            case 3:
+                searchGroup(text);
+                break;
+            default:
+                searchCompany(text);
+        }
+
+    }
+
+    private void searchCompany(String text) {
         RetrofitHelper.getApi().queryCompany(text).enqueue(new Callback<CompanyListResult>() {
             @Override
             public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
@@ -234,15 +257,161 @@ public class Search_activity extends AppCompatActivity  {
                         }
                         adapter.notifyDataSetChanged();
                     }else {
-                        UiUtils.showToast(Search_activity.this,result.msg);
+                        UiUtils.showToast(App.getApplication(),result.msg);
                     }
                 }
 
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                       if (dialog.isShowing())
-                           dialog.dismiss();
+                        if (dialog.isShowing())
+                            dialog.dismiss();
+                    }
+                },800);
+            }
+
+            @Override
+            public void onFailure(Call<CompanyListResult> call, Throwable t) {
+                LogUtil.e(t.toString());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog.isShowing())
+                            dialog.dismiss();
+                    }
+                },800);
+            }
+        });
+    }
+
+
+    private void searchRoom(String text) {
+        RetrofitHelper.getApi().queryFireroom(text).enqueue(new Callback<CompanyListResult>() {
+            @Override
+            public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
+                CompanyListResult result = response.body();
+//                System.out.println("和大嫂大嫂等等等等等等等等等等等等"+result.status);
+                if (result!=null){
+                    if (result.status.equals("1")){
+                        datas.clear();
+                        List<CompanyList> lists = result.results;
+                        for (CompanyList info:lists) {
+                            SparseArray<String> map = new SparseArray<String>();
+//                            System.out.println("我的id是:====>"+info.id);
+                            map.put(0,info.id);
+                            map.put(1,info.name);
+//                            map.put(2,info.lat);
+//                            map.put(3,info.lng);
+                            datas.add(map);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }else {
+                        UiUtils.showToast(App.getApplication(),result.msg);
+                    }
+                }
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog.isShowing())
+                            dialog.dismiss();
+                    }
+                },800);
+            }
+
+            @Override
+            public void onFailure(Call<CompanyListResult> call, Throwable t) {
+                LogUtil.e(t.toString());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog.isShowing())
+                            dialog.dismiss();
+                    }
+                },800);
+            }
+        });
+    }
+
+
+    private void searchStation(String text) {
+        RetrofitHelper.getApi().queryFirestation(text).enqueue(new Callback<CompanyListResult>() {
+            @Override
+            public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
+                CompanyListResult result = response.body();
+//                System.out.println("和大嫂大嫂等等等等等等等等等等等等"+result.status);
+                if (result!=null){
+                    if (result.status.equals("1")){
+                        datas.clear();
+                        List<CompanyList> lists = result.results;
+                        for (CompanyList info:lists) {
+                            SparseArray<String> map = new SparseArray<String>();
+//                            System.out.println("我的id是:====>"+info.id);
+                            map.put(0,info.id);
+                            map.put(1,info.name);
+//                            map.put(2,info.lat);
+//                            map.put(3,info.lng);
+                            datas.add(map);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }else {
+                        UiUtils.showToast(App.getApplication(),result.msg);
+                    }
+                }
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog.isShowing())
+                            dialog.dismiss();
+                    }
+                },800);
+            }
+
+            @Override
+            public void onFailure(Call<CompanyListResult> call, Throwable t) {
+                LogUtil.e(t.toString());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog.isShowing())
+                            dialog.dismiss();
+                    }
+                },800);
+            }
+        });
+    }
+
+    private void searchGroup(String text) {
+        RetrofitHelper.getApi().queryFiregroup(text).enqueue(new Callback<CompanyListResult>() {
+            @Override
+            public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
+                CompanyListResult result = response.body();
+//                System.out.println("和大嫂大嫂等等等等等等等等等等等等"+result.status);
+                if (result!=null){
+                    if (result.status.equals("1")){
+                        datas.clear();
+                        List<CompanyList> lists = result.results;
+                        for (CompanyList info:lists) {
+                            SparseArray<String> map = new SparseArray<String>();
+//                            System.out.println("我的id是:====>"+info.id);
+                            map.put(0,info.id);
+                            map.put(1,info.name);
+//                            map.put(2,info.lat);
+//                            map.put(3,info.lng);
+                            datas.add(map);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }else {
+                        UiUtils.showToast(App.getApplication(),result.msg);
+                    }
+                }
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog.isShowing())
+                            dialog.dismiss();
                     }
                 },800);
             }

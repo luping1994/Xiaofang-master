@@ -1,5 +1,6 @@
-package com.suntrans.xiaofang.fragment.editinfo;
+package com.suntrans.xiaofang.fragment.addinfo;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -18,21 +20,16 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.geocoder.GeocodeResult;
-import com.amap.api.services.geocoder.GeocodeSearch;
-import com.amap.api.services.geocoder.RegeocodeQuery;
-import com.amap.api.services.geocoder.RegeocodeResult;
 import com.google.common.collect.ImmutableMap;
-import com.suntrans.xiaofang.BaseApplication;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.activity.add.Add_detail_activity;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,7 +89,7 @@ public class Type1_fragment extends Fragment {
     @BindView(R.id.leaderdepart)
     EditText leaderdepart;
     @BindView(R.id.foundtime)
-    EditText foundtime;
+    TextView foundtime;
     @BindView(R.id.phone)
     EditText phone;
     @BindView(R.id.straffnum)
@@ -131,9 +128,17 @@ public class Type1_fragment extends Fragment {
     LinearLayout content1;
     @BindView(R.id.marker)
     EditText marker;
+    @BindView(R.id.lng)
+    EditText lng;
+    @BindView(R.id.lat)
+    EditText lat;
     private ArrayList<HashMap<String, String>> datas = new ArrayList<>();
     ProgressDialog progressDialog = new ProgressDialog(UiUtils.getContext());
 
+
+    private int mYear;
+    private int mMonth;
+    private int mDay;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -147,44 +152,74 @@ public class Type1_fragment extends Fragment {
         dialog = new ProgressDialog(UiUtils.getContext());
         dialog.setMessage("添加中");
         progressDialog.setMessage("获取中");
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+
         getposition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog.show();
-                GeocodeSearch geocodeSearch = new GeocodeSearch(BaseApplication.getApplication());
-                RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(((Add_detail_activity) getActivity()).latLng.latitude, ((Add_detail_activity) getActivity()).latLng.longitude), 200, GeocodeSearch.AMAP);
-                geocodeSearch.getFromLocationAsyn(query);
-                geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
-                    @Override
-                    public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
-                        progressDialog.dismiss();
-                        if (rCode == 1000) {
-                            if (result != null && result.getRegeocodeAddress() != null
-                                    && result.getRegeocodeAddress().getFormatAddress() != null) {
-                                String addressName = result.getRegeocodeAddress().getFormatAddress();
-                                addr.setText(addressName);
-                            } else {
 
-                            }
-                        } else {
-                        }
-                    }
+                String lat2 = App.getSharedPreferences().getString("lat", "-1");
+                String lng2 = App.getSharedPreferences().getString("lng", "-1");
+                String addr2 = App.getSharedPreferences().getString("addr", "-1");
+                if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
+                    UiUtils.showToast(App.getApplication(), "获取地址失败");
+                    return;
+                }
+                lng.setText(lng2);
+                lat.setText(lat2);
+                addr.setText(addr2);
+//                if (((Add_detail_activity)getActivity()).myLocation!=null){
+//                    lng.setText(((Add_detail_activity)getActivity()).myLocation.longitude+"");
+//                    lat.setText(((Add_detail_activity)getActivity()).myLocation.latitude+"");
+//                    addr.setText(((Add_detail_activity)getActivity()).myaddr);
+//                }else {
+//                    Snackbar.make(scroll,"获取当前地址失败",Snackbar.LENGTH_SHORT).show();
+//                }
+            }
+        });
 
-                    @Override
-                    public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
-                        progressDialog.dismiss();
-                    }
-                });
+        foundtime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(),mDateSetListener,mYear, mMonth, mDay);
+                pickerDialog.show();
             }
         });
     }
+
+
+    private DatePickerDialog.OnDateSetListener mDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+                public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                      int dayOfMonth) {
+                    mYear = year;
+                    mMonth = monthOfYear;
+                    mDay = dayOfMonth;
+                    foundtime.setText(
+                            new StringBuilder()
+                            .append(mYear).append("-")
+                            .append(pad(mMonth+1)).append("-")
+                            .append(pad(mDay))
+                    );
+                }
+            };
+    private static String pad(int c) {
+        if (c >= 10)
+            return String.valueOf(c);
+        else
+            return "0" + String.valueOf(c);
+    }
+
 
     Map<String, String> map;
     ProgressDialog dialog;
 
     @OnClick(R.id.commit)
     public void onClick() {
-        AlertDialog.Builder  builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加单位吗")
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加单位吗")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -206,13 +241,17 @@ public class Type1_fragment extends Fragment {
     private void addCommit() {
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
         map = null;
-        if (name.getText().equals("") || addr.getText().equals("")) {
-            UiUtils.showToast(UiUtils.getContext(), "带*号的项目不不能为空!");
-            return;
-        }
+
         String name1 = name.getText().toString();
         String addr1 = addr.getText().toString();
-
+        if (name1.equals("") || name1 == null) {
+            UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
+            return;
+        }
+        if (addr1== null || addr1.equals("")) {
+            UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
+            return;
+        }
         int checkedid = dangerlevel.getCheckedRadioButtonId();
         String incharge1 = incharge.getText().toString();
         String dangerlevels = "";
@@ -451,8 +490,19 @@ public class Type1_fragment extends Fragment {
                 builder.put("remark", remark1);
 
         }
+        String lng1 = lng.getText().toString();
+        String lat1 = lat.getText().toString();
+        if (lng1 != null) {
+            lng1 = lng1.replace(" ", "");
+            if (!TextUtils.equals("", lng1))
+                builder.put("lng", lng1);
+        }
 
-
+        if (lat1 != null) {
+            lat1 = lat1.replace(" ", "");
+            if (!TextUtils.equals("", lat1))
+                builder.put("lat", lat1);
+        }
         map = builder.build();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey().toString();
@@ -483,6 +533,5 @@ public class Type1_fragment extends Fragment {
             }
         });
     }
-
 
 }

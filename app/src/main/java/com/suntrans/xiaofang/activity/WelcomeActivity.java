@@ -7,7 +7,8 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.suntrans.xiaofang.BaseApplication;
+import com.pgyersdk.update.PgyUpdateManager;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.others.Login_Activity;
 import com.suntrans.xiaofang.model.personal.UserInfo;
@@ -29,6 +30,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private String username;
     private String password;
     private String access_token;
+    private String expires_in;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,18 +60,35 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void initApp() {
         //检查token是否过期或者有无登录的操作
-        username = BaseApplication.getSharedPreferences().getString("username", "");
-        password = BaseApplication.getSharedPreferences().getString("password", "");
-        access_token = BaseApplication.getSharedPreferences().getString("access_token", "-1");
+        username = App.getSharedPreferences().getString("username", "");
+        expires_in = App.getSharedPreferences().getString("expires_in", "1");
+        password = App.getSharedPreferences().getString("password", "");
+        access_token = App.getSharedPreferences().getString("access_token", "-1");
         if (!access_token.equals("-1")) {
-            getUserinfo();
-
+            checkTime();
         } else {
             Message msg = new Message();
             msg.what = 1;
             handler.sendMessageDelayed(msg, 1800);
         }
 
+    }
+
+    private void checkTime() {
+        long currenttime =System.currentTimeMillis();
+        long fristtime = App.getSharedPreferences().getLong("firsttime",1l);
+//        System.out.println("过期时间"+expires_in);
+        long d = (currenttime - fristtime)/1000;
+//        System.out.println("差值"+d);
+        if (d>(Long.valueOf(expires_in)-6*24*3600)){
+            Message msg = new Message();
+            msg.what = 1;
+            handler.sendMessageDelayed(msg, 1800);
+        }else {
+            Message msg = new Message();
+            msg.what = 0;
+            handler.sendMessageDelayed(msg, 1800);
+        }
     }
 
     private void getUserinfo() {
@@ -91,7 +110,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     @Override
                     public void call(UserInfo userInfo) {
                         LogUtil.i("用户ID为:"+userInfo.getId());//将用户id保存
-                        BaseApplication.getSharedPreferences().edit().putString("userID",userInfo.getId()).commit();
+                        App.getSharedPreferences().edit().putString("userID",userInfo.getId()).commit();
                     }
                 })
                 .subscribeOn(Schedulers.io())

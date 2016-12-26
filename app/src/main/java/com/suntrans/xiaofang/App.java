@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 
+import com.pgyersdk.crash.PgyCrashManager;
 import com.suntrans.xiaofang.utils.LogUtil;
 
 import java.io.File;
@@ -17,8 +18,10 @@ import java.io.OutputStream;
  * Created by Looney on 2016/8/11.
  * Des:代表当前应用.
  */
-public class BaseApplication extends Application {
-    private static BaseApplication application;
+public class App extends Application {
+
+
+    private static App application;
     private static int mainTid;
     private static Handler mHandler;
     private static SharedPreferences msharedPreferences;
@@ -26,6 +29,7 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        PgyCrashManager.register(this);
 //        if (LeakCanary.isInAnalyzerProcess(this)) {
 //            // This process is dedicated to LeakCanary for heap analysis.
 //            // You should not init your app in this process.
@@ -66,7 +70,7 @@ public class BaseApplication extends Application {
 
         // 第一次运行应用程序时，加载数据库到data/data/当前包的名称/database/<db_name>
 
-        File dir = new File("data/data/" + BaseApplication.getApplication().getPackageName() + "/databases");
+        File dir = new File("data/data/" + App.getApplication().getPackageName() + "/databases");
         LogUtil.i("!dir.exists()=" + !dir.exists());
         LogUtil.i("!dir.isDirectory()=" + !dir.isDirectory());
 
@@ -83,7 +87,7 @@ public class BaseApplication extends Application {
             try {
                 file.createNewFile();
 
-                inputStream = BaseApplication.getApplication().getClass().getClassLoader().getResourceAsStream("assets/" + SqliteFileName);
+                inputStream = App.getApplication().getClass().getClassLoader().getResourceAsStream("assets/" + SqliteFileName);
                 outputStream = new FileOutputStream(file);
 
                 byte[] buffer = new byte[1024];

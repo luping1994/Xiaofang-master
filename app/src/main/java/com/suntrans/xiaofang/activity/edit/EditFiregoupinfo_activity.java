@@ -1,7 +1,11 @@
 package com.suntrans.xiaofang.activity.edit;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,8 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ScrollView;
 
+import com.amap.api.maps.model.LatLng;
 import com.google.common.collect.ImmutableMap;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.model.firegroup.FireGroupDetailInfo;
@@ -63,6 +70,8 @@ public class EditFiregoupinfo_activity extends AppCompatActivity {
     EditText district;
     @BindView(R.id.group)
     EditText group;
+    @BindView(R.id.scroll)
+    ScrollView scroll;
     private Toolbar toolbar;
     private EditText txName;
     private FireGroupDetailInfo info;
@@ -79,15 +88,54 @@ public class EditFiregoupinfo_activity extends AppCompatActivity {
     }
 
     private void initView() {
-//        txName = (EditText) findViewById(R.id.name);
-//        txName.setText(getIntent().getStringExtra("title"));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.suntrans.addr.RECEIVE");
+        registerReceiver(broadcastReceiver, filter);
         info = (FireGroupDetailInfo) getIntent().getSerializableExtra("info");
-        id = getIntent().getStringExtra("id");
+
+    }
+
+
+
+    public void getLocation(View view) {
+//        if (myLocation == null) {
+//            Snackbar.make(scroll, "获取当前地址失败", Snackbar.LENGTH_SHORT).show();
+//            return;
+//        }
+//        lat.setText(myLocation.latitude + "");
+//        lng.setText(myLocation.longitude + "");
+//        addr.setText(myaddr);
+
+        String lat2 = App.getSharedPreferences().getString("lat", "-1");
+        String lng2 = App.getSharedPreferences().getString("lng", "-1");
+        String addr2 = App.getSharedPreferences().getString("addr", "-1");
+        if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
+            UiUtils.showToast(App.getApplication(), "获取地址失败");
+            return;
+        }
+        lng.setText(lng2);
+        lat.setText(lat2);
+        addr.setText(addr2);
+    }
+
+    public LatLng myLocation;//我当前的位置
+    public String myaddr;//我的位置描述
+    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            myLocation = intent.getParcelableExtra("myLocation");
+            myaddr = intent.getStringExtra("addrdes");
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(broadcastReceiver);
+        super.onDestroy();
     }
 
 
     private void initData() {
-
 
         name.setText(info.name);
         addr.setText(info.addr);
@@ -177,7 +225,7 @@ public class EditFiregoupinfo_activity extends AppCompatActivity {
         String soapweight1 = soapweight.getText().toString();
 
         String group1 = group.getText().toString();
-        builder.put("id",id);
+        builder.put("id", info.id);
         if (Utils.isVaild(name1)) {
             builder.put("name", name1.replace(" ", ""));
         }
@@ -220,7 +268,6 @@ public class EditFiregoupinfo_activity extends AppCompatActivity {
         if (Utils.isVaild(district1)) {
             builder.put("district", district1);
         }
-
 
 
         if (Utils.isVaild(group1)) {

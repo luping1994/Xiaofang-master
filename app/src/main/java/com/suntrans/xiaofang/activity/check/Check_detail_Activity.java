@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.base.BaseActivity;
@@ -347,12 +348,12 @@ public class Check_detail_Activity extends BaseActivity {
                     CompanyPassResult result = response.body();
                     try {
                         if (result.status.equals("1")) {
-                            UiUtils.showToast(Check_detail_Activity.this, result.result);
+                            UiUtils.showToast(App.getApplication(), result.result);
                         } else {
-                            UiUtils.showToast(Check_detail_Activity.this, result.msg);
+                            UiUtils.showToast(App.getApplication(), result.msg);
                         }
                     } catch (NullPointerException e) {
-                        UiUtils.showToast(Check_detail_Activity.this, "操作失败!");
+                        UiUtils.showToast(App.getApplication(), "操作失败!");
                     }
 
                 }
@@ -360,7 +361,7 @@ public class Check_detail_Activity extends BaseActivity {
 
             @Override
             public void onFailure(Call<CompanyPassResult> call, Throwable t) {
-                UiUtils.showToast(Check_detail_Activity.this, "操作失败!");
+                UiUtils.showToast(App.getApplication(), "操作失败!");
             }
         });
     }
@@ -374,12 +375,12 @@ public class Check_detail_Activity extends BaseActivity {
                     CompanyPassResult result = response.body();
                     try {
                         if (result.status.equals("1")) {
-                            UiUtils.showToast(Check_detail_Activity.this, result.result);
+                            UiUtils.showToast(App.getApplication(), result.result);
                         } else {
-                            UiUtils.showToast(Check_detail_Activity.this, result.msg);
+                            UiUtils.showToast(App.getApplication(), result.msg);
                         }
                     } catch (NullPointerException e) {
-                        UiUtils.showToast(Check_detail_Activity.this, "操作失败!");
+                        UiUtils.showToast(App.getApplication(), "操作失败!");
                     }
 
                 }
@@ -387,7 +388,7 @@ public class Check_detail_Activity extends BaseActivity {
 
             @Override
             public void onFailure(Call<CompanyPassResult> call, Throwable t) {
-                UiUtils.showToast(Check_detail_Activity.this, "操作失败!");
+                UiUtils.showToast(App.getApplication(), "操作失败!");
             }
         });
     }

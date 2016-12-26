@@ -17,7 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.suntrans.xiaofang.BaseApplication;
+import com.suntrans.xiaofang.App;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,23 +74,23 @@ public class UiUtils {
 	}
 
 	public static Context getContext() {
-		return BaseApplication.getApplication();
+		return App.getApplication();
 	}
 
 	//	public static void runOnUiThread(Runnable runnable) {
 //		// 在主线程运行
-//		if(android.os.Process.myTid()==BaseApplication.getMainTid()){
+//		if(android.os.Process.myTid()==App.getMainTid()){
 //			runnable.run();
 //		}else{
 //			//获取handler
-//			BaseApplication.getHandler().post(runnable);
+//			App.getHandler().post(runnable);
 //		}
 //	}
 	public static void runOnUiThread(Runnable runnable) {
-		if (android.os.Process.myTid() == BaseApplication.getMainTid()) {
+		if (android.os.Process.myTid() == App.getMainTid()) {
 			runnable.run();
 		} else {
-			BaseApplication.getHandler().post(runnable);
+			App.getHandler().post(runnable);
 		}
 	}
 

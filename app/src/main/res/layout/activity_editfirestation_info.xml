@@ -96,33 +96,40 @@
                     android:textSize="@dimen/text_size1" />
 
                 <Button
+                    android:onClick="getLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="获取当前位置" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginLeft="40dp"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading">
+                <TextView
+                    android:gravity="center"
+                    android:text="经纬度:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
                 <EditText
+                    android:layout_marginLeft="20dp"
+                    android:hint="经度"
                     android:inputType="numberDecimal"
                     android:textSize="14sp"
                     android:id="@+id/lng"
-                    android:text="114.341014"
                     android:textColor="@color/border"
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+
                 <EditText
+                    android:hint="纬度"
                     android:inputType="numberDecimal"
                     android:textSize="14sp"
                     android:id="@+id/lat"
-                    android:text="30.547186"
                     android:textColor="@color/border"
                     android:layout_weight="1"
                     android:layout_width="match_parent"

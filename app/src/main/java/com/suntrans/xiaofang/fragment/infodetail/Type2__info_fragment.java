@@ -1,4 +1,4 @@
-package com.suntrans.xiaofang.fragment;
+package com.suntrans.xiaofang.fragment.infodetail;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,30 +17,32 @@ import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.suntrans.xiaofang.BaseApplication;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.edit.EditFireroomInfo_activity;
 import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
-import com.suntrans.xiaofang.activity.edit.EditFiregoupinfo_activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
-import com.suntrans.xiaofang.model.firegroup.FireGroupDetailInfo;
-import com.suntrans.xiaofang.model.firegroup.FireGroupDetailResult;
+import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
+import com.suntrans.xiaofang.model.fireroom.FireRoomDetailInfo;
+import com.suntrans.xiaofang.model.fireroom.FireRoomDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 
 import java.util.ArrayList;
 
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by Looney on 2016/12/13.
- * 消防中队详情信息fragment
+ * 社区消防室详情信息fragment
  */
 
-public class Type4__info_fragment extends Fragment implements View.OnClickListener {
+public class Type2__info_fragment extends Fragment implements View.OnClickListener {
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
@@ -82,7 +84,7 @@ public class Type4__info_fragment extends Fragment implements View.OnClickListen
 
     private void initData() {
         SparseArray<String> array = new SparseArray<>();
-        array.put(0, "名称");
+        array.put(0, "社区消防室名称");
         array.put(1, "--");
         datas.add(array);
 
@@ -92,54 +94,40 @@ public class Type4__info_fragment extends Fragment implements View.OnClickListen
         datas.add(array1);
 
         SparseArray<String> array2 = new SparseArray<>();
-        array2.put(0, "辖区面积");
+        array2.put(0, "志愿消防队联系人");
         array2.put(1, "--");
         datas.add(array2);
 
 
         SparseArray<String> array3 = new SparseArray<>();
-        array3.put(0, "消防队站联系电话");
+        array3.put(0, "联系电话");
         array3.put(1, "--");
         datas.add(array3);
 
         SparseArray<String> array4 = new SparseArray<>();
-        array4.put(0, "消防队员人数");
+        array4.put(0, "消防队人数");
         array4.put(1, "--");
         datas.add(array4);
 
+        SparseArray<String> array5 = new SparseArray<>();
+        array5.put(0, "车辆配置情况");
+        array5.put(1, "--");
+        datas.add(array5);
 
         SparseArray<String> array6 = new SparseArray<>();
-        array6.put(0, "消防车总数");
+        array6.put(0, "装备配置情况");
         array6.put(1, "--");
         datas.add(array6);
 
         SparseArray<String> array7 = new SparseArray<>();
-        array7.put(0, "消防车辆配置情况");
+        array7.put(0, "所属区");
         array7.put(1, "--");
         datas.add(array7);
 
         SparseArray<String> array8 = new SparseArray<>();
-        array8.put(0, "车载水总量（吨）");
+        array8.put(0, "所属中队");
         array8.put(1, "--");
         datas.add(array8);
-
-
-
-        SparseArray<String> array10 = new SparseArray<>();
-        array10.put(0, "车载泡沫总量（吨）");
-        array10.put(1, "--");
-        datas.add(array10);
-
-        SparseArray<String> array11 = new SparseArray<>();
-        array11.put(0, "所属区");
-        array11.put(1, "--");
-        datas.add(array11);
-
-
-        SparseArray<String> array14 = new SparseArray<>();
-        array14.put(0, "所属大队");
-        array14.put(1, "--");
-        datas.add(array14);
 
     }
 
@@ -148,8 +136,14 @@ public class Type4__info_fragment extends Fragment implements View.OnClickListen
         super.onResume();
         getData();
     }
-
-
+//    getposition.setOnClickListener(new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//            lng.setText(((Add_detail_activity)getActivity()).myLocation.longitude+"");
+//            lat.setText(((Add_detail_activity)getActivity()).myLocation.latitude+"");
+//            addr.setText(((Add_detail_activity)getActivity()).myaddr);
+//        }
+//    });
 
     class MyAdapter extends RecyclerView.Adapter {
 
@@ -202,46 +196,43 @@ public class Type4__info_fragment extends Fragment implements View.OnClickListen
         }
     }
 
-    public FireGroupDetailInfo myInfo;
+    public FireRoomDetailInfo myInfo;
     private void getData() {
-        RetrofitHelper.getApi().getFireGroupDetailInfo(((InfoDetail_activity)getActivity()).companyId)
+        RetrofitHelper.getApi().getFireRoomDetailInfo(((InfoDetail_activity)getActivity()).companyId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<FireGroupDetailResult>() {
+                .subscribe(new Action1<FireRoomDetailResult>() {
                     @Override
-                    public void call(FireGroupDetailResult result) {
+                    public void call(FireRoomDetailResult result) {
                         if (result!=null){
                             if (!result.status.equals("0")){
-                                FireGroupDetailInfo info = result.result;
+                                FireRoomDetailInfo info = result.result;
                                 myInfo=info;
                                 LogUtil.i(info.toString());
                                 refreshView(info);
                             }
                         }else {
-                            UiUtils.showToast(getActivity(),"请求失败!");
+                            UiUtils.showToast(App.getApplication(),"请求失败!");
                         }
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        LogUtil.i(throwable.toString());
-                        UiUtils.showToast(BaseApplication.getApplication(),"未知错误");
+                        UiUtils.showToast(App.getApplication(),"请求失败!");
                     }
                 });
     }
 
-    private void refreshView(FireGroupDetailInfo info) {
+    private void refreshView(FireRoomDetailInfo info) {
         datas.get(0).put(1,info.name);//名字
         datas.get(1).put(1,info.addr);//地址
-        datas.get(2).put(1,info.area==null?"--":info.area+"平方公里");
+        datas.get(2).put(1,info.contact==null?"--":info.contact);
         datas.get(3).put(1,info.phone==null?"--":info.phone);
         datas.get(4).put(1,info.membernum==null?"--":info.membernum+"人");
-        datas.get(5).put(1,info.carnum==null?"--":info.carnum);
-        datas.get(6).put(1,info.cardisp==null?"--":info.cardisp);
-        datas.get(7).put(1,info.waterweight==null?"--":info.waterweight);
-        datas.get(8).put(1,info.soapweight==null?"--":info.soapweight);
-        datas.get(9).put(1,info.district==null?"--":info.district);
-        datas.get(10).put(1,info.group+info.group);
+        datas.get(5).put(1,info.cardisp==null?"--":info.cardisp);
+        datas.get(6).put(1,info.equipdisp==null?"--":info.equipdisp);
+        datas.get(7).put(1,info.district==null?"--":info.district);
+        datas.get(8).put(1,info.group==null?"--":info.group);
         myAdapter.notifyDataSetChanged();
     }
 
@@ -255,7 +246,7 @@ public class Type4__info_fragment extends Fragment implements View.OnClickListen
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        delete();
                     }
                 });
                 builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -270,10 +261,11 @@ public class Type4__info_fragment extends Fragment implements View.OnClickListen
                 break;
             case R.id.fab2:
                 Intent intent = new Intent();
-                intent.setClass(getActivity(), EditFiregoupinfo_activity.class);
+                intent.setClass(getActivity(), EditFireroomInfo_activity.class);
                 intent.putExtra("title",((InfoDetail_activity)getActivity()).title);
-                intent.putExtra("id",((InfoDetail_activity)getActivity()).companyId);
+//                intent.putExtra("id",((InfoDetail_activity)getActivity()).companyId);
                 intent.putExtra("info",myInfo);
+//                intent.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
@@ -299,5 +291,50 @@ public class Type4__info_fragment extends Fragment implements View.OnClickListen
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
         }
+    }
+
+
+    private void delete() {
+        RetrofitHelper.getApi().deleteFireRoom(myInfo.id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<AddFireRoomResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(AddFireRoomResult result) {
+                        AlertDialog.Builder builder= new AlertDialog.Builder(getActivity());
+                        if (result!=null){
+                            if (result.status.equals("1")){
+                                builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        getActivity().finish();
+                                    }
+                                });
+                                builder.create().show();
+                            }else {
+                                builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                });
+                                builder.create().show();
+                            }
+                        }else {
+                            UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                        }
+                    }
+                });
     }
 }

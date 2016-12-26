@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.base.BaseActivity;
@@ -37,22 +38,26 @@ public class Check_Activity extends BaseActivity {
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
     private MyAdapter adapter;
-    private ArrayList<Map<String,String>> datas = new ArrayList<>();
-    Handler handler = new Handler(){
+    private ArrayList<Map<String, String>> datas = new ArrayList<>();
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case 1:
                     adapter.notifyDataSetChanged();
-                break;
+                    break;
+                case 0:
+                    if (msg.obj!=null)
+                    UiUtils.showToast(App.getApplication(), (String) msg.obj);
+                    break;
             }
         }
     };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
 
     public void setupToolbar() {
@@ -76,7 +81,7 @@ public class Check_Activity extends BaseActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycleview);
         manager = new LinearLayoutManager(this);
         adapter = new MyAdapter();
-        recyclerView.addItemDecoration(new RecyclerViewDivider(this,LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new RecyclerViewDivider(this, LinearLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
     }
@@ -98,44 +103,52 @@ public class Check_Activity extends BaseActivity {
             @Override
             public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
                 CompanyListResult result = response.body();
-                System.out.println("raw:"+response.raw());
-                System.out.println("message"+response.message());
-                if (result!=null){
-                    if (!result.status.equals("0")&&result!=null){
+                System.out.println("raw:" + response.raw());
+                System.out.println("message" + response.message());
+                if (result != null) {
+                    if (!result.status.equals("0") && result != null) {
                         List<CompanyList> lists = result.results;
-                        for (CompanyList info: lists) {
-                            if (info.id==null||info.name==null){
+                        for (CompanyList info : lists) {
+                            if (info.id == null || info.name == null) {
                                 continue;
                             }
-                            HashMap<String,String> map1=new HashMap<String, String>();
-                            map1.put("state","0");
-                            map1.put("name",info.name);
-                            map1.put("id",info.id);
+                            HashMap<String, String> map1 = new HashMap<String, String>();
+                            map1.put("state", "0");
+                            map1.put("name", info.name);
+                            map1.put("id", info.id);
                             datas.add(map1);
-                            handler.sendEmptyMessage(1);
+                            handler.sendEmptyMessageDelayed(1, 500);
+//                            handler.sendEmptyMessage(1);
                         }
-                    }else {
+                    } else {
                         try {
-                            UiUtils.showToast(Check_Activity.this,result.msg);
-                        }catch (Exception e){
+                            Message msg = new Message();
+                            msg.what=0;
+                            msg.obj = result.msg;
+                            handler.sendMessageDelayed(msg,500);
+
+                        } catch (Exception e) {
 
                         }
                     }
-                }else {
-                    UiUtils.showToast(Check_Activity.this,"获取审核单位失败!");
+                } else {
+                    Message msg = new Message();
+                    msg.what=0;
+                    msg.obj = "获取审核单位失败!";
+                    handler.sendMessageDelayed(msg,500);
                 }
             }
 
             @Override
             public void onFailure(Call<CompanyListResult> call, Throwable t) {
                 t.printStackTrace();
-                UiUtils.showToast(Check_Activity.this,"获取审核单位失败,可能权限不足");
+                UiUtils.showToast(App.getApplication(), "获取审核单位失败,可能权限不足");
             }
         });
     }
 
 
-    class ViewHolder1 extends RecyclerView.ViewHolder{
+    class ViewHolder1 extends RecyclerView.ViewHolder {
         TextView name;
 
         public ViewHolder1(View itemView) {
@@ -144,7 +157,7 @@ public class Check_Activity extends BaseActivity {
         }
     }
 
-    class ViewHolder2 extends RecyclerView.ViewHolder{
+    class ViewHolder2 extends RecyclerView.ViewHolder {
         TextView state;
         TextView name;
 
@@ -154,16 +167,16 @@ public class Check_Activity extends BaseActivity {
         }
     }
 
-    class MyAdapter extends RecyclerView.Adapter{
+    class MyAdapter extends RecyclerView.Adapter {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v;
-            if (viewType==0){
-               v = LayoutInflater.from(Check_Activity.this).inflate(R.layout.item_checked,parent,false);
+            if (viewType == 0) {
+                v = LayoutInflater.from(Check_Activity.this).inflate(R.layout.item_checked, parent, false);
                 ViewHolder1 holder1 = new ViewHolder1(v);
                 return holder1;
-            }else {
-                v = LayoutInflater.from(Check_Activity.this).inflate(R.layout.item_search_activity2,parent,false);
+            } else {
+                v = LayoutInflater.from(Check_Activity.this).inflate(R.layout.item_search_activity2, parent, false);
                 ViewHolder2 holder2 = new ViewHolder2(v);
                 return holder2;
             }
@@ -172,19 +185,19 @@ public class Check_Activity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-            if (holder instanceof ViewHolder1){
-                ((ViewHolder1)holder).name.setText("单位名称:"+datas.get(position).get("name"));
-                ((ViewHolder1)holder).name.setOnClickListener(new View.OnClickListener() {
+            if (holder instanceof ViewHolder1) {
+                ((ViewHolder1) holder).name.setText("单位名称:" + datas.get(position).get("name"));
+                ((ViewHolder1) holder).name.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(Check_Activity.this,Check_detail_Activity.class);
-                        intent.putExtra("id",datas.get(position).get("id"));
+                        Intent intent = new Intent(Check_Activity.this, Check_detail_Activity.class);
+                        intent.putExtra("id", datas.get(position).get("id"));
                         startActivity(intent);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
                 });
-            }else {
-                ((ViewHolder2)holder).name.setText("无待审核单位");
+            } else {
+                ((ViewHolder2) holder).name.setText("无待审核单位");
             }
 
         }
@@ -192,16 +205,18 @@ public class Check_Activity extends BaseActivity {
 
         @Override
         public int getItemViewType(int position) {
-            if (datas.size()==0)
+            if (datas.size() == 0)
                 return 1;
             return 0;
         }
 
         @Override
         public int getItemCount() {
-            return datas.size()==0?1:datas.size();
+            return datas.size() == 0 ? 1 : datas.size();
         }
-    }{
+    }
+
+    {
 
     }
 }

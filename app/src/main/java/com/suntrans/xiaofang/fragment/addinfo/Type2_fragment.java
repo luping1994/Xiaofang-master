@@ -1,4 +1,4 @@
-package com.suntrans.xiaofang.fragment.editinfo;
+package com.suntrans.xiaofang.fragment.addinfo;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -17,9 +17,11 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 
 import com.google.common.collect.ImmutableMap;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.UiUtils;
 
 import java.util.Map;
 
@@ -64,9 +66,12 @@ public class Type2_fragment extends Fragment {
     EditText lng;
     @BindView(R.id.lat)
     EditText lat;
+    @BindView(R.id.getposition)
+    Button getposition;
     private ImmutableMap.Builder<String, String> builder;
     private String district1;
     private AlertDialog dialog;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -93,12 +98,34 @@ public class Type2_fragment extends Fragment {
 
             }
         });
+        getposition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String lat2 = App.getSharedPreferences().getString("lat", "-1");
+                String lng2 = App.getSharedPreferences().getString("lng", "-1");
+                String addr2 = App.getSharedPreferences().getString("addr", "-1");
+                if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
+                    UiUtils.showToast(App.getApplication(), "获取地址失败");
+                    return;
+                }
+                lng.setText(lng2);
+                lat.setText(lat2);
+                addr.setText(addr2);
+//                if (((Add_detail_activity)getActivity()).myLocation!=null){
+//                    lng.setText(((Add_detail_activity)getActivity()).myLocation.longitude+"");
+//                    lat.setText(((Add_detail_activity)getActivity()).myLocation.latitude+"");
+//                    addr.setText(((Add_detail_activity)getActivity()).myaddr);
+//                }else {
+//                    Snackbar.make(scroll,"获取当前地址失败",Snackbar.LENGTH_SHORT).show();
+//                }
+            }
+        });
     }
 
 
     @OnClick(R.id.add_fireroom)
     public void onClick() {
-        AlertDialog.Builder  builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加单位吗")
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加单位吗")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -131,7 +158,16 @@ public class Type2_fragment extends Fragment {
         String group1 = group.getText().toString();
         String lng1 = lng.getText().toString();
         String lat1 = lat.getText().toString();
-        
+
+        if (name1.equals("") || name1 == null) {
+            UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
+            return;
+        }
+        if (addr1== null || addr1.equals("")) {
+            UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
+            return;
+        }
+
         if (name1 != null) {
             name1 = name1.replace(" ", "");
             if (!TextUtils.equals("", name1))

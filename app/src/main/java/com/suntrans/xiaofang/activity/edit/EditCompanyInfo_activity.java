@@ -1,7 +1,11 @@
 package com.suntrans.xiaofang.activity.edit;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,7 +22,9 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.amap.api.maps.model.LatLng;
 import com.google.common.collect.ImmutableMap;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
@@ -120,6 +126,10 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
     ScrollView scroll;
     @BindView(R.id.marker)
     EditText marker;
+    @BindView(R.id.lng)
+    EditText lng;
+    @BindView(R.id.lat)
+    EditText lat;
     private Toolbar toolbar;
     private EditText txName;
     private CompanyDetailnfo info;
@@ -135,15 +145,50 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
     }
 
     private void initView() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.suntrans.addr.RECEIVE");
+        registerReceiver(broadcastReceiver,filter);
+
 //        txName = (EditText) findViewById(R.id.name);
 //        txName.setText(getIntent().getStringExtra("title"));
         info = (CompanyDetailnfo) getIntent().getSerializableExtra("info");
+//        latLng = getIntent().getParcelableExtra("from");
     }
 
+
+
+    public void getLocation(View view) {
+        String lat2 = App.getSharedPreferences().getString("lat", "-1");
+        String lng2 = App.getSharedPreferences().getString("lng", "-1");
+        String addr2 = App.getSharedPreferences().getString("addr", "-1");
+        if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
+            UiUtils.showToast(App.getApplication(), "获取地址失败");
+            return;
+        }
+        lng.setText(lng2);
+        lat.setText(lat2);
+        addr.setText(addr2);
+//        if (myLocation==null){
+//            Snackbar.make(scroll,"获取当前地址失败",Snackbar.LENGTH_SHORT).show();
+//            return;
+//        }
+//        lat.setText(myLocation.latitude + "");
+//        lng.setText(myLocation.longitude + "");
+//        addr.setText(myaddr);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(broadcastReceiver);
+        super.onDestroy();
+    }
 
     private void initData() {
         name.setText(info.name);
         addr.setText(info.addr);
+
+        lat.setText(info.lat);
+        lng.setText(info.lng);
         incharge.setText(info.incharge);
         if (info.dangerlevel != null) {
             if (info.dangerlevel.equals("1"))
@@ -291,9 +336,9 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
 
         //添加修改信息需要id
         try {
-            builder.put("id",info.id);
-        }catch (Exception e){
-            UiUtils.showToast(this,"单位不存在");
+            builder.put("id", info.id);
+        } catch (Exception e) {
+            UiUtils.showToast(App.getApplication(), "单位不存在");
         }
         if (name1 != null) {
             name1 = name1.replace(" ", "");
@@ -507,9 +552,7 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
             @Override
             public void onResponse(Call<AddCompanyResult> call, Response<AddCompanyResult> response) {
                 dialog.dismiss();
-                System.out.println("message" + response.message());
-                System.out.println("body" + response.body());
-                System.out.println("raw" + response.raw());
+
                 AddCompanyResult result = response.body();
                 try {
                     if (result == null) {
@@ -517,7 +560,7 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
                     } else {
                         UiUtils.showToast(UiUtils.getContext(), "提示:" + result.result);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
 
@@ -531,4 +574,16 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
             }
         });
     }
+
+
+
+    public LatLng myLocation;//我当前的位置
+    public String myaddr;//我的位置描述
+    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            myLocation = intent.getParcelableExtra("myLocation");
+            myaddr = intent.getStringExtra("addrdes");
+        }
+    };
 }

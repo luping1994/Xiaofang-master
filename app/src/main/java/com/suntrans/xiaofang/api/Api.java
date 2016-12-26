@@ -14,6 +14,7 @@ import com.suntrans.xiaofang.model.fireroom.FireRoomDetailResult;
 import com.suntrans.xiaofang.model.firestation.AddFireStationResult;
 import com.suntrans.xiaofang.model.firestation.FireStationDetailResult;
 import com.suntrans.xiaofang.model.license.AddLicenseResult;
+import com.suntrans.xiaofang.model.license.LicenseDetailResult;
 import com.suntrans.xiaofang.model.login.LoginInfo;
 import com.suntrans.xiaofang.model.personal.UserInfoResult;
 import com.suntrans.xiaofang.model.supervise.SuperviseDetailResult;
@@ -119,6 +120,16 @@ public interface Api {
     Call<AddCompanyResult> createCompany(@FieldMap Map<String, String> info);
 
     /**
+     * 删除公司信息
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/company/delete")
+    Observable<AddCompanyResult> deleteCompany(@Field("id") String id);
+
+    /**
      * 更新公司信息
      *
      * @param info
@@ -138,6 +149,39 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/company/search")
     Call<CompanyListResult> queryCompany(@Field("name") String name);
+
+
+    /**
+     * 根据关键词查询fireroom信息
+     *
+     * @param name
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/fireroom/search")
+    Call<CompanyListResult> queryFireroom(@Field("name") String name);
+
+
+    /**
+     * 根据关键词查询firestation信息
+     *
+     * @param name
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/firestation/search")
+    Call<CompanyListResult> queryFirestation(@Field("name") String name);
+
+
+    /**
+     * 根据关键词查询firegroup信息
+     *
+     * @param name
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/firegroup/search")
+    Call<CompanyListResult> queryFiregroup(@Field("name") String name);
 
     /**
      * @param id
@@ -202,6 +246,16 @@ public interface Api {
     @POST("/api/v1/fireroom/create")
     Observable<AddFireRoomResult> createFireRoom(@FieldMap Map<String, String> map);
 
+    /**
+     * 删除消防室
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/fireroom/delete")
+    Observable<AddFireRoomResult> deleteFireRoom(@Field("id") String id);
+
 
     @FormUrlEncoded
     @POST("/api/v1/fireroom/detail")
@@ -211,10 +265,24 @@ public interface Api {
     @POST("/api/v1/fireroom/update")
     Observable<AddFireRoomResult> updateFireRoom(@FieldMap Map<String, String> map);
 
-
+    /**
+     * 创建小型站
+     * @param map
+     * @return
+     */
     @FormUrlEncoded
     @POST("/api/v1/firestation/create")
     Observable<AddFireStationResult> createStation(@FieldMap Map<String, String> map);
+
+    /**
+     * 删除小型站
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/firestation/delete")
+    Observable<AddFireStationResult> deleteStation(@Field("id") String id);
 
 
     @FormUrlEncoded
@@ -225,10 +293,26 @@ public interface Api {
     @POST("/api/v1/firestation/update")
     Observable<AddFireStationResult> updateFireStation(@FieldMap Map<String, String> map);
 
-
+    /**
+     * 创建中队
+     * @param map
+     * @return
+     */
     @FormUrlEncoded
     @POST("/api/v1/firegroup/create")
     Observable<AddFireGroupResult> createGroup(@FieldMap Map<String, String> map);
+
+
+    /**
+     * 删除中队
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/firegroup/delete")
+    Observable<AddFireGroupResult> deleteGroup(@Field("id") String id);
+
 
     @FormUrlEncoded
     @POST("/api/v1/firegroup/detail")
@@ -273,14 +357,14 @@ public interface Api {
 
 
     /**
-     * 一定范围内的行政许可建筑
+     * 行政许可详情
      *
      * @param id
      * @return
      */
     @FormUrlEncoded
     @POST("/api/v1/license/detail")
-    Observable<FireComponentGeneralInfoList> getLicenseDetailInfo(@Field("id") String id);
+    Observable<LicenseDetailResult> getLicenseDetailInfo(@Field("id") String id);
 
     /**
      * 验收接口
@@ -347,6 +431,18 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/issued/detail")
     Observable<SuperviseDetailResult> getSuperviseDetail(@Field("id") String id);
+
+    //api/v1/license/range
+
+    /**
+     *
+     *根据单位id获取监督详情
+     * @param contents
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/guestbook/create")
+    Observable<AddCompanyResult> commitGuesBook(@Field("contents") String contents);
 
 }
 

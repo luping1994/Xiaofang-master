@@ -2,6 +2,7 @@ package com.suntrans.xiaofang.activity.others;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
@@ -94,9 +95,15 @@ public class Personal_activity extends AppCompatActivity {
                         info.area2 = userInfo.area2;
                         info.area3 = userInfo.area3;
                         info.area4 = userInfo.area4;
-                        collapsingToolbarLayout.setTitle(info.truename);
-                        adapter.notifyDataSetChanged();
-                        System.out.println(userInfo.toString());
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                collapsingToolbarLayout.setTitle(info.truename);
+                                adapter.notifyDataSetChanged();
+                            }
+                        },500);
+
+//                        System.out.println(userInfo.toString());
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -107,6 +114,8 @@ public class Personal_activity extends AppCompatActivity {
                 });
     }
 
+
+    Handler handler = new Handler();
     private void setUpToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);

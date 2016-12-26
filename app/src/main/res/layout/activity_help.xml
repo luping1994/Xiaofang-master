@@ -16,18 +16,51 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" >
     </android.support.v7.widget.Toolbar>
-
-    <com.suntrans.xiaofang.views.IViewPager
-        android:id="@+id/vPager"
-        android:background="@color/white"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_gravity="center"
-        android:layout_weight="1.0"
-        android:flipInterval="30"
-        st:enabled="true"
-        android:persistentDrawingCache="animation"
-        />
+    <RelativeLayout
+        android:orientation="vertical"
+        android:background="@color/bg_color"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/one"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="20dp"
+            android:textSize="16sp"
+            android:textColor="@color/balck"
+            android:text="请输入你的宝贵意见:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/one"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:gravity="start"
+            android:background="@drawable/layout_border2"
+            android:id="@+id/value"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:textSize="16sp"/>
+        <Button
+            android:onClick="onClick"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/value"
+            android:text="提交"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <!--<com.suntrans.xiaofang.views.IViewPager-->
+        <!--android:id="@+id/vPager"-->
+        <!--android:background="@color/white"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="0dip"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_weight="1.0"-->
+        <!--android:flipInterval="30"-->
+        <!--st:enabled="true"-->
+        <!--android:persistentDrawingCache="animation"-->
+        <!--/>-->
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0.6dip"
@@ -36,6 +69,7 @@
         >
     </LinearLayout>
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="50dip"
         android:paddingTop="0dip"

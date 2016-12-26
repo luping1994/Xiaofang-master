@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.suntrans.xiaofang.BaseApplication;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.eventandissue.SuperviseDetail_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
@@ -19,6 +19,7 @@ import com.suntrans.xiaofang.adapter.RecycleviewAdapter;
 import com.suntrans.xiaofang.model.supervise.Supervise;
 import com.suntrans.xiaofang.model.supervise.SuperviseListResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
 
 import java.util.ArrayList;
 
@@ -55,12 +56,13 @@ public class SuperviseFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 Intent intent = new Intent();
+                LogUtil.i("id为："+datas.get(position).get(4));
                 intent.putExtra("id",datas.get(position).get(4));
                 intent.setClass(getActivity(), SuperviseDetail_activity.class);
                 startActivity(intent);
             }
         });
-        recyclerView.addItemDecoration(new RecyclerViewDivider(BaseApplication.getApplication(), LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new RecyclerViewDivider(App.getApplication(), LinearLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 

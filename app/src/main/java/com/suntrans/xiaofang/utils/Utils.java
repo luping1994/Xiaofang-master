@@ -12,7 +12,7 @@ import android.view.WindowManager;
 
 import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.AMapNaviStep;
-import com.suntrans.xiaofang.BaseApplication;
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.model.StrategyBean;
 
 import java.text.DecimalFormat;
@@ -210,7 +210,7 @@ public class Utils {
     ///判断网络是否可用，如果连接到了网络就返回true（无论是否真正可以上网），如果没有连接，则返回false。表示无可用网络
     public static boolean IsNetWork()
     {
-        Context context = BaseApplication.getApplication();
+        Context context = App.getApplication();
         // 获取手机所有连接管理对象（包括对wi-fi,net等连接的管理）
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 

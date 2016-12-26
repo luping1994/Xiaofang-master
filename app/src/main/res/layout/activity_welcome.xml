@@ -32,14 +32,7 @@
             android:text="消防安全网格化管理平台"/>
     </LinearLayout>
 
-    <TextView
-        android:layout_above="@+id/tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        android:text="技术支持@"/>
+
     <TextView
         android:id="@+id/tv"
         android:layout_alignParentBottom="true"
