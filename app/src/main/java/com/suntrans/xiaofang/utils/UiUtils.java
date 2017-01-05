@@ -34,6 +34,14 @@ public class UiUtils {
 		mToast.show();
 	}
 
+	public static void showToast(String str) {
+		if (mToast == null) {
+			mToast = Toast.makeText(App.getApplication(), str, Toast.LENGTH_SHORT);
+		}
+		mToast.setText(str);
+		mToast.show();
+	}
+
 
 	/**
 	 * 获取到字符数组

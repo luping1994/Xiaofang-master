@@ -8,15 +8,17 @@ android {
         applicationId "com.suntrans.xiaofang"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 3
-        versionName "1.0.4"
+        versionCode 8
+        versionName "1.0.8"
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            shrinkResources true
-            zipAlignEnabled true
+//            shrinkResources true
+//            zipAlignEnabled true
+
+//            buildConfigField "boolean","LOG_DEBUG","false"
         }
     }
 //    sourceSets{
@@ -49,9 +51,9 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.google.guava:guava-collections:r03'
-        compile 'com.tencent.bugly:crashreport:latest.release'
+    compile 'com.tencent.bugly:crashreport:latest.release'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
-
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile files('libs/pgyer_sdk_2.4.5.jar')
+    compile project(':library')
 }

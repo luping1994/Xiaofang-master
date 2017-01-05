@@ -433,7 +433,7 @@
 
     <Button
         android:id="@+id/commit_group"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/commit_selector"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:textColor="@color/white"

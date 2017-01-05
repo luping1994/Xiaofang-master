@@ -28,11 +28,12 @@
             android:layout_height="50dp"
             android:background="@android:color/transparent">
             <LinearLayout
+                android:background="?android:attr/selectableItemBackground"
                 android:id="@+id/back_btn_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:gravity="center"
+                android:gravity="center|left"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -59,6 +60,7 @@
                 android:layout_alignParentRight="true"
                 android:onClick="openGallery"
                 android:id="@+id/xiangce"
+                android:background="?android:attr/selectableItemBackground"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
                 <TextView

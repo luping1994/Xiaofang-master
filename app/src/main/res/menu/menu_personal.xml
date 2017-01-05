@@ -22,17 +22,17 @@
         android:icon="@drawable/ic_edit"
         android:title="编辑" />
     <item
-            android:id="@+id/per"
+            android:id="@+id/changedpassword"
             app:showAsAction="never"
             android:title="修改密码" />
 
     <item
-        android:id="@+id/scan1"
+        android:id="@+id/zhuxiao"
         app:showAsAction="never"
         android:title="注销登录" />
 
     <item
-        android:id="@+id/pulldata"
+        android:id="@+id/changed"
         app:showAsAction="never"
         android:title="更换头像" />
 

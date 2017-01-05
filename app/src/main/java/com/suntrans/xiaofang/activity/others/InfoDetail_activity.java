@@ -4,12 +4,12 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.fragment.infodetail.Type1__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type2__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type3__info_fragment;
@@ -25,8 +25,8 @@ import java.util.Map;
  * Created by Looney on 2016/12/1.
  */
 
-public class InfoDetail_activity extends AppCompatActivity {
-    private Toolbar toolbar;
+public class InfoDetail_activity extends BasedActivity {
+    public Toolbar toolbar;
 
 
     public String title;
@@ -69,7 +69,7 @@ public class InfoDetail_activity extends AppCompatActivity {
     private void initView() {
         companyId = getIntent().getStringExtra("companyID").split("#")[0];
         companyType = getIntent().getStringExtra("companyID").split("#")[1];
-
+        System.out.println("InfodetailActivity:"+"公司id="+companyId);
         switch (Integer.valueOf(companyType)){
             case 0:
                 type1__info_fragment = new Type1__info_fragment();

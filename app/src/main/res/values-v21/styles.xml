@@ -29,8 +29,5 @@
 
     <dimen name="spacing_large">16dp</dimen>
 
-    <style name="MyDialogTheme" parent="android:Theme.Material.Dialog">
-
-    </style>
 
 </resources>

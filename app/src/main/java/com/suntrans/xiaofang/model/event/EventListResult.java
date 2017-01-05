@@ -13,4 +13,6 @@ public class EventListResult {
 
     @SerializedName("result")
     public List<Event> result;
+
+
 }

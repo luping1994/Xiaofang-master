@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/colorPrimaryDark"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/toolbar"/>
+    <LinearLayout
+        android:background="@color/bg_color"
+        android:id="@+id/ll_modify"
+        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/username_view"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="输入旧密码:"
+            android:gravity="left"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/old_password_edit"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:scrollHorizontally="true"
+            android:autoText="false"
+            android:capitalize="none"
+            android:gravity="fill_horizontal"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/password_view"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="输入新密码:"
+            android:gravity="left"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/password_edit"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:scrollHorizontally="true"
+            android:autoText="false"
+            android:capitalize="none"
+            android:gravity="fill_horizontal"
+            android:password="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <LinearLayout
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_below="@+id/ll_modify"
+                android:onClick="modify"
+                android:text="确定"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

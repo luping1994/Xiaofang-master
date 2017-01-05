@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
-import com.pgyersdk.update.PgyUpdateManager;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.others.Login_Activity;
@@ -25,7 +23,7 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/12/15.
  */
 
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends BasedActivity {
 
     private String username;
     private String password;

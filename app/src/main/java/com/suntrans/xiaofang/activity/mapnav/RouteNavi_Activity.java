@@ -1,6 +1,5 @@
 package com.suntrans.xiaofang.activity.mapnav;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.Toast;
@@ -21,12 +20,13 @@ import com.amap.api.navi.model.NaviInfo;
 import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.utils.TTSController;
 
 /**
  * 按照选定策略导航
  */
-public class RouteNavi_Activity extends Activity implements AMapNaviListener, AMapNaviViewListener {
+public class RouteNavi_Activity extends BasedActivity implements AMapNaviListener, AMapNaviViewListener {
 
 	AMapNaviView mAMapNaviView;
 	AMapNavi mAMapNavi;

@@ -4,13 +4,13 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.activity.Main_Activity;
 import com.suntrans.xiaofang.model.login.LoginInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
@@ -22,7 +22,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class Login_Activity extends AppCompatActivity implements View.OnClickListener {
+public class Login_Activity extends BasedActivity implements View.OnClickListener {
     private Button login ;
     private EditView ed_account;
     private EditView ed_password;
@@ -37,7 +37,7 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
 //        ed_account.setText(App.getSharedPreferences().getString("username",""));
 //        ed_password.setText(App.getSharedPreferences().getString("password",""));
         login.setOnClickListener(this);
-        dialog= new ProgressDialog(this,R.style.MyDialogTheme);
+        dialog= new ProgressDialog(this);
         dialog.setMessage("登陆中..");
         dialog.setCancelable(false);
 

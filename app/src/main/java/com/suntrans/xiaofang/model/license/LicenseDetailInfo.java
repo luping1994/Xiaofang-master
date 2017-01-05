@@ -10,17 +10,24 @@ public class LicenseDetailInfo implements Serializable{
     public String id;
     public String user_id;
     public String building_id;
+
     public String completetime;
     public String cisqualified;
     public String cnumber;
+
+
     public String opentime;
     public String oisqualified;
     public String onumber;
+
     public String status;
     public String updated_at;
     public String created_at;
     public String deleted_at;
     public Building building;
+
+    public String lat;
+    public String lng;
 
 
 

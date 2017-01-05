@@ -9,26 +9,25 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.amap.api.maps.model.LatLng;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.fragment.addinfo.Type1_fragment;
 import com.suntrans.xiaofang.fragment.addinfo.Type2_fragment;
 import com.suntrans.xiaofang.fragment.addinfo.Type3_fragment;
 import com.suntrans.xiaofang.fragment.addinfo.Type4_fragment;
 import com.suntrans.xiaofang.fragment.addinfo.Type5_fragment;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 
 /**
  * Created by Looney on 2016/12/1.
  */
 
-public class Add_detail_activity extends AppCompatActivity {
+public class Add_detail_activity extends BasedActivity {
     private Toolbar toolbar;
     int type;
     private FrameLayout content;

@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
@@ -36,7 +36,7 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/12/1.
  */
 
-public class Help_activity extends AppCompatActivity {
+public class Help_activity extends BasedActivity {
     public IViewPager vPager;    //自定义ViewPager控件
     @BindView(R.id.value)
     EditText value;

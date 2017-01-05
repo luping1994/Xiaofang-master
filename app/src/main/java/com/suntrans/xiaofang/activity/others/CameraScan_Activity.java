@@ -11,7 +11,6 @@ import android.os.Looper;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,6 +32,7 @@ import com.google.zxing.qrcode.QRCodeReader;
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
@@ -43,7 +43,7 @@ import java.util.Hashtable;
  * Created by Looney on 2016/12/10.
  */
 
-public class CameraScan_Activity extends AppCompatActivity implements DecoratedBarcodeView.TorchListener {
+public class CameraScan_Activity extends BasedActivity implements DecoratedBarcodeView.TorchListener {
 
     private CaptureManager captureManager;
     private DecoratedBarcodeView mDBV;

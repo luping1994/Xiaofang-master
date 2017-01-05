@@ -1,5 +1,7 @@
 package com.suntrans.xiaofang.fragment.infodetail_parts;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
+import com.suntrans.xiaofang.utils.DbHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 
 import java.util.ArrayList;
@@ -34,13 +37,14 @@ public class DetailInfoFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_detailinfo,container,false);
+        View view = inflater.inflate(R.layout.fragment_detailinfo, container, false);
         initData();
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view,savedInstanceState);
         LogUtil.i("DetailInfoFragment==>onViewVreated");
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
         manager = new LinearLayoutManager(getActivity());
@@ -49,6 +53,8 @@ public class DetailInfoFragment extends Fragment {
         recyclerView.setAdapter(myAdapter);
         recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.VERTICAL));
     }
+
+
 
     private void initData() {
         SparseArray<String> array = new SparseArray<>();
@@ -66,7 +72,6 @@ public class DetailInfoFragment extends Fragment {
         array2.put(0, "消防管辖");
         array2.put(1, "--");
         datas.add(array2);
-
 
 
         SparseArray<String> array3 = new SparseArray<>();
@@ -127,7 +132,7 @@ public class DetailInfoFragment extends Fragment {
         datas.add(array13);
 
 
-        SparseArray<String> array14= new SparseArray<>();
+        SparseArray<String> array14 = new SparseArray<>();
         array14.put(0, "消防安全管理人电话");
         array14.put(1, "--");
         datas.add(array14);
@@ -180,51 +185,49 @@ public class DetailInfoFragment extends Fragment {
         array23.put(1, "--");
         datas.add(array23);
 //
-//        SparseArray<String> array24 = new SparseArray<>();
-//        array24.put(0, "单位专职（志愿）消防员数");
-//        array24.put(1, "--");
-//        datas.add(array24);
-//
-//
-//        SparseArray<String> array25 = new SparseArray<>();
-//        array25.put(0, "消防车道数");
-//        array25.put(1, "--");
-//        datas.add(array25);
-//
-//        SparseArray<String> array26 = new SparseArray<>();
-//        array26.put(0, "消防电梯数");
-//        array26.put(1, "--");
-//        datas.add(array26);
-//
-//
-//
-//        SparseArray<String> array27 = new SparseArray<>();
-//        array27.put(0, "消防车道类型");
-//        array27.put(1, "--");
-//        datas.add(array27);
-//
-//        SparseArray<String> array28 = new SparseArray<>();
-//        array28.put(0, "避难层数");
-//        array28.put(1, "--");
-//        datas.add(array28);
-//
-//        SparseArray<String> array29 = new SparseArray<>();
-//        array29.put(0, "避难层位置");
-//        array29.put(1, "--");
-//        datas.add(array29);
-//
-//        SparseArray<String> array30 = new SparseArray<>();
-//        array30.put(0, "单位毗邻情况");
-//        array30.put(1, "--");
-//        datas.add(array30);
-//
-//        SparseArray<String> array31 = new SparseArray<>();
-//        array31.put(0, "备注");
-//        array31.put(1, "--");
-//        datas.add(array31);
+        SparseArray<String> array24 = new SparseArray<>();
+        array24.put(0, "单位专职（志愿）消防员数");
+        array24.put(1, "--");
+        datas.add(array24);
+
+
+        SparseArray<String> array25 = new SparseArray<>();
+        array25.put(0, "消防车道数");
+        array25.put(1, "--");
+        datas.add(array25);
+
+        SparseArray<String> array26 = new SparseArray<>();
+        array26.put(0, "消防电梯数");
+        array26.put(1, "--");
+        datas.add(array26);
+
+
+        SparseArray<String> array27 = new SparseArray<>();
+        array27.put(0, "消防车道类型");
+        array27.put(1, "--");
+        datas.add(array27);
+
+        SparseArray<String> array28 = new SparseArray<>();
+        array28.put(0, "避难层数");
+        array28.put(1, "--");
+        datas.add(array28);
+
+        SparseArray<String> array29 = new SparseArray<>();
+        array29.put(0, "避难层位置");
+        array29.put(1, "--");
+        datas.add(array29);
+
+        SparseArray<String> array30 = new SparseArray<>();
+        array30.put(0, "单位毗邻情况");
+        array30.put(1, "--");
+        datas.add(array30);
+
+        SparseArray<String> array31 = new SparseArray<>();
+        array31.put(0, "备注");
+        array31.put(1, "--");
+        datas.add(array31);
 
     }
-
 
 
     class MyAdapter extends RecyclerView.Adapter {
@@ -247,7 +250,7 @@ public class DetailInfoFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return datas.size() ;
+            return datas.size();
         }
 
 
@@ -275,44 +278,100 @@ public class DetailInfoFragment extends Fragment {
     }
 
 
-
     public void setData(CompanyDetailnfo info) {
-       refreshView(info);
+        refreshView(info);
     }
 
     private void refreshView(CompanyDetailnfo info) {
         datas.get(0).put(1, info.name);//名字
         datas.get(1).put(1, info.addr);//地址
         datas.get(2).put(1, info.incharge == null ? "--" : info.incharge);
-        datas.get(3).put(1, info.dangerlevel == null ? "--" : (info.dangerlevel.equals("1") ? "火灾高危单位" : "一般消防安全重点单位"));
+        String dangerlevels="";
+        if (info.dangerlevel!=null){
+            if (info.dangerlevel.equals("1")){
+                dangerlevels = "火灾高危单位";
+            }else if (info.dangerlevel.equals("2")){
+                dangerlevels = "一般消防安全重点单位";
+            }else if (info.dangerlevel.equals("3")){
+                dangerlevels =  "十小场所";
+            }else if (info.dangerlevel.equals("4")){
+                dangerlevels="其他非重点单位";
+            }
+        }
+        datas.get(3).put(1, dangerlevels);
         datas.get(4).put(1, info.buildarea == null ? "--" : info.buildarea + "平方米");
-        datas.get(5).put(1,info.exitnum==null?"--":info.exitnum+"个");
-        datas.get(6).put(1,info.stairnum==null?"--":info.stairnum+"人");
-        datas.get(7).put(1,info.hasfacility==null?"--":info.hasfacility.equals("1")?"有":"没有");
-        datas.get(8).put(1,info.mainattribute+info.subattribute);
-        datas.get(9).put(1,info.artiname==null?"--":info.artiname);
-        datas.get(10).put(1,info.artiid==null?"--":info.artiid);
-        datas.get(11).put(1,info.artiphone==null?"--":info.artiphone);
-        datas.get(12).put(1,info.managername==null?"--":info.managername);
-        datas.get(13).put(1,info.managerid==null?"--":info.managerid);
-        datas.get(14).put(1,info.managerphone==null?"--":info.managerphone);
-        datas.get(15).put(1,info.responname==null?"--":info.responname);
-        datas.get(16).put(1,info.responid==null?"--":info.responid);
-        datas.get(17).put(1,info.responphone==null?"--":info.responphone);
-        datas.get(18).put(1,info.orgid==null?"--":info.orgid);
-        datas.get(19).put(1,info.leaderdepart==null?"--":info.leaderdepart);
-        datas.get(20).put(1,info.foundtime==null?"--":info.foundtime);
-        datas.get(21).put(1,info.phone==null?"--":info.phone);
-        datas.get(22).put(1,info.staffnum+"人");
-        datas.get(23).put(1,info.area==null?"--":info.area+"平方米");
-//        datas.get(24).put(1,info.firemannum==null?"--":info.firemannum+"人");
-//        datas.get(25).put(1,info.lanenum==null?"--":info.lanenum+"个");
-//        datas.get(26).put(1,info.elevatornum==null?"--":info.elevatornum+"个");
-//        datas.get(27).put(1,info.elevatornum);//数据库暂无该字段
-//        datas.get(28).put(1,info.refugenum==null?"--":info.refugenum+"个");
-//        datas.get(29).put(1,info.refugepos==null?"--":info.refugepos+"");
-//        datas.get(30).put(1,"东:"+info.east+"\n"+"西:"+info.west+"\n"+"南:"+info.south+"\n"+"北:"+info.north);
-//        datas.get(31).put(1,info.remark);
+        datas.get(5).put(1, info.exitnum == null ? "--" : info.exitnum + "个");
+        datas.get(6).put(1, info.stairnum == null ? "--" : info.stairnum + "个");
+        datas.get(7).put(1, info.facility == null ? "--" : info.facility);
+
+        String mainId = info.mainattribute;
+        if (mainId!=null){
+            if (info.cmystate!=null){
+                if (info.cmystate.equals("0")){
+                    DbHelper helper = new DbHelper(getActivity(),"Fire",null,1);
+                    SQLiteDatabase db = helper.getReadableDatabase();
+                    db.beginTransaction();
+                    Cursor cursor = db.rawQuery("select Name from attr_main where Id=?",new String[]{mainId});
+                    if (cursor.getCount()>0){
+                        while (cursor.moveToNext()){
+                            datas.get(8).put(1, cursor.getString(0));
+                        }
+                    }
+                    cursor.close();
+                    db.setTransactionSuccessful();
+                    db.endTransaction();
+                }else {
+                    DbHelper helper = new DbHelper(getActivity(),"Fire",null,1);
+                    SQLiteDatabase db = helper.getReadableDatabase();
+                    db.beginTransaction();
+                    Cursor cursor = db.rawQuery("select Name from attr_general where Id=?",new String[]{mainId});
+                    if (cursor.getCount()>0){
+                        while (cursor.moveToNext()){
+                            datas.get(8).put(1, cursor.getString(0));
+                        }
+                    }
+                    cursor.close();
+                    db.setTransactionSuccessful();
+                    db.endTransaction();
+                }
+            }
+
+
+        }
+
+
+        datas.get(9).put(1, info.artiname == null ? "--" : info.artiname);
+        datas.get(10).put(1, info.artiid == null ? "--" : info.artiid);
+        datas.get(11).put(1, info.artiphone == null ? "--" : info.artiphone);
+
+        datas.get(12).put(1, info.managername == null ? "--" : info.managername);
+        datas.get(13).put(1, info.managerid == null ? "--" : info.managerid);
+        datas.get(14).put(1, info.managerphone == null ? "--" : info.managerphone);
+
+        datas.get(15).put(1, info.responname == null ? "--" : info.responname);
+        datas.get(16).put(1, info.responid == null ? "--" : info.responid);
+        datas.get(17).put(1, info.responphone == null ? "--" : info.responphone);
+
+        datas.get(18).put(1, info.orgid == null ? "--" : info.orgid);
+        datas.get(19).put(1, info.leaderdepart == null ? "--" : info.leaderdepart);
+        datas.get(20).put(1, info.foundtime == null ? "--" : info.foundtime);
+        datas.get(21).put(1, info.phone == null ? "--" : info.phone);
+        datas.get(22).put(1, info.staffnum==null?"--":info.staffnum+ "人");
+        datas.get(23).put(1, info.area == null ? "--" : info.area + "平方米");
+        datas.get(24).put(1, info.firemannum == null ? "--" : info.firemannum + "人");
+        datas.get(25).put(1, info.lanenum == null ? "--" : info.lanenum + "个");
+        datas.get(26).put(1, info.elevatornum == null ? "--" : info.elevatornum + "个");
+        datas.get(27).put(1, info.lanepos);//数据库暂无该字段
+        datas.get(28).put(1, info.refugenum == null ? "--" : info.refugenum + "个");
+        datas.get(29).put(1, info.refugepos == null ? "--" : info.refugepos + "");
+        if (info.east == null && info.west == null && info.south == null && info.north == null) {
+            datas.get(30).put(1, "--");
+        } else {
+
+            datas.get(30).put(1, info.east + "\n" + "西:" + info.west + "\n" + "南:" + info.south + "\n" + "北:" + info.north);
+        }
+        datas.get(31).put(1, info.remark);
+
         myAdapter.notifyDataSetChanged();
     }
 

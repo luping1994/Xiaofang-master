@@ -35,8 +35,14 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.ViewHolder1> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder1 holder, int position) {
+    public void onBindViewHolder(ViewHolder1 holder, final int position) {
         holder.setdata(position);
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClick(v,position);
+            }
+        });
     }
 
 
@@ -69,5 +75,15 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.ViewHolder1> {
                     .placeholder(R.drawable.nopic)
                     .into(imageView);
         }
+    }
+
+
+
+    public onItemClickListener listener;
+    public void setOnitemClickListener(onItemClickListener listener){
+        this.listener = listener;
+    }
+    public interface onItemClickListener{
+        void onItemClick(View view,int position);
     }
 }

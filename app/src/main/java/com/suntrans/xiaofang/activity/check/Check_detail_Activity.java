@@ -313,7 +313,7 @@ public class Check_detail_Activity extends BaseActivity {
         datas.get(4).put(1, info.buildarea == null ? "--" : info.buildarea + "平方米");
         datas.get(5).put(1, info.exitnum == null ? "--" : info.exitnum + "个");
         datas.get(6).put(1, info.stairnum == null ? "--" : info.stairnum + "个");
-        datas.get(7).put(1, info.hasfacility == null ? "--" : info.hasfacility.equals("1") ? "有" : "没有");
+        datas.get(7).put(1, info.facility == null ? "--" : info.facility);
         datas.get(8).put(1, info.mainattribute + info.subattribute);
         datas.get(9).put(1, info.artiname);
         datas.get(10).put(1, info.artiid);

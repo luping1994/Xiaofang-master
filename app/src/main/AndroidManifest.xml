@@ -10,16 +10,12 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!--允许程序访问CellID或WiFi热点来获取粗略的位置-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!--用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <!--用于访问GPS定位-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <!--用于访问网络，网络定位需要上网-->
     <uses-permission android:name="android.permission.INTERNET"/>
     <!--用于读取手机当前的状态-->
@@ -33,6 +29,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 允许程序录制音频 -->
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -83,6 +80,14 @@
         <activity android:name=".activity.edit.EditFiregoupinfo_activity"/>
         <activity android:name=".activity.eventandissue.EventDetail_activity"/>
         <activity android:name=".activity.eventandissue.SuperviseDetail_activity"/>
+
+        <activity android:name=".activity.edit.EditLicense_activity"/>
+
+        <activity android:name=".activity.others.DetailPic_Activity"/>
+
+        <activity android:name=".activity.others.ModifyPassword_Activity"/>
+        <!-- ceshizhuactivity-->
+
     </application>
 
 </manifest>

@@ -54,6 +54,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/name"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -84,6 +85,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/addr"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -94,7 +96,6 @@
                     android:hint="请输入"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
-
                 <Button
                     android:onClick="getLocation"
                     android:layout_width="wrap_content"
@@ -149,11 +150,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*辖区面积"
+                    android:text="辖区面积"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="numberDecimal"
                     android:id="@+id/area"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -185,11 +187,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*消防队站联系电话"
+                    android:text="消防队站联系电话"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="phone"
                     android:id="@+id/phone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -215,7 +218,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:gravity="center"
-                    android:text="*消防队员人数"
+                    android:text="消防队员人数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
                 <LinearLayout
@@ -229,8 +232,10 @@
                         android:text="现役："
                         android:textSize="@dimen/text_size" />
                     <EditText
+                        android:inputType="number"
                         android:id="@+id/servingnum"
-                        android:layout_width="40dp"
+                        android:layout_width="wrap_content"
+                        android:minWidth="60dp"
                         android:layout_height="wrap_content"
                         android:gravity="left|center"
                         android:textColor="@color/balck"
@@ -250,8 +255,10 @@
                         android:text="专职："
                         android:textSize="@dimen/text_size" />
                     <EditText
+                        android:inputType="number"
                         android:id="@+id/fulltimenum"
-                        android:layout_width="40dp"
+                        android:layout_width="wrap_content"
+                        android:minWidth="60dp"
                         android:layout_height="match_parent"
                         android:gravity="left|center"
                         android:textColor="@color/balck"
@@ -281,11 +288,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*消防车总数"
+                    android:text="消防车总数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/carnum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -318,11 +326,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:gravity="center"
-                    android:text="*车辆配置情况"
+                    android:text="车辆配置情况"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/cardisp"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
@@ -346,11 +355,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*车载水总量"
+                    android:text="载水总量"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="numberDecimal"
                     android:id="@+id/waterweight"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -384,11 +394,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*车载泡沫总量"
+                    android:text="车载泡沫总量"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="numberDecimal"
                     android:id="@+id/soapweight"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -421,10 +432,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*所属区"
+                    android:text="所属区"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/district"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -449,12 +461,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*所属街"
+                    android:text="所属街"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size"
                     android:id="@+id/textView4" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/street"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -479,10 +492,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*所属社区"
+                    android:text="所属社区"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/community"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -507,10 +521,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*所属大队"
+                    android:text="所属大队"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/group"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -531,7 +546,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="@color/white"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/commit_selector"
         android:textSize="20sp"
         android:text="确认修改"/>
 

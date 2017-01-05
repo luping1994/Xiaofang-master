@@ -2,18 +2,18 @@ package com.suntrans.xiaofang.base;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 
 
 /**
  * Created by Stay on 2/2/16.
  * Powered by www.stay4it.com
  */
-public abstract class BaseActivity extends AppCompatActivity  {
+public abstract class BaseActivity extends BasedActivity {
     protected Toolbar toolbar;
 
     @Override

@@ -1,12 +1,15 @@
 package com.suntrans.xiaofang.activity.others;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +22,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.model.personal.UserInfo;
 import com.suntrans.xiaofang.model.personal.UserInfoResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
@@ -35,7 +40,7 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/11/24.
  */
 
-public class Personal_activity extends AppCompatActivity {
+public class Personal_activity extends BasedActivity {
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Toolbar toolbar;
     private TextView tvTitle;
@@ -59,15 +64,49 @@ public class Personal_activity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.zhuxiao:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("确定要注销吗?")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                SharedPreferences.Editor editor = App.getSharedPreferences().edit();
+                                editor.putString("expires_in", "-1");
+                                editor.putString("access_token", "-1");
+                                editor.putString("refresh_token", "-1");
+                                editor.putLong("firsttime", 1l);
+                                editor.commit();
+                                killAll();
+                                Intent intent = new Intent();
+                                intent.setClass(Personal_activity.this, Login_Activity.class);
+                                startActivity(intent);
+                                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                            }
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.create().show();
+                break;
+
+            case R.id.changedpassword:
+                Intent intent = new Intent();
+                intent.setClass(Personal_activity.this, ModifyPassword_Activity.class);
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private UserInfo info;
+
     private void getData() {
         RetrofitHelper.getUserInfoApi()
                 .getUserInfo()
@@ -75,7 +114,7 @@ public class Personal_activity extends AppCompatActivity {
                 .filter(new Func1<UserInfoResult, Boolean>() {
                     @Override
                     public Boolean call(UserInfoResult userInfoResult) {
-                        return userInfoResult.status==1?true:false;
+                        return userInfoResult.status == 1 ? true : false;
                     }
                 })
                 .map(new Func1<UserInfoResult, UserInfo>() {
@@ -89,7 +128,7 @@ public class Personal_activity extends AppCompatActivity {
                 .subscribe(new Action1<UserInfo>() {
                     @Override
                     public void call(UserInfo userInfo) {
-                        info.truename =userInfo.truename;
+                        info.truename = userInfo.truename;
                         info.mobile = userInfo.mobile;
                         info.area1 = userInfo.area1;
                         info.area2 = userInfo.area2;
@@ -101,7 +140,7 @@ public class Personal_activity extends AppCompatActivity {
                                 collapsingToolbarLayout.setTitle(info.truename);
                                 adapter.notifyDataSetChanged();
                             }
-                        },500);
+                        }, 500);
 
 //                        System.out.println(userInfo.toString());
                     }
@@ -116,6 +155,7 @@ public class Personal_activity extends AppCompatActivity {
 
 
     Handler handler = new Handler();
+
     private void setUpToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
@@ -124,7 +164,7 @@ public class Personal_activity extends AppCompatActivity {
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar!=null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(true);
         }
@@ -132,38 +172,39 @@ public class Personal_activity extends AppCompatActivity {
 
     private void initView() {
         info = new UserInfo();
-        recyclerView  = (RecyclerView) findViewById(R.id.recycleview);
+        recyclerView = (RecyclerView) findViewById(R.id.recycleview);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         adapter = new MyAdapter();
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_personal,menu);
+        getMenuInflater().inflate(R.menu.menu_personal, menu);
         return true;
     }
 
-    class MyAdapter extends RecyclerView.Adapter{
+    class MyAdapter extends RecyclerView.Adapter {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v;
-            if (viewType==1){
-                v =LayoutInflater.from(Personal_activity.this).inflate(R.layout.item_contacts,parent,false);
+            if (viewType == 1) {
+                v = LayoutInflater.from(Personal_activity.this).inflate(R.layout.item_contacts, parent, false);
                 return new ViewHolder1(v);
-            }else {
-                v =LayoutInflater.from(Personal_activity.this).inflate(R.layout.item_email,parent,false);
+            } else {
+                v = LayoutInflater.from(Personal_activity.this).inflate(R.layout.item_email, parent, false);
                 return new ViewHolder2(v);
             }
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof ViewHolder2){
-                ((ViewHolder2)holder).setData(position);
-            }else {
-                ((ViewHolder1)holder).setData(position);
+            if (holder instanceof ViewHolder2) {
+                ((ViewHolder2) holder).setData(position);
+            } else {
+                ((ViewHolder1) holder).setData(position);
             }
         }
 
@@ -174,14 +215,15 @@ public class Personal_activity extends AppCompatActivity {
 
         @Override
         public int getItemViewType(int position) {
-            if (position==0){
+            if (position == 0) {
                 return 1;
             }
             return 0;
         }
 
-        class ViewHolder1 extends RecyclerView.ViewHolder{
+        class ViewHolder1 extends RecyclerView.ViewHolder {
             TextView mobile;
+
             public ViewHolder1(View itemView) {
                 super(itemView);
                 mobile = (TextView) itemView.findViewById(R.id.mobile);
@@ -192,10 +234,11 @@ public class Personal_activity extends AppCompatActivity {
             }
         }
 
-        class ViewHolder2 extends RecyclerView.ViewHolder{
-            ImageView imageView ;
+        class ViewHolder2 extends RecyclerView.ViewHolder {
+            ImageView imageView;
             TextView name;
             TextView value;
+
             public ViewHolder2(View itemView) {
                 super(itemView);
                 value = (TextView) itemView.findViewById(R.id.value);
@@ -204,14 +247,14 @@ public class Personal_activity extends AppCompatActivity {
             }
 
             public void setData(int position) {
-                if (position==1){
+                if (position == 1) {
                     imageView.setImageResource(R.drawable.ic_email);
                     name.setText("电子邮件");
                     value.setText("dany@qq.com");
-                }else {
+                } else {
                     imageView.setImageResource(R.drawable.ic_addr);
                     name.setText("地址");
-                    value.setText(info.area1+info.area2+info.area3+info.area4);
+                    value.setText(info.area1 + info.area2 + info.area3 + info.area4);
                 }
             }
         }

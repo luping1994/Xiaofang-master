@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   >
+    <ProgressBar
+        android:id="@+id/loading_bar"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:id="@+id/errorll"
+        android:orientation="vertical"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content">
+        <ImageView
+
+            android:id="@+id/ic_error_page"
+            android:src="@drawable/ic_error_page"
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
+        <Button
+            android:textColor="#ff717171"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:background="@drawable/btn_bg"
+            android:layout_below="@+id/ic_error_page"
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:text="加载失败,点击加载"
+            android:id="@+id/loading_failed"
+            android:layout_width="match_parent"
+            android:layout_height="34dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

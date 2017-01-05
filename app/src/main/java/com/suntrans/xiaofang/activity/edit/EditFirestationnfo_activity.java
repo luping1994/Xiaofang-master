@@ -1,18 +1,13 @@
 package com.suntrans.xiaofang.activity.edit;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,10 +15,10 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.amap.api.maps.model.LatLng;
 import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.model.firestation.AddFireStationResult;
 import com.suntrans.xiaofang.model.firestation.FireStationDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
@@ -44,7 +39,7 @@ import rx.schedulers.Schedulers;
  * 修改消防室信息
  */
 
-public class EditFirestationnfo_activity extends AppCompatActivity {
+public class EditFirestationnfo_activity extends BasedActivity {
 
     @BindView(R.id.name)
     EditText name;
@@ -99,9 +94,9 @@ public class EditFirestationnfo_activity extends AppCompatActivity {
     }
 
     private void initView() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("com.suntrans.addr.RECEIVE");
-        registerReceiver(broadcastReceiver, filter);
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction("com.suntrans.addr.RECEIVE");
+//        registerReceiver(broadcastReceiver, filter);
 
         info = (FireStationDetailInfo) getIntent().getSerializableExtra("info");
     }
@@ -127,20 +122,20 @@ public class EditFirestationnfo_activity extends AppCompatActivity {
         addr.setText(addr2);
 
     }
-
-    public LatLng myLocation;//我当前的位置
-    public String myaddr;//我的位置描述
-    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            myLocation = intent.getParcelableExtra("myLocation");
-            myaddr = intent.getStringExtra("addrdes");
-        }
-    };
+//
+//    public LatLng myLocation;//我当前的位置
+//    public String myaddr;//我的位置描述
+//    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            myLocation = intent.getParcelableExtra("myLocation");
+//            myaddr = intent.getStringExtra("addrdes");
+//        }
+//    };
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(broadcastReceiver);
+//        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 

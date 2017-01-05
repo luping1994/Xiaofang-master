@@ -1,6 +1,5 @@
 package com.suntrans.xiaofang.activity.mapnav;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,8 +36,8 @@ import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.model.StrategyBean;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.suntrans.xiaofang.views.WaitDialog;
@@ -50,7 +49,7 @@ import java.util.List;
 /**
  * 驾车路径规划并展示对应的路线标签
  */
-public class CalculateRoute_Activity extends Activity implements AMapNaviListener, View.OnClickListener {
+public class CalculateRoute_Activity extends BasedActivity implements AMapNaviListener, View.OnClickListener {
     private StrategyBean mStrategyBean;
     private static final float ROUTE_UNSELECTED_TRANSPARENCY = 0.3F;
     private static final float ROUTE_SELECTED_TRANSPARENCY = 1F;
@@ -230,7 +229,7 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
         from = ((LatLng) getIntent().getParcelableExtra("from"));
         to = ((LatLng) getIntent().getParcelableExtra("to"));
         mStrategyBean = new StrategyBean(false, false, false, false);
-        LogUtil.i("起始点坐标:" + from.latitude + "终点坐标:" + to.latitude);
+//        LogUtil.i("起始点坐标:" + from.latitude + "终点坐标:" + to.latitude);
         startLatlng = new NaviLatLng(from.latitude, from.longitude);
         endLatlng = new NaviLatLng(to.latitude, to.longitude);
 
@@ -361,7 +360,7 @@ public class CalculateRoute_Activity extends Activity implements AMapNaviListene
      */
     private void startNavi() {
         Intent gpsintent = new Intent(getApplicationContext(), RouteNavi_Activity.class);
-        gpsintent.putExtra("gps", false); // gps 为true为真实导航，为false为模拟导航
+        gpsintent.putExtra("gps", true); // gps 为true为真实导航，为false为模拟导航
         startActivity(gpsintent);
     }
 

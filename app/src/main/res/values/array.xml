@@ -39,5 +39,30 @@
         <item>行政许可</item>
 
     </string-array>
+    <string-array name="hege">
+        <item>是</item>
+        <item>否</item>
+    </string-array>
 
+
+
+    <string-array name="lane">
+        <item>穿过建筑物</item>
+        <item>进入内院或天井</item>
+        <item>环形</item>
+        <item>尽头式</item>
+    </string-array>
+
+
+    <string-array name="autofire">
+        <item>室内消火栓系统</item>
+        <item>自动喷水灭火系统</item>
+        <item>火灾自动报警系统</item>
+        <item>气体灭火系统</item>
+        <item>泡沫灭火系统</item>
+        <item>防烟排烟系统</item>
+        <item>灭火器</item>
+        <item>干粉灭火器</item>
+        <item>其他</item>
+    </string-array>
 </resources>

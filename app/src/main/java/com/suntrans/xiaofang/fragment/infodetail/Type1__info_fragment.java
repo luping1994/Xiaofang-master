@@ -3,6 +3,7 @@ package com.suntrans.xiaofang.fragment.infodetail;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,7 @@ import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.edit.EditCompanyInfo_activity;
 import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
+import com.suntrans.xiaofang.fragment.BasedFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.DetailInfoFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.EventFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.SuperviseFragment;
@@ -46,7 +48,7 @@ import rx.schedulers.Schedulers;
  * 社会单位详情fragment
  */
 
-public class Type1__info_fragment extends Fragment implements View.OnClickListener {
+public class Type1__info_fragment extends BasedFragment implements View.OnClickListener {
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
 
 //    private RecyclerView recyclerView;
@@ -77,16 +79,7 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
-
-//        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
-//        manager = new LinearLayoutManager(getActivity());
-//        myAdapter = new MyAdapter();
-//        recyclerView.setLayoutManager(manager);
-//        recyclerView.setAdapter(myAdapter);
-//        recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.VERTICAL));
-//
-
-
+        super.onViewCreated(view,savedInstanceState);
         menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
         menuRed.setClosedOnTouchOutside(true);
         fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
@@ -102,9 +95,20 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
         PagerAdapter adapter = new PagerAdapter(getChildFragmentManager());
         pager.setAdapter(adapter);
         pager.setOffscreenPageLimit(2);
+        pager.setVisibility(View.INVISIBLE);
+//        progressBar.setVisibility(View.VISIBLE);
+//        error.setVisibility(View.GONE);
         tabLayout.setupWithViewPager(pager);
 
     }
+
+    @Override
+    public void reLoadData(View view) {
+        progressBar.setVisibility(View.VISIBLE);
+        error.setVisibility(View.INVISIBLE);
+        getData();
+    }
+
     class PagerAdapter extends FragmentStatePagerAdapter {
         String[] titles = new String[]{"单位信息","单位事件","单位监督"};
         public PagerAdapter(FragmentManager fm) {
@@ -163,7 +167,7 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
                 CompanyDetailnfoResult result = response.body();
                 if (result != null) {
                     if (!result.status.equals("0")) {
-                        CompanyDetailnfo info = result.info;
+                        final CompanyDetailnfo info = result.info;
                         if (info.lat!=null||info.lng!=null){
                             try {
                                 to = new LatLng(Double.valueOf(info.lat),Double.valueOf(info.lng));
@@ -176,11 +180,27 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
                         detailInfoFragment0.setData(info);
                         eventFragment.setId(info.id);
                         superviseFragment.setId(info.id);
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (info.name!=null&&!info.name.equals("")){
+                                    ((InfoDetail_activity)getActivity()).toolbar.setTitle(info.name);
+                                }
+                                progressBar.setVisibility(View.INVISIBLE);
+                                pager.setVisibility(View.VISIBLE);
+                                error.setVisibility(View.GONE);
 
+                            }
+                        },500);
+
+                    }else {
+                        UiUtils.showToast(result.msg);
 
                     }
                 } else {
                     UiUtils.showToast(App.getApplication(), "请求失败!");
+                    progressBar.setVisibility(View.INVISIBLE);
+                    error.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -188,13 +208,19 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
             @Override
             public void onFailure(Call<CompanyDetailnfoResult> call, Throwable t) {
                 UiUtils.showToast(App.getApplication(), "请求失败!");
+                progressBar.setVisibility(View.INVISIBLE);
+                error.setVisibility(View.VISIBLE);
             }
         });
     }
 
-
+    Handler handler = new Handler();
     @Override
     public void onClick(View v) {
+        if (myInfo==null){
+            UiUtils.showToast(UiUtils.getContext(),"无法获取单位信息");
+            return;
+        }
         switch (v.getId()) {
             case R.id.fab1:
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -215,6 +241,7 @@ public class Type1__info_fragment extends Fragment implements View.OnClickListen
                 dialog.show();
                 break;
             case R.id.fab2:
+
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), EditCompanyInfo_activity.class);
                 intent.putExtra("title", ((InfoDetail_activity) getActivity()).title);

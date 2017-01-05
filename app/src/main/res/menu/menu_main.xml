@@ -16,10 +16,15 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/search"
+        android:title="搜索"
+        android:icon="@drawable/ic_menu_search"
+        app:showAsAction="always"
+        android:actionViewClass="android.widget.SearchView"
+        />
     <item
         android:id="@+id/per"
         android:icon="@drawable/ic_mine"
-        android:showAsAction="never"
         android:title="@string/menu_personal"
         app:showAsAction="never" />
 
@@ -28,7 +33,7 @@
         android:icon="@drawable/ic_saoyisao"
         android:title="@string/menu_scan"
         app:showAsAction="never"
-        android:showAsAction="never" />
+        />
 
     <!--<item-->
     <!--android:icon="@drawable/ic_add"-->
@@ -37,19 +42,16 @@
     <!--android:title="@string/menu_pulldata" />-->
 
     <item
-        android:showAsAction="never"
         android:id="@+id/help"
         android:icon="@drawable/ic_help"
         android:title="@string/menu_help"
         app:showAsAction="never" />
     <item
-        android:showAsAction="never"
         android:id="@+id/check"
         android:icon="@drawable/ic_shenghe"
         android:title="@string/menu_check"
         app:showAsAction="never" />
     <item
-        android:showAsAction="never"
         android:id="@+id/add"
         android:icon="@drawable/ic_add"
         android:title="@string/menu_add"

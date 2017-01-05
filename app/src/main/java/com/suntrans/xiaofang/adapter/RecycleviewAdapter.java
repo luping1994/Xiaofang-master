@@ -20,11 +20,13 @@ import java.util.ArrayList;
 
 public class RecycleviewAdapter extends RecyclerView.Adapter {
 
+    private int type;
     private Context context;
 
-    public RecycleviewAdapter(Context context, ArrayList<SparseArray<String>> datas) {
+    public RecycleviewAdapter(Context context, ArrayList<SparseArray<String>> datas, int type) {
         this.context = context;
         this.datas = datas;
+        this.type = type;
     }
 
     private ArrayList<SparseArray<String>> datas;
@@ -80,7 +82,11 @@ public class RecycleviewAdapter extends RecyclerView.Adapter {
         }
 
         public void setData(int position) {
-            textView.setText("单位无事件记录");
+            if (type == 0)
+                textView.setText("单位无事件记录");
+            else
+                textView.setText("单位无监督记录");
+
         }
     }
 

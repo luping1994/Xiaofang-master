@@ -51,7 +51,7 @@ public class SuperviseFragment extends Fragment {
         datas = new ArrayList<>();
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
         manager = new LinearLayoutManager(getActivity());
-        adapter = new RecycleviewAdapter(getActivity(), datas);
+        adapter = new RecycleviewAdapter(getActivity(), datas,1);
         adapter.setOnItemClickListener(new RecycleviewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {

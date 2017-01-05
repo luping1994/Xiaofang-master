@@ -3,8 +3,8 @@ package com.suntrans.xiaofang.fragment.infodetail;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.amap.api.maps.model.LatLng;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.suntrans.xiaofang.App;
@@ -23,15 +24,16 @@ import com.suntrans.xiaofang.activity.edit.EditFireroomInfo_activity;
 import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
+import com.suntrans.xiaofang.fragment.BasedFragment;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailInfo;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 
 import java.util.ArrayList;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -42,7 +44,7 @@ import rx.schedulers.Schedulers;
  * 社区消防室详情信息fragment
  */
 
-public class Type2__info_fragment extends Fragment implements View.OnClickListener {
+public class Type2__info_fragment extends BasedFragment implements View.OnClickListener {
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
@@ -53,6 +55,11 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
     private FloatingActionButton fab1;
     private FloatingActionButton fab2;
     private FloatingActionButton fab3;
+    private Observable observable_delete;
+    private Observable observable_getdata;
+
+
+    LatLng to ;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -62,13 +69,16 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view,savedInstanceState);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
         manager = new LinearLayoutManager(getActivity());
         myAdapter = new MyAdapter();
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(myAdapter);
         recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(),LinearLayoutManager.VERTICAL));
-
+        recyclerView.setVisibility(View.INVISIBLE);
+//        progressBar.setVisibility(View.VISIBLE);
+//        btFailed.setVisibility(View.GONE);
 
         menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
         menuRed.setClosedOnTouchOutside(true);
@@ -76,10 +86,17 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
         fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
         fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
 
-
         fab1.setOnClickListener(this);
         fab2.setOnClickListener(this);
         fab3.setOnClickListener(this);
+
+    }
+
+    @Override
+    public void reLoadData(View view) {
+        progressBar.setVisibility(View.VISIBLE);
+        error.setVisibility(View.INVISIBLE);
+        getData();
     }
 
     private void initData() {
@@ -136,14 +153,7 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
         super.onResume();
         getData();
     }
-//    getposition.setOnClickListener(new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//            lng.setText(((Add_detail_activity)getActivity()).myLocation.longitude+"");
-//            lat.setText(((Add_detail_activity)getActivity()).myLocation.latitude+"");
-//            addr.setText(((Add_detail_activity)getActivity()).myaddr);
-//        }
-//    });
+
 
     class MyAdapter extends RecyclerView.Adapter {
 
@@ -198,31 +208,52 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
 
     public FireRoomDetailInfo myInfo;
     private void getData() {
-        RetrofitHelper.getApi().getFireRoomDetailInfo(((InfoDetail_activity)getActivity()).companyId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<FireRoomDetailResult>() {
+        observable_getdata = RetrofitHelper.getApi().getFireRoomDetailInfo(((InfoDetail_activity)getActivity()).companyId)
+                 .observeOn(AndroidSchedulers.mainThread())
+                 .subscribeOn(Schedulers.io());
+        observable_getdata.subscribe(new Action1<FireRoomDetailResult>() {
                     @Override
                     public void call(FireRoomDetailResult result) {
                         if (result!=null){
                             if (!result.status.equals("0")){
                                 FireRoomDetailInfo info = result.result;
+                                if (info.lat!=null||info.lng!=null){
+                                    try {
+                                        to = new LatLng(Double.valueOf(info.lat),Double.valueOf(info.lng));
+                                    }catch (Exception e){
+                                        to=null;
+                                    }
+                                }
                                 myInfo=info;
-                                LogUtil.i(info.toString());
+//                                LogUtil.i(info.toString());
                                 refreshView(info);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                        recyclerView.setVisibility(View.VISIBLE);
+                                        error.setVisibility(View.GONE);
+                                    }
+                                },500);
                             }
                         }else {
+                            progressBar.setVisibility(View.INVISIBLE);
+                            error.setVisibility(View.VISIBLE);
                             UiUtils.showToast(App.getApplication(),"请求失败!");
                         }
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        error.setVisibility(View.VISIBLE);
                         UiUtils.showToast(App.getApplication(),"请求失败!");
                     }
                 });
     }
 
+
+    Handler handler = new Handler();
     private void refreshView(FireRoomDetailInfo info) {
         datas.get(0).put(1,info.name);//名字
         datas.get(1).put(1,info.addr);//地址
@@ -240,6 +271,10 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
+        if (myInfo==null){
+            UiUtils.showToast(UiUtils.getContext(),"无法获取单位信息");
+            return;
+        }
         switch (v.getId()){
             case R.id.fab1:
                 final AlertDialog.Builder builder =new AlertDialog.Builder(getActivity());
@@ -260,6 +295,7 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
                 dialog.show();
                 break;
             case R.id.fab2:
+
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), EditFireroomInfo_activity.class);
                 intent.putExtra("title",((InfoDetail_activity)getActivity()).title);
@@ -272,7 +308,7 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
             case R.id.fab3:
                 Intent intent1 = new Intent();
                 intent1.setClass(getActivity(),CalculateRoute_Activity.class);
-                if (getActivity().getIntent().getParcelableExtra("from")==null){
+                if (getActivity().getIntent().getParcelableExtra("from")==null||to==null){
                     final AlertDialog.Builder builder1 =new AlertDialog.Builder(getActivity());
                     builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
@@ -286,7 +322,7 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
                     break;
                 }
                 intent1.putExtra("from",getActivity().getIntent().getParcelableExtra("from"));
-                intent1.putExtra("to",getActivity().getIntent().getParcelableExtra("to"));
+                intent1.putExtra("to",to);
                 startActivity(intent1);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
@@ -295,10 +331,11 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
 
 
     private void delete() {
-        RetrofitHelper.getApi().deleteFireRoom(myInfo.id)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<AddFireRoomResult>() {
+        observable_delete = RetrofitHelper.getApi().deleteFireRoom(myInfo.id)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io());
+
+        observable_delete.subscribe(new Subscriber<AddFireRoomResult>() {
                     @Override
                     public void onCompleted() {
 
@@ -336,5 +373,11 @@ public class Type2__info_fragment extends Fragment implements View.OnClickListen
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        observable_getdata.unsubscribeOn(Schedulers.io());
     }
 }

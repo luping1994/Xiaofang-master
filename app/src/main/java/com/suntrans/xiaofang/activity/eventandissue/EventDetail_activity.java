@@ -1,5 +1,6 @@
 package com.suntrans.xiaofang.activity.eventandissue;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,8 +13,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +28,8 @@ import android.widget.MediaController;
 import android.widget.TextView;
 
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
+import com.suntrans.xiaofang.activity.others.DetailPic_Activity;
 import com.suntrans.xiaofang.adapter.PicAdapter;
 import com.suntrans.xiaofang.model.event.Event;
 import com.suntrans.xiaofang.model.event.EventDetailResult;
@@ -50,7 +53,7 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/12/22.
  */
 
-public class EventDetail_activity extends AppCompatActivity implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
+public class EventDetail_activity extends BasedActivity implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
     private static final String TAG = "EventDetail_activity";
 //    @BindView(R.id.start)
@@ -76,6 +79,8 @@ public class EventDetail_activity extends AppCompatActivity implements MediaPlay
     TextView type;
     @BindView(R.id.status)
     TextView status;
+    @BindView(R.id.companyaddr)
+    TextView companyaddr;
     private Toolbar toolbar;
     private String id;
     private RecyclerView recyclerView_before;
@@ -110,7 +115,7 @@ public class EventDetail_activity extends AppCompatActivity implements MediaPlay
     private void initData() {
         datas = new ArrayList<>();
         SparseArray<String> array = new SparseArray<>();
-        array.put(0, "地点:");
+        array.put(0, "单位名称:");
         array.put(1, "");
         datas.add(array);
 
@@ -137,6 +142,11 @@ public class EventDetail_activity extends AppCompatActivity implements MediaPlay
         array5.put(0, "处理情况:");
         array5.put(1, "");
         datas.add(array5);
+
+        SparseArray<String> array6 = new SparseArray<>();
+        array6.put(0, "单位地址:");
+        array6.put(1, "");
+        datas.add(array6);
     }
 
 
@@ -165,6 +175,47 @@ public class EventDetail_activity extends AppCompatActivity implements MediaPlay
         recyclerView_after.setAdapter(adapter_after);
 
         start = (ImageView) findViewById(R.id.start);
+
+        adapter_after.setOnitemClickListener(new PicAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if (url_after==null||url_after.size()==0){
+                    return;
+                }
+                if (Build.VERSION.SDK_INT < 21) {
+                    Intent intent = new Intent();
+                    intent.putExtra("url", url_after.get(position));
+                    intent.setClass(EventDetail_activity.this, DetailPic_Activity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(EventDetail_activity.this, DetailPic_Activity.class);
+                    intent.putExtra("url", url_after.get(position));
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(EventDetail_activity.this, view, getString(R.string.transition_test));
+                    startActivity(intent, options.toBundle());
+                }
+            }
+        });
+        adapter_before.setOnitemClickListener(new PicAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if (url_before==null||url_before.size()==0){
+                    return;
+                }
+                if (Build.VERSION.SDK_INT < 21) {
+                    Intent intent = new Intent();
+                    intent.putExtra("url", url_before.get(position));
+                    intent.setClass(EventDetail_activity.this, DetailPic_Activity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(EventDetail_activity.this, DetailPic_Activity.class);
+                    intent.putExtra("url", url_before.get(position));
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(EventDetail_activity.this, view, getString(R.string.transition_test));
+                    startActivity(intent, options.toBundle());
+                }
+            }
+        });
 
     }
 
@@ -198,6 +249,7 @@ public class EventDetail_activity extends AppCompatActivity implements MediaPlay
     }
 
     private void getData() {
+        System.out.println("我的ID是==>"+id);
         RetrofitHelper.getApi().getEventDetail(id)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -210,6 +262,7 @@ public class EventDetail_activity extends AppCompatActivity implements MediaPlay
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        UiUtils.showToast(UiUtils.getContext(), "获取事件详情失败");
                     }
 
                     @Override
@@ -254,6 +307,7 @@ public class EventDetail_activity extends AppCompatActivity implements MediaPlay
             str += "(上报副所长)";
         }
         datas.get(5).put(1, str);
+        datas.get(6).put(1, event.company_address);
 
         refreshlayout();
 
@@ -292,6 +346,7 @@ public class EventDetail_activity extends AppCompatActivity implements MediaPlay
         creatAt.setText(datas.get(3).get(0) + datas.get(3).get(1));
         type.setText(datas.get(4).get(0) + datas.get(4).get(1));
         status.setText(datas.get(5).get(0) + datas.get(5).get(1));
+        companyaddr.setText(datas.get(6).get(0) + datas.get(6).get(1));
     }
 
     @Override

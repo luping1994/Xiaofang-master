@@ -2,6 +2,7 @@ package com.suntrans.xiaofang.fragment.addinfo;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -163,7 +164,7 @@ public class Type2_fragment extends Fragment {
             UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
             return;
         }
-        if (addr1== null || addr1.equals("")) {
+        if (addr1 == null || addr1.equals("")) {
             UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
             return;
         }
@@ -186,8 +187,9 @@ public class Type2_fragment extends Fragment {
 
         if (phone1 != null) {
             phone1 = contact1.replace(" ", "");
-            if (!TextUtils.equals("", phone1))
+            if (!TextUtils.equals("", phone1)) {
                 builder.put("phone", phone1);
+            }
         }
         if (membernum1 != null) {
             membernum1 = membernum1.replace(" ", "");
@@ -239,12 +241,14 @@ public class Type2_fragment extends Fragment {
                 .subscribe(new Subscriber<AddFireRoomResult>() {
                     @Override
                     public void onCompleted() {
-
+//                        dialog.dismiss();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        UiUtils.showToast(UiUtils.getContext(), "添加失败!");
+//                        dialog.dismiss();
                     }
 
                     @Override
@@ -262,10 +266,23 @@ public class Type2_fragment extends Fragment {
                                             }
                                         })
                                         .create();
-                                dialog.show();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dialog.show();
+                                    }
+                                }, 500);
+                            }else {
+                                UiUtils.showToast(result.msg);
                             }
+                        } else {
+                            UiUtils.showToast("添加失败");
+
                         }
                     }
                 });
     }
+
+    Handler handler = new Handler();
+
 }

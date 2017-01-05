@@ -20,7 +20,6 @@ import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 
@@ -162,6 +161,15 @@ public class Type4_fragment extends Fragment {
 
         String group1 = group.getText().toString();
 
+        if (name1.equals("") || name1 == null) {
+            UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
+            return;
+        }
+        if (addr1== null || addr1.equals("")) {
+            UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
+            return;
+        }
+
         if (Utils.isVaild(name1)) {
             builder.put("name", name1.replace(" ", ""));
         }
@@ -244,9 +252,11 @@ public class Type4_fragment extends Fragment {
                                         })
                                         .create();
                                 dialog.show();
+                            }else {
+                                UiUtils.showToast(result.msg);
                             }
                         } else {
-                            LogUtil.i("失败了！！！！！！！！！！！！！！！");
+                            UiUtils.showToast("添加失败");
                         }
                     }
                 });

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -12,10 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -27,10 +28,17 @@ import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.suntrans.xiaofang.utils.Utils;
+import com.suntrans.xiaofang.views.dialog.AttrSelector;
+import com.suntrans.xiaofang.views.dialog.BottomDialog;
+import com.suntrans.xiaofang.views.dialog.DefaultProvider;
+import com.suntrans.xiaofang.views.dialog.GeneralProvider;
+import com.suntrans.xiaofang.views.dialog.MainAttr;
+import com.suntrans.xiaofang.views.dialog.SubAttr;
+import com.suntrans.xiaofang.views.dialog.onAttrSelectedListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -62,8 +70,9 @@ public class Type1_fragment extends Fragment {
     EditText exitnum;
     @BindView(R.id.stairnum)
     EditText stairnum;
-    @BindView(R.id.hasfacility)
-    RadioGroup hasfacility;
+//
+
+
     @BindView(R.id.attribute)
     TextView attribute;
     @BindView(R.id.artiname)
@@ -120,10 +129,7 @@ public class Type1_fragment extends Fragment {
     Button commit;
     @BindView(R.id.getposition)
     Button getposition;
-    @BindView(R.id.have)
-    RadioButton have;
-    @BindView(R.id.no)
-    RadioButton no;
+
     @BindView(R.id.content1)
     LinearLayout content1;
     @BindView(R.id.marker)
@@ -132,18 +138,57 @@ public class Type1_fragment extends Fragment {
     EditText lng;
     @BindView(R.id.lat)
     EditText lat;
-    private ArrayList<HashMap<String, String>> datas = new ArrayList<>();
+
+
+    //    private ArrayList<HashMap<String, String>> datas = new ArrayList<>();
     ProgressDialog progressDialog = new ProgressDialog(UiUtils.getContext());
+    @BindView(R.id.one)
+    CheckBox one;
+    @BindView(R.id.two)
+    CheckBox two;
+    @BindView(R.id.three)
+    CheckBox three;
+    @BindView(R.id.four)
+    CheckBox four;
+    @BindView(R.id.five)
+    CheckBox five;
+    @BindView(R.id.six)
+    CheckBox six;
+    @BindView(R.id.senven)
+    CheckBox senven;
+    @BindView(R.id.eight)
+    CheckBox eight;
+    @BindView(R.id.nine)
+    CheckBox nine;
+
+    @BindView(R.id.lan_1)
+    CheckBox lan1;
+    @BindView(R.id.lan_2)
+    CheckBox lan2;
+    @BindView(R.id.lan_3)
+    CheckBox lan3;
+    @BindView(R.id.lan_4)
+    CheckBox lan4;
+
+    @BindView(R.id.attribute_ll)
+    LinearLayout attributeLl;
 
 
     private int mYear;
     private int mMonth;
     private int mDay;
+    private CheckBox[] lane;
+    private CheckBox[] autofire;
+    private String dangerlevels;
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_type1, container, false);
         ButterKnife.bind(this, view);
+        lane = new CheckBox[]{lan1, lan2, lan3, lan4};
+        autofire = new CheckBox[]{one, two, three, four, five, six, senven, eight, nine};
         return view;
     }
 
@@ -156,7 +201,7 @@ public class Type1_fragment extends Fragment {
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
-
+        attributeLl.setOnClickListener(attrlistener);
         getposition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,13 +229,91 @@ public class Type1_fragment extends Fragment {
         foundtime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(),mDateSetListener,mYear, mMonth, mDay);
+                DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(), mDateSetListener, mYear, mMonth, mDay);
                 pickerDialog.show();
             }
         });
+        dangerlevels = "";
+        dangerlevel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.dangerlevel1) {
+                    attributeLl.setVisibility(View.VISIBLE);
+                    dangerlevels = "1";
+                } else if (checkedId == R.id.dangerlevel2) {
+                    attributeLl.setVisibility(View.VISIBLE);
+                    dangerlevels = "2";
+                } else if (checkedId == R.id.dangerlevel3) {
+                    attributeLl.setVisibility(View.VISIBLE);
+                    dangerlevels = "3";
+                } else if (checkedId == R.id.dangerlevel4) {
+                    dangerlevels = "4";
+                    attributeLl.setVisibility(View.GONE);
+                }
+            }
+        });
+
     }
 
+    String mainAttrId = "";
+    String subAttrId = "";
+    BottomDialog bottomDialog;
+    private View.OnClickListener attrlistener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            bottomDialog = null;
+            if (dangerlevels.equals("1")||dangerlevels.equals("2")){
+                AttrSelector selector = new AttrSelector(getActivity());
+                DefaultProvider provider = new DefaultProvider(UiUtils.getContext());
+                selector.setProvider(provider);
+                bottomDialog = new BottomDialog(getActivity(),selector);
+            }else if (dangerlevels.equals("3")){
+                AttrSelector selector = new AttrSelector(getActivity());
+                GeneralProvider provider = new GeneralProvider(UiUtils.getContext());
+                selector.setProvider(provider);
+                bottomDialog = new BottomDialog(getActivity(),selector);
+            }else if (dangerlevels.equals("4")){
+                //隐藏单位属性
+                attributeLl.setVisibility(View.GONE);
+            }else{
+                UiUtils.showToast("请先选择火灾危险等级");
+                return;
+            }
+            bottomDialog.setSelectorListener(new onAttrSelectedListener() {
+                @Override
+                public void onSelectSuccess(MainAttr mainAttr, ArrayList<SubAttr> subData, int type) {
+                    if (type == 1) {
+                        attribute.setText(mainAttr.name);
+                        String mainid1 = mainAttr.id + "";
+                        mainAttrId = mainid1;
+                    } else {
+                        String mainid = mainAttr.id + "";
+                        String subid = "";
+                        String subidname = "";
+                        for (SubAttr attr :
+                                subData) {
+                            subid = subid + "#" + attr.id;
+                            subidname = subidname + "#" + attr.name;
+                        }
+                        mainAttrId = mainid;
+                        subAttrId = subid;
+                        attribute.setText(mainAttr.name);
+                        System.out.println(mainAttr.name + "fushixing->" + subidname);
+                    }
+                    bottomDialog.dismiss();
+                }
 
+                @Override
+                public void onSelectFailed(String msg) {
+                    if (msg.equals("取消")) {
+                        bottomDialog.dismiss();
+                    } else
+                        UiUtils.showToast(UiUtils.getContext(), msg);
+                }
+            });
+            bottomDialog.show();
+        }
+    };
     private DatePickerDialog.OnDateSetListener mDateSetListener =
             new DatePickerDialog.OnDateSetListener() {
                 public void onDateSet(DatePicker view, int year, int monthOfYear,
@@ -200,12 +323,13 @@ public class Type1_fragment extends Fragment {
                     mDay = dayOfMonth;
                     foundtime.setText(
                             new StringBuilder()
-                            .append(mYear).append("-")
-                            .append(pad(mMonth+1)).append("-")
-                            .append(pad(mDay))
+                                    .append(mYear).append("-")
+                                    .append(pad(mMonth + 1)).append("-")
+                                    .append(pad(mDay))
                     );
                 }
             };
+
     private static String pad(int c) {
         if (c >= 10)
             return String.valueOf(c);
@@ -223,6 +347,7 @@ public class Type1_fragment extends Fragment {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        UiUtils.showToast("正在添加请稍后..。");
                         addCommit();
 
                     }
@@ -248,18 +373,12 @@ public class Type1_fragment extends Fragment {
             UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
             return;
         }
-        if (addr1== null || addr1.equals("")) {
+        if (addr1 == null || addr1.equals("")) {
             UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
             return;
         }
-        int checkedid = dangerlevel.getCheckedRadioButtonId();
+
         String incharge1 = incharge.getText().toString();
-        String dangerlevels = "";
-        if (checkedid == R.id.dangerlevel1) {
-            dangerlevels = "1";
-        } else if (checkedid == R.id.dangerlevel2) {
-            dangerlevels = "2";
-        }
 
         String buildarea1 = buildarea.getText().toString();
         String exitnum1 = exitnum.getText().toString();
@@ -333,16 +452,16 @@ public class Type1_fragment extends Fragment {
                 builder.put("stairnum", stairnum.getText().toString());
         }
 
-        int id = hasfacility.getCheckedRadioButtonId();
-        String hasfacility1 = "";
-        if (id == R.id.have) {
-            hasfacility1 = "1";
-        } else if (id == R.id.no) {
-            hasfacility1 = "0";
+
+        String facility1 = "";
+        for (int i = 0; i < autofire.length; i++) {
+            if (autofire[i].isChecked()) {
+                facility1 += App.getApplication().getResources().getStringArray(R.array.autofire)[i] + "#";
+            }
         }
-        hasfacility1 = hasfacility1.replace(" ", "");
-        if (!TextUtils.equals("", hasfacility1))
-            builder.put("hasfacility", hasfacility1);//备注单位属性未添加
+        facility1 = facility1.replace(" ", "");
+        if (!TextUtils.equals("", facility1))
+            builder.put("facility", facility1);//备注单位属性未添加
 
 
         if (artiname1 != null) {
@@ -438,6 +557,16 @@ public class Type1_fragment extends Fragment {
                 builder.put("lanenum", lanenum1);
 
         }
+        String lanpos1 = "";
+        for (int i = 0; i < lane.length; i++) {
+            if (lane[i].isChecked()) {
+                lanpos1 += App.getApplication().getResources().getStringArray(R.array.lane)[i] + "#";
+            }
+        }
+        if (Utils.isVaild(lanpos1)) {
+            builder.put("lanepos", lanpos1);//消防车道类型为添加
+        }
+
         if (elevatornum1 != null) {
             elevatornum1 = elevatornum1.replace(" ", "");
             if (!TextUtils.equals("", elevatornum1))
@@ -503,6 +632,15 @@ public class Type1_fragment extends Fragment {
             if (!TextUtils.equals("", lat1))
                 builder.put("lat", lat1);
         }
+
+
+        if (Utils.isVaild(mainAttrId)) {
+            builder.put("mainattribute", mainAttrId);
+        }
+
+        if (Utils.isVaild(subAttrId)) {
+            builder.put("subattribute", subAttrId);
+        }
         map = builder.build();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey().toString();
@@ -512,13 +650,33 @@ public class Type1_fragment extends Fragment {
         RetrofitHelper.getApi().createCompany(map).enqueue(new Callback<AddCompanyResult>() {
             @Override
             public void onResponse(Call<AddCompanyResult> call, Response<AddCompanyResult> response) {
-
                 AddCompanyResult result = response.body();
                 try {
                     if (result != null) {
-                        UiUtils.showToast(UiUtils.getContext(), "提示:" + result.result);
+                        if (result.status.equals("1")) {
+                            final AlertDialog dialog1;
+
+                            dialog1 = new AlertDialog.Builder(getActivity())
+                                    .setMessage(result.result)
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
+                                        }
+                                    })
+                                    .create();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dialog1.show();
+                                }
+                            }, 500);
+                        } else {
+
+                            UiUtils.showToast(UiUtils.getContext(), result.msg);
+                        }
                     } else {
-                        UiUtils.showToast(UiUtils.getContext(), result.msg);
+                        UiUtils.showToast(UiUtils.getContext(), "添加失败");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -533,5 +691,7 @@ public class Type1_fragment extends Fragment {
             }
         });
     }
+
+    Handler handler = new Handler();
 
 }

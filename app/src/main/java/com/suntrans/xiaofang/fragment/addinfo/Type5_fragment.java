@@ -13,13 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.license.AddLicenseResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 
@@ -59,10 +60,12 @@ public class Type5_fragment extends Fragment {
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
 
     Map<String, String> map;
+    Map<String, String> map2;
     private AlertDialog dialog;
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
     private MyAdapter adapter;
+    private String isqualified="1";
 
     @Nullable
     @Override
@@ -132,7 +135,21 @@ public class Type5_fragment extends Fragment {
 
     @OnClick(R.id.commit_license)
     public void onClick() {
-        addCommit();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加行政许可信息吗")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        addCommit();
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+        builder.create().show();
     }
 
     class MyAdapter extends RecyclerView.Adapter {
@@ -173,18 +190,47 @@ public class Type5_fragment extends Fragment {
         class ViewHolder1 extends RecyclerView.ViewHolder {
             TextView key;
             TextView value;
+            RadioGroup group;
+            RadioButton yes;
+            RadioButton no;
 
             public ViewHolder1(View itemView) {
                 super(itemView);
                 key = (TextView) itemView.findViewById(R.id.key);
                 value = (TextView) itemView.findViewById(R.id.value);
+                group = (RadioGroup) itemView.findViewById(R.id.group);
+                yes = (RadioButton) itemView.findViewById(R.id.yes);
+                no = (RadioButton) itemView.findViewById(R.id.no);
             }
 
             public void setData(int position) {
-                if (position < 5)
+                if (position < 5) {
+                    value.setVisibility(View.VISIBLE);
+                    group.setVisibility(View.GONE);
                     key.setText(datas.get(position - 1).get(0));
-                else
+                } else if (position < 8) {
+                    value.setVisibility(View.VISIBLE);
+                    group.setVisibility(View.GONE);
                     key.setText(datas.get(position - 2).get(0));
+                } else {
+                    key.setText(datas.get(position - 2).get(0));
+                    value.setText("1");
+                    value.setVisibility(View.GONE);
+                    group.setVisibility(View.VISIBLE);
+                    group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(RadioGroup group, int checkedId) {
+                            switch (checkedId) {
+                                case R.id.yes:
+                                    isqualified = "1";
+                                    break;
+                                case R.id.no:
+                                    isqualified = "0";
+                                    break;
+                            }
+                        }
+                    });
+                }
 
             }
         }
@@ -220,7 +266,10 @@ public class Type5_fragment extends Fragment {
                 if (i < 5)
                     builder.put(datas.get(i - 1).get(2), a);
                 else if (i > 5) {
-                    builder.put(datas.get(i - 2).get(2), a);
+                    if (i == 8)
+                        builder.put("isqualified", isqualified);
+                    else
+                        builder.put(datas.get(i - 2).get(2), a);
                 }
             } else {
                 UiUtils.showToast(UiUtils.getContext(), "所有字段必填");
@@ -268,6 +317,7 @@ public class Type5_fragment extends Fragment {
             System.out.println(key + "," + value);
         }
 
+
         RetrofitHelper.getApi().createLicense(map)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -278,6 +328,7 @@ public class Type5_fragment extends Fragment {
 
                     @Override
                     public void onError(Throwable e) {
+                        UiUtils.showToast(UiUtils.getContext(),"添加失败");
                         e.printStackTrace();
                     }
 
@@ -296,9 +347,12 @@ public class Type5_fragment extends Fragment {
                                         })
                                         .create();
                                 dialog.show();
+                            }else {
+                                UiUtils.showToast(result.msg);
                             }
                         } else {
-                            LogUtil.i("失败了！！！！！！！！！！！！！！！");
+
+                            UiUtils.showToast(UiUtils.getContext(),"添加失败");
                         }
                     }
                 });

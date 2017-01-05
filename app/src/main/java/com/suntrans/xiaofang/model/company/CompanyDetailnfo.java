@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 public class CompanyDetailnfo implements Serializable{
 
+ 
     public  String lat;
     public  String lng;
 
@@ -22,7 +23,7 @@ public class CompanyDetailnfo implements Serializable{
     public  String cmystate;
 
 
-    public  String hasfacility;
+    public  String facility;
 
     public  String mainattribute;
     public  String subattribute;
@@ -99,7 +100,7 @@ public class CompanyDetailnfo implements Serializable{
                 ", dangerlevel='" + dangerlevel + '\'' +
                 ", exitnum='" + exitnum + '\'' +
                 ", stairnum='" + stairnum + '\'' +
-                ", hasfacility='" + hasfacility + '\'' +
+                ", hasfacility='" + facility + '\'' +
                 ", mainattribute='" + mainattribute + '\'' +
                 ", subattribute='" + subattribute + '\'' +
                 ", companyid='" + companyid + '\'' +

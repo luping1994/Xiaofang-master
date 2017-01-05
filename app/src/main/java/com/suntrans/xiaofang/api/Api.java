@@ -16,6 +16,7 @@ import com.suntrans.xiaofang.model.firestation.FireStationDetailResult;
 import com.suntrans.xiaofang.model.license.AddLicenseResult;
 import com.suntrans.xiaofang.model.license.LicenseDetailResult;
 import com.suntrans.xiaofang.model.login.LoginInfo;
+import com.suntrans.xiaofang.model.personal.CPasswordResult;
 import com.suntrans.xiaofang.model.personal.UserInfoResult;
 import com.suntrans.xiaofang.model.supervise.SuperviseDetailResult;
 import com.suntrans.xiaofang.model.supervise.SuperviseListResult;
@@ -369,26 +370,23 @@ public interface Api {
     /**
      * 验收接口
      *
-     * @param id
+     * @param map
      * @return
      */
     @FormUrlEncoded
     @POST("/api/v1/license/complete")
-    Observable<AddLicenseResult> completeLicense(@Field("id") String id);
+    Observable<AddLicenseResult> completeLicense(@FieldMap Map<String, String> map);
 
 
     /**
      * 开业前接口
      *
-     * @param id
+     * @param map
      * @return
      */
     @FormUrlEncoded
-    @POST("/api/v1/license/complete")
-    Observable<AddLicenseResult> openLicense(@Field("id") String id,
-                                             @Field("time") String time,
-                                             @Field("isqualified") String isqualified,
-                                             @Field("number") String number);
+    @POST("/api/v1/license/open")
+    Observable<AddLicenseResult> openLicense(@FieldMap Map<String, String> map);
 
     /**
      *
@@ -443,6 +441,17 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/guestbook/create")
     Observable<AddCompanyResult> commitGuesBook(@Field("contents") String contents);
+
+
+    /**
+     *
+     *根据单位id获取监督详情
+     * @param contents
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/user/password")
+    Observable<CPasswordResult> changedPassword(@Field("password") String contents);
 
 }
 

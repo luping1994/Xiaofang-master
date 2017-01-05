@@ -1,38 +1,50 @@
 package com.suntrans.xiaofang.activity.edit;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.amap.api.maps.model.LatLng;
 import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.DbHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.suntrans.xiaofang.utils.Utils;
+import com.suntrans.xiaofang.views.dialog.AttrSelector;
+import com.suntrans.xiaofang.views.dialog.BottomDialog;
+import com.suntrans.xiaofang.views.dialog.DefaultProvider;
+import com.suntrans.xiaofang.views.dialog.GeneralProvider;
+import com.suntrans.xiaofang.views.dialog.MainAttr;
+import com.suntrans.xiaofang.views.dialog.SubAttr;
+import com.suntrans.xiaofang.views.dialog.onAttrSelectedListener;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -45,7 +57,7 @@ import retrofit2.Response;
  * Created by Looney on 2016/12/3.
  */
 
-public class EditCompanyInfo_activity extends AppCompatActivity {
+public class EditCompanyInfo_activity extends BasedActivity {
     @BindView(R.id.addr)
     EditText addr;
     @BindView(R.id.incharge)
@@ -64,14 +76,10 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
     EditText exitnum;
     @BindView(R.id.stairnum)
     EditText stairnum;
-    @BindView(R.id.have)
-    RadioButton have;
-    @BindView(R.id.no)
-    RadioButton no;
-    @BindView(R.id.hasfacility)
-    RadioGroup hasfacility;
-    @BindView(R.id.attribute)
-    TextView attribute;
+
+    //    @BindView(R.id.hasfacility)
+//    RadioGroup hasfacility;
+
     @BindView(R.id.artiname)
     EditText artiname;
     @BindView(R.id.artiid)
@@ -95,7 +103,7 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
     @BindView(R.id.leaderdepart)
     EditText leaderdepart;
     @BindView(R.id.foundtime)
-    EditText foundtime;
+    TextView foundtime;
     @BindView(R.id.phone)
     EditText phone;
     @BindView(R.id.straffnum)
@@ -130,9 +138,58 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
     EditText lng;
     @BindView(R.id.lat)
     EditText lat;
+    @BindView(R.id.dangerlevel3)
+    RadioButton dangerlevel3;
+    @BindView(R.id.dangerlevel4)
+    RadioButton dangerlevel4;
+    @BindView(R.id.one)
+    CheckBox one;
+    @BindView(R.id.two)
+    CheckBox two;
+    @BindView(R.id.three)
+    CheckBox three;
+    @BindView(R.id.four)
+    CheckBox four;
+    @BindView(R.id.five)
+    CheckBox five;
+    @BindView(R.id.six)
+    CheckBox six;
+    @BindView(R.id.senven)
+    CheckBox senven;
+    @BindView(R.id.eight)
+    CheckBox eight;
+    @BindView(R.id.nine)
+    CheckBox nine;
+    @BindView(R.id.facility)
+    LinearLayout facility;
+    @BindView(R.id.lan_1)
+    CheckBox lan1;
+    @BindView(R.id.lan_2)
+    CheckBox lan2;
+    @BindView(R.id.lan_3)
+    CheckBox lan3;
+    @BindView(R.id.lan_4)
+    CheckBox lan4;
+    @BindView(R.id.attribute)
+    TextView attribute;
+    @BindView(R.id.attribute_ll)
+    LinearLayout attributeLl;
+
+
     private Toolbar toolbar;
     private EditText txName;
     private CompanyDetailnfo info;
+    private int mYear;
+    private int mMonth;
+    private int mDay;
+
+    private CheckBox[] autofire;
+    private String[] hasFire;
+
+    private CheckBox[] laneCheckBox;
+    private String[] laneArray;
+    private String level;
+    String dangerlevels = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -145,17 +202,131 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
     }
 
     private void initView() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("com.suntrans.addr.RECEIVE");
-        registerReceiver(broadcastReceiver,filter);
 
-//        txName = (EditText) findViewById(R.id.name);
-//        txName.setText(getIntent().getStringExtra("title"));
+        laneCheckBox = new CheckBox[]{lan1, lan2, lan3, lan4};
+        autofire = new CheckBox[]{one, two, three, four, five, six, senven, eight, nine};
+        hasFire = App.getApplication().getResources().getStringArray(R.array.autofire);
+        laneArray = App.getApplication().getResources().getStringArray(R.array.lane);
+
         info = (CompanyDetailnfo) getIntent().getSerializableExtra("info");
-//        latLng = getIntent().getParcelableExtra("from");
+//        System.out.println(info.toString());
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+        foundtime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog pickerDialog = new DatePickerDialog(EditCompanyInfo_activity.this, mDateSetListener, mYear, mMonth, mDay);
+                pickerDialog.show();
+            }
+        });
+        attributeLl.setOnClickListener(attrlistener);
+        dangerlevels = "";
+        dangerlevel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.dangerlevel1) {
+                    dangerlevels = "1";
+                    attributeLl.setVisibility(View.VISIBLE);
+
+                } else if (checkedId == R.id.dangerlevel2) {
+                    dangerlevels = "2";
+                    attributeLl.setVisibility(View.VISIBLE);
+
+                } else if (checkedId == R.id.dangerlevel3) {
+                    dangerlevels = "3";
+                    attributeLl.setVisibility(View.VISIBLE);
+
+                } else if (checkedId == R.id.dangerlevel4) {
+                    attributeLl.setVisibility(View.GONE);
+                    dangerlevels = "4";
+                    mainAttrId= "";
+                    subAttrId= "";
+                }
+            }
+        });
     }
 
+    String mainAttrId= "";
+    String subAttrId= "";
+    private BottomDialog bottomDialog;
 
+    private View.OnClickListener attrlistener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            bottomDialog = null;
+            if (dangerlevels.equals("1")||dangerlevels.equals("2")){
+                AttrSelector selector = new AttrSelector(EditCompanyInfo_activity.this);
+                DefaultProvider provider = new DefaultProvider(EditCompanyInfo_activity.this);
+                selector.setProvider(provider);
+                bottomDialog = new BottomDialog(EditCompanyInfo_activity.this,selector);
+            }else if (dangerlevels.equals("3")){
+                AttrSelector selector = new AttrSelector(EditCompanyInfo_activity.this);
+                GeneralProvider provider = new GeneralProvider(EditCompanyInfo_activity.this);
+                selector.setProvider(provider);
+                bottomDialog = new BottomDialog(EditCompanyInfo_activity.this,selector);
+            }else if (dangerlevels.equals("4")){
+                //隐藏单位属性
+                attributeLl.setVisibility(View.GONE);
+            }else{
+                UiUtils.showToast("请先选择火灾危险等级");
+                return;
+            }
+            bottomDialog.setSelectorListener(new onAttrSelectedListener() {
+                @Override
+                public void onSelectSuccess(MainAttr mainAttr, ArrayList<SubAttr> subData, int type) {
+                    if (type==1){
+                        attribute.setText(mainAttr.name);
+                        String mainid1 = mainAttr.id+"";
+                        mainAttrId =mainid1;
+                    }else {
+                        attribute.setText(mainAttr.name);
+                       String mainid = mainAttr.id+"";
+                        String subid = "";
+                        for (SubAttr attr :
+                                subData) {
+                            subid=subid+"#"+attr.id;
+                        }
+                        mainAttrId =mainid;
+                        subAttrId = subid;
+                    }
+                    bottomDialog.dismiss();
+                }
+
+                @Override
+                public void onSelectFailed(String msg) {
+                    if (msg.equals("取消")){
+                        bottomDialog.dismiss();
+                    }else
+                    UiUtils.showToast(UiUtils.getContext(),msg);
+                }
+            });
+            bottomDialog.show();
+        }
+    };
+    private DatePickerDialog.OnDateSetListener mDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+                public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                      int dayOfMonth) {
+                    mYear = year;
+                    mMonth = monthOfYear;
+                    mDay = dayOfMonth;
+                    foundtime.setText(
+                            new StringBuilder()
+                                    .append(mYear).append("-")
+                                    .append(pad(mMonth + 1)).append("-")
+                                    .append(pad(mDay))
+                    );
+                }
+            };
+
+    private static String pad(int c) {
+        if (c >= 10)
+            return String.valueOf(c);
+        else
+            return "0" + String.valueOf(c);
+    }
 
     public void getLocation(View view) {
         String lat2 = App.getSharedPreferences().getString("lat", "-1");
@@ -179,11 +350,12 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(broadcastReceiver);
+//        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
     private void initData() {
+
         name.setText(info.name);
         addr.setText(info.addr);
 
@@ -191,22 +363,47 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
         lng.setText(info.lng);
         incharge.setText(info.incharge);
         if (info.dangerlevel != null) {
-            if (info.dangerlevel.equals("1"))
+            level = info.dangerlevel;
+            if (level.equals("1"))
                 dangerlevel1.setChecked(true);
-            else
+            else if (level.equals("2"))
                 dangerlevel2.setChecked(true);
+            else if (level.equals("3")){
+                dangerlevel3.setChecked(true);
+            }else if (level.equals("4")){
+                dangerlevel4.setChecked(true);
+            }
         } else {
             dangerlevel1.setChecked(false);
             dangerlevel2.setChecked(false);
+            dangerlevel3.setChecked(false);
+            dangerlevel4.setChecked(false);
         }
         buildarea.setText(info.buildarea);
         exitnum.setText(info.exitnum);
         stairnum.setText(info.stairnum);
-        if (hasfacility.equals(1)) {
-            have.setChecked(true);
-        } else {
-            no.setChecked(true);
+
+        if (info.facility != null) {
+            String[] fire = info.facility.split("#");
+            for (int i = 0; i < fire.length; i++) {
+                for (int j = 0; j < hasFire.length; j++) {
+                    if (fire[i].equals(hasFire[j]))
+                        autofire[j].setChecked(true);
+                }
+            }
         }
+
+
+        if (info.lanepos != null) {
+            String[] lanpos1 = info.lanepos.split("#");
+            for (int i = 0; i < lanpos1.length; i++) {
+                for (int j = 0; j < laneArray.length; j++) {
+                    if (lanpos1[i].equals(laneArray[j]))
+                        laneCheckBox[j].setChecked(true);
+                }
+            }
+        }
+
         artiname.setText(info.artiname);
         artiid.setText(info.artiid);
         artiphone.setText(info.artiphone);
@@ -230,12 +427,27 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
         elevatornum.setText(info.elevatornum);
         refugenum.setText(info.refugenum);
         refugepos.setText(info.refugepos);
-        east.setText("东:" + info.east);
-        south.setText("南" + info.south);
-        west.setText("西" + info.west);
-        north.setText("北" + info.north);
+        east.setText(info.east);
+        south.setText(info.south);
+        west.setText(info.west);
+        north.setText(info.north);
         marker.setText(info.remark);
 
+        String mainId = info.mainattribute;
+        if (mainId!=null){
+            DbHelper helper = new DbHelper(this,"Fire",null,1);
+            SQLiteDatabase db = helper.getReadableDatabase();
+            db.beginTransaction();
+            Cursor cursor = db.rawQuery("select Name from attr_main where Id=?",new String[]{mainId});
+            if (cursor.getCount()>0){
+                while (cursor.moveToNext()){
+                    attribute.setText(cursor.getString(0));
+                }
+            }
+            cursor.close();
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
     private void setupToolBar() {
@@ -295,14 +507,8 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
         String name1 = name.getText().toString();
         String addr1 = addr.getText().toString();
 
-        int checkedid = dangerlevel.getCheckedRadioButtonId();
         String incharge1 = incharge.getText().toString();
-        String dangerlevels = "";
-        if (checkedid == R.id.dangerlevel1) {
-            dangerlevels = "1";
-        } else if (checkedid == R.id.dangerlevel2) {
-            dangerlevels = "2";
-        }
+
 
         String buildarea1 = buildarea.getText().toString();
         String exitnum1 = exitnum.getText().toString();
@@ -351,7 +557,7 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
                 builder.put("addr", addr1);
         }
 
-        builder.put("cmystate", "0");
+//        builder.put("cmystate", "0");
 
         if (incharge1 != null) {
             incharge1 = incharge1.replace(" ", "");
@@ -383,16 +589,15 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
                 builder.put("stairnum", stairnum.getText().toString());
         }
 
-        int id = hasfacility.getCheckedRadioButtonId();
-        String hasfacility1 = "";
-        if (id == R.id.have) {
-            hasfacility1 = "1";
-        } else if (id == R.id.no) {
-            hasfacility1 = "0";
+        String facility1 = "";
+        for (int i = 0; i < autofire.length; i++) {
+            if (autofire[i].isChecked()) {
+                facility1 += App.getApplication().getResources().getStringArray(R.array.autofire)[i] + "#";
+            }
         }
-        hasfacility1 = hasfacility1.replace(" ", "");
-        if (!TextUtils.equals("", hasfacility1))
-            builder.put("hasfacility", hasfacility1);//备注单位属性未添加
+        facility1 = facility1.replace(" ", "");
+        if (!TextUtils.equals("", facility1))
+            builder.put("facility", facility1);//备注单位属性未添加
 
 
         if (artiname1 != null) {
@@ -488,6 +693,18 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
                 builder.put("lanenum", lanenum1);
 
         }
+
+        String lanpos1 = "";
+        for (int i = 0; i < laneCheckBox.length; i++) {
+            if (laneCheckBox[i].isChecked()) {
+                lanpos1 += App.getApplication().getResources().getStringArray(R.array.lane)[i] + "#";
+            }
+        }
+
+        if (Utils.isVaild(lanpos1)) {
+            builder.put("lanepos", lanpos1);//消防车道类型为添加
+        }
+
         if (elevatornum1 != null) {
             elevatornum1 = elevatornum1.replace(" ", "");
             if (!TextUtils.equals("", elevatornum1))
@@ -541,6 +758,17 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
 
         }
 
+        if (Utils.isVaild(info.cmystate)){
+            builder.put("cmystate",info.cmystate);
+        }
+
+        if (Utils.isVaild(mainAttrId)){
+            builder.put("mainattribute",mainAttrId);
+        }
+
+        if (Utils.isVaild(subAttrId)){
+            builder.put("subattribute",subAttrId);
+        }
 
         map1 = builder.build();
         for (Map.Entry<String, String> entry : map1.entrySet()) {
@@ -561,7 +789,7 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
                         UiUtils.showToast(UiUtils.getContext(), "提示:" + result.result);
                     }
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
 
             }
@@ -576,14 +804,13 @@ public class EditCompanyInfo_activity extends AppCompatActivity {
     }
 
 
-
-    public LatLng myLocation;//我当前的位置
-    public String myaddr;//我的位置描述
-    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            myLocation = intent.getParcelableExtra("myLocation");
-            myaddr = intent.getStringExtra("addrdes");
-        }
-    };
+//    public LatLng myLocation;//我当前的位置
+//    public String myaddr;//我的位置描述
+//    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            myLocation = intent.getParcelableExtra("myLocation");
+//            myaddr = intent.getStringExtra("addrdes");
+//        }
+//    };
 }

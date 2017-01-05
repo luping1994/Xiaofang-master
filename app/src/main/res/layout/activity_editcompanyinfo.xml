@@ -54,6 +54,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/name"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -84,6 +85,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/addr"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -148,7 +150,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*消防管辖"
+                    android:text="消防管辖"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -181,7 +183,7 @@
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:gravity="center"
-                    android:text="*火灾危险性"
+                    android:text="火灾危险性"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -203,6 +205,19 @@
                         android:layout_height="wrap_content"
                         android:text="一般消防安全重点单位" />
 
+
+                    <RadioButton
+                        android:id="@+id/dangerlevel3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="十小场所" />
+
+                    <RadioButton
+                        android:id="@+id/dangerlevel4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="其他非重点单位" />
+
                 </RadioGroup>
             </RelativeLayout>
 
@@ -219,12 +234,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*建筑面积"
+                    android:text="建筑面积"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/buildarea"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -257,7 +273,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*安全出口数"
+                    android:text="安全出口数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -295,11 +311,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*疏散楼梯数"
+                    android:text="疏散楼梯数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/stairnum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -321,7 +338,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
@@ -332,35 +349,79 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*自动消防设施"
+                    android:text="自动消防设施"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
-                <RadioGroup
-                    android:id="@+id/hasfacility"
+                <LinearLayout
+                    android:id="@+id/facility"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_marginLeft="16dp"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:gravity="center|left"
+                    android:orientation="vertical">
 
-                    <RadioButton
-                        android:id="@+id/have"
+                    <CheckBox
+                        android:id="@+id/one"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="有" />
+                        android:text="室内消火栓系统" />
 
-                    <RadioButton
-                        android:id="@+id/no"
+                    <CheckBox
+                        android:id="@+id/two"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="无" />
-                </RadioGroup>
+                        android:text="自动喷水灭火系统" />
+
+                    <CheckBox
+                        android:id="@+id/three"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="火灾自动报警系统" />
+
+                    <CheckBox
+                        android:id="@+id/four"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="气体灭火系统" />
+
+                    <CheckBox
+                        android:id="@+id/five"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="泡沫灭火系统" />
+
+                    <CheckBox
+                        android:id="@+id/six"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="防烟排烟系统" />
+
+                    <CheckBox
+                        android:id="@+id/senven"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="灭火器" />
+
+                    <CheckBox
+                        android:id="@+id/eight"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="干粉灭火器" />
+
+                    <CheckBox
+                        android:id="@+id/nine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="其他" />
+                </LinearLayout>
+
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/attribute_ll"
                 android:layout_gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -368,17 +429,20 @@
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
+                android:visibility="visible"
                 android:paddingRight="@dimen/infoitem_pading">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*单位属性"
+                    android:text="单位属性"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <TextView
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:id="@+id/attribute"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -386,9 +450,9 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:gravity="center"
-                    android:hint="国家机关"
+                    android:hint="请选择单位属性"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1" />
+                    android:textSize="15sp" />
                 <ImageView
                     android:src="@drawable/ic_right_arrow"
                     android:layout_gravity="center"
@@ -408,11 +472,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*法定代表人"
+                    android:text="法定代表人"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -444,6 +509,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/artiid"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -474,6 +540,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="phone"
                     android:id="@+id/artiphone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -503,6 +570,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="textPersonName"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -532,6 +600,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -562,6 +631,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="phone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -592,6 +662,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="textPersonName"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -621,6 +692,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -651,6 +723,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -710,7 +783,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
-
+                    android:inputType="text"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
@@ -741,7 +814,8 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
-                <EditText
+                <TextView
+                    android:inputType="datetime"
                     android:id="@+id/foundtime"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -749,7 +823,7 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:gravity="center"
-                    android:hint="请输入"
+                    android:hint="请选择时间"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
@@ -773,6 +847,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="phone"
                     android:id="@+id/phone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -803,6 +878,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/straffnum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -840,6 +916,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="numberDecimal"
                     android:id="@+id/area"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -876,6 +953,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/lanenum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -913,6 +991,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/elevatornum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -951,31 +1030,36 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
-                <RadioGroup
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/fire_type">
 
-                    <RadioButton
+                    <CheckBox
+                        android:id="@+id/lan_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="穿过建筑物的消防车道" />
 
-                    <RadioButton
+                    <CheckBox
+                        android:id="@+id/lan_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="进入内院或天井的消防车道" />
 
-                    <RadioButton
+                    <CheckBox
+                        android:id="@+id/lan_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="环形消防车道" />
 
-                    <RadioButton
+                    <CheckBox
+                        android:id="@+id/lan_4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="尽头式消防车道" />
-                </RadioGroup>
+                </LinearLayout>
             </RelativeLayout>
             <LinearLayout
                 android:layout_marginTop="1px"
@@ -995,6 +1079,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="number"
                     android:id="@+id/refugenum"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -1032,6 +1117,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/refugepos"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -1188,6 +1274,7 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+                    android:inputType="text"
                     android:id="@+id/marker"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
@@ -1206,7 +1293,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="@color/white"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/commit_selector"
         android:textSize="20sp"
         android:text="确认修改"/>
 

@@ -86,7 +86,27 @@
                 android:src="@drawable/ic_search_grey_500_36dp" />
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
-
+    <LinearLayout
+        android:gravity=""
+        android:background="@color/bg_color"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:gravity="center"
+            android:text="选择搜索的单位类型:"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/secondtextcolor"/>
+        <Spinner
+            android:gravity="center"
+            android:id="@+id/spinner"
+            android:entries="@array/type"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp">
+        </Spinner>
+    </LinearLayout>
     <android.support.v7.widget.RecyclerView
         android:scrollbars="vertical"
         android:id="@+id/recycleview"

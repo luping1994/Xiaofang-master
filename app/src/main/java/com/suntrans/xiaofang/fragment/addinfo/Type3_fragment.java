@@ -187,6 +187,16 @@ public class Type3_fragment extends Fragment {
         String community1 = community.getText().toString();
         String group1 = group.getText().toString();
 
+
+        if (name1.equals("") || name1 == null) {
+            UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
+            return;
+        }
+        if (addr1== null || addr1.equals("")) {
+            UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
+            return;
+        }
+
         if (Utils.isVaild(name1)) {
             builder.put("name", name1.replace(" ", ""));
         }
@@ -247,19 +257,21 @@ public class Type3_fragment extends Fragment {
             String value = entry.getValue().toString();
             System.out.println(key + "," + value);
         }
+
         RetrofitHelper.getApi().createStation(map)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AddFireStationResult>() {
                     @Override
                     public void onCompleted() {
-                        dialog.dismiss();
+//                        dialog.dismiss();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        dialog.dismiss();
+                        UiUtils.showToast(UiUtils.getContext(), "添加失败!");
+//                        dialog.dismiss();
                     }
 
                     @Override
@@ -268,8 +280,6 @@ public class Type3_fragment extends Fragment {
                             LogUtil.i(result.status);
                             if (TextUtils.equals("1", result.status)) {
                                 String result1 = result.result;
-                                LogUtil.i("resultweikong添加失败");
-
                                 dialog = new AlertDialog.Builder(getActivity())
                                         .setMessage(result1)
                                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -287,9 +297,10 @@ public class Type3_fragment extends Fragment {
                                     }
                                 }, 500);
                             } else {
+                                UiUtils.showToast(UiUtils.getContext(),result.msg);
                             }
                         } else {
-                            LogUtil.i("添加失败");
+                            UiUtils.showToast(UiUtils.getContext(),"添加失败");
                         }
                     }
                 });

@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,12 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 
 /**
  * Created by Looney on 2016/12/1.
  */
 
-public class PullData_activity extends AppCompatActivity implements View.OnClickListener {
+public class PullData_activity extends BasedActivity implements View.OnClickListener {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private Spinner spinner1;

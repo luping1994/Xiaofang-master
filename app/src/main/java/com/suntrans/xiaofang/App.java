@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 
-import com.pgyersdk.crash.PgyCrashManager;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,16 +20,14 @@ import java.io.OutputStream;
  */
 public class App extends Application {
 
-
     private static App application;
     private static int mainTid;
     private static Handler mHandler;
     private static SharedPreferences msharedPreferences;
-    private static String appKey ="bc2aa07aff1140e6adc06733e9be94ca";
     @Override
     public void onCreate() {
         super.onCreate();
-        PgyCrashManager.register(this);
+//        PgyCrashManager.register(this);
 //        if (LeakCanary.isInAnalyzerProcess(this)) {
 //            // This process is dedicated to LeakCanary for heap analysis.
 //            // You should not init your app in this process.
@@ -37,12 +35,21 @@ public class App extends Application {
 //        }
 //        LeakCanary.install(this);
 //        // Normal app init code...
-//        CrashReport.initCrashReport(getApplicationContext(), "7d01f61d8c", true);//初始化腾讯bug分析工具
+        CrashReport.initCrashReport(getApplicationContext(), "7d01f61d8c", true);//初始化腾讯bug分析工具
         application=this;
         mainTid=android.os.Process.myTid();
         mHandler=new Handler();
+        new Thread(){//copy assets目录下的开关信息数据库
+            @Override
+            public void run() {
+                try {
+                    CopySqliteFileFromRawToDatabases("Fire");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
-
 
     public static SharedPreferences getSharedPreferences(){
         if (msharedPreferences==null){

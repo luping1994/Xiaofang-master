@@ -4,7 +4,7 @@
     <string name="menu_scan">扫一扫</string>
     <string name="menu_pulldata">导出数据</string>
     <string name="menu_help">帮助与反馈</string>
-    <string name="search_text">请输入要搜索的社会单位</string>
+    <string name="search_text">请输入要搜索的单位</string>
     <string name="app_id">58421d56</string>
     <string name="login">登录</string>
     <string name="company_name">技术支持@广州三川控制系统工程设备有限公司</string>
@@ -16,4 +16,6 @@
     <string name="menu_check">审核信息</string>
     <string name="menu_add">新增</string>
     <string name="loading">加载中</string>
+    <string name="desc_check_mark">check mark</string>
+    <string name="transition_test">test</string>
 </resources>

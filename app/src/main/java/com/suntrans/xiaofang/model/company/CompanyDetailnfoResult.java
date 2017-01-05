@@ -11,6 +11,7 @@ public class CompanyDetailnfoResult {
     @SerializedName("result")
     public CompanyDetailnfo info;
 
+    public  String msg;
 
 
     /*

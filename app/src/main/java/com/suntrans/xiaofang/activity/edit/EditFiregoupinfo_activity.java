@@ -1,27 +1,22 @@
 package com.suntrans.xiaofang.activity.edit;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ScrollView;
 
-import com.amap.api.maps.model.LatLng;
 import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.model.firegroup.FireGroupDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
@@ -41,7 +36,7 @@ import rx.schedulers.Schedulers;
  * 修改消防中队信息
  */
 
-public class EditFiregoupinfo_activity extends AppCompatActivity {
+public class EditFiregoupinfo_activity extends BasedActivity {
 
 
     @BindView(R.id.name)
@@ -88,9 +83,9 @@ public class EditFiregoupinfo_activity extends AppCompatActivity {
     }
 
     private void initView() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("com.suntrans.addr.RECEIVE");
-        registerReceiver(broadcastReceiver, filter);
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction("com.suntrans.addr.RECEIVE");
+//        registerReceiver(broadcastReceiver, filter);
         info = (FireGroupDetailInfo) getIntent().getSerializableExtra("info");
 
     }
@@ -98,13 +93,7 @@ public class EditFiregoupinfo_activity extends AppCompatActivity {
 
 
     public void getLocation(View view) {
-//        if (myLocation == null) {
-//            Snackbar.make(scroll, "获取当前地址失败", Snackbar.LENGTH_SHORT).show();
-//            return;
-//        }
-//        lat.setText(myLocation.latitude + "");
-//        lng.setText(myLocation.longitude + "");
-//        addr.setText(myaddr);
+
 
         String lat2 = App.getSharedPreferences().getString("lat", "-1");
         String lng2 = App.getSharedPreferences().getString("lng", "-1");
@@ -118,19 +107,8 @@ public class EditFiregoupinfo_activity extends AppCompatActivity {
         addr.setText(addr2);
     }
 
-    public LatLng myLocation;//我当前的位置
-    public String myaddr;//我的位置描述
-    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            myLocation = intent.getParcelableExtra("myLocation");
-            myaddr = intent.getStringExtra("addrdes");
-        }
-    };
-
     @Override
     protected void onDestroy() {
-        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
@@ -247,7 +225,7 @@ public class EditFiregoupinfo_activity extends AppCompatActivity {
             builder.put("phone", phone1.replace(" ", ""));
         }
         if (Utils.isVaild(membernum1)) {
-            builder.put("servingnum", membernum1.replace(" ", ""));
+            builder.put("membernum", membernum1.replace(" ", ""));
         }
 
 

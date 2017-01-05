@@ -16,7 +16,9 @@
         app:layout_collapseMode="pin"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"></android.support.v7.widget.Toolbar>
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+    </android.support.v7.widget.Toolbar>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,7 +37,7 @@
                 android:paddingBottom="@dimen/activity_horizontal_margin"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_horizontal_margin">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -48,6 +50,25 @@
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:text="地点:"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:background="@color/border"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:id="@+id/companyaddr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="单位地址:"
                         android:textSize="15sp" />
                 </LinearLayout>
 
