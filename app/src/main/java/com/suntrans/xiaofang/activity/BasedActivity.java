@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Looney on 2016/12/27.
  */
 
-public class BasedActivity extends AppCompatActivity {
+public class  BasedActivity extends AppCompatActivity {
 
 
     public final static List<BasedActivity> mList = new LinkedList<BasedActivity>();

@@ -1,6 +1,7 @@
 package com.suntrans.xiaofang.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -176,9 +177,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         /**
          *模拟武汉大学地址，release时删除
          */
-//        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//        a();
-//        new Thread(new RunnableMockLocation()).start();
+        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        a();
+        new Thread(new RunnableMockLocation()).start();
 
 
 

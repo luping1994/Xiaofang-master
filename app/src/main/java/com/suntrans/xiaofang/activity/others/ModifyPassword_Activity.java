@@ -58,7 +58,7 @@ public class ModifyPassword_Activity extends BasedActivity {
     }
     public void modify(View view){
         String newPassword = newPasswordEdit.getText().toString();
-        if (newPassword==null&&newPassword.equals("")){
+        if (newPassword==null||newPassword.equals("")){
             UiUtils.showToast("密码为空");
             return;
         }

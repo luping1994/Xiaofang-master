@@ -184,7 +184,12 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
                             @Override
                             public void run() {
                                 if (info.name!=null&&!info.name.equals("")){
-                                    ((InfoDetail_activity)getActivity()).toolbar.setTitle(info.name);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ((InfoDetail_activity)getActivity()).toolbar.setTitle(info.name);
+                                        }
+                                    },600);
                                 }
                                 progressBar.setVisibility(View.INVISIBLE);
                                 pager.setVisibility(View.VISIBLE);

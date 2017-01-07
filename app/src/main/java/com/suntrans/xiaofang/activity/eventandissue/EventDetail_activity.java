@@ -392,8 +392,8 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
                 retriever.release();
             }
         });
-        observable.observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
+        observable.observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<Bitmap>() {
                     @Override
                     public void call(final Bitmap bitmap) {
