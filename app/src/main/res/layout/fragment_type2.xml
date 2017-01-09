@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:id="@+id/content1"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <Button
-        android:id="@+id/add_fireroom"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/commit_selector"
-
-        android:text="确认添加"
-        android:textColor="@color/white"
-        android:textSize="18sp" />
-
     <ScrollView
+        android:layout_weight="1"
         android:id="@+id/scroll"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
@@ -77,7 +67,6 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
-                    android:inputType="text"
                     android:id="@+id/addr"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -86,6 +75,7 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="text"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
 
@@ -103,31 +93,33 @@
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading">
+
                 <TextView
-                    android:gravity="center"
-                    android:text="经纬度:"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-                <EditText
-                    android:layout_marginLeft="20dp"
-                    android:hint="经度"
-                    android:inputType="numberDecimal"
-                    android:textSize="14sp"
-                    android:id="@+id/lng"
-                    android:textColor="@color/border"
-                    android:layout_weight="1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="经纬度:" />
 
                 <EditText
+                    android:id="@+id/lng"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:hint="经度"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/border"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/lat"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:hint="纬度"
                     android:inputType="numberDecimal"
-                    android:textSize="14sp"
-                    android:id="@+id/lat"
                     android:textColor="@color/border"
-                    android:layout_weight="1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -148,7 +140,6 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
-                    android:inputType="text"
                     android:id="@+id/contact"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -157,6 +148,7 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="text"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
@@ -179,7 +171,6 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
-                    android:inputType="phone"
                     android:id="@+id/phone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -188,6 +179,7 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="phone"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
@@ -231,6 +223,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_condition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1px"
@@ -239,27 +232,39 @@
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="车辆配置情况"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
-
-                <EditText
-                    android:inputType="text"
-                    android:id="@+id/cardisp"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:background="@null"
-                    android:gravity="left|start"
-                    android:hint="请输入"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1" />
+                    android:layout_height="30dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="车辆配置情况"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size" />
+
+                    <Button
+                        android:id="@+id/add"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentRight="true"
+                        android:background="@null"
+                        android:text="＋" />
+
+                    <Button
+                        android:layout_toLeftOf="@+id/add"
+                        android:id="@+id/sub"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@null"
+                        android:text="－" />
+                </RelativeLayout>
+
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_condition_eq"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1px"
@@ -268,24 +273,35 @@
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="装备配置情况"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
-
-                <EditText
-                    android:inputType="text"
-                    android:id="@+id/equipdisp"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:background="@null"
-                    android:gravity="left|start"
-                    android:hint="请输入"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1" />
+                    android:layout_height="30dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="装备配置情况"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size" />
+
+                    <Button
+                        android:id="@+id/add_eq"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentRight="true"
+                        android:background="@null"
+                        android:text="＋" />
+
+                    <Button
+                        android:layout_toLeftOf="@+id/add_eq"
+                        android:id="@+id/sub_eq"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@null"
+                        android:text="－" />
+                </RelativeLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -298,13 +314,13 @@
                 android:paddingRight="@dimen/infoitem_pading">
 
                 <TextView
+                    android:id="@+id/textView5"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="*所属区"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size"
-                    android:id="@+id/textView5" />
+                    android:textSize="@dimen/text_size" />
 
                 <Spinner
                     android:id="@+id/district"
@@ -337,7 +353,6 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
-                    android:inputType="text"
                     android:id="@+id/group"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -346,10 +361,18 @@
                     android:background="@null"
                     android:gravity="left|center"
                     android:hint="请输入"
+                    android:inputType="text"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
-</RelativeLayout>
+    <Button
+        android:id="@+id/add_fireroom"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/commit_selector"
+        android:text="确认添加"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+</LinearLayout>

@@ -80,6 +80,8 @@ public class Login_Activity extends BasedActivity implements View.OnClickListene
                         editor.putString("access_token",info.access_token);
                         editor.putString("refresh_token",info.refresh_token);
                         editor.putLong("firsttime", System.currentTimeMillis());
+                        editor.putString("username", username);
+                        editor.putString("password", password);
                         editor.commit();
                         startActivity(new Intent(Login_Activity.this, Main_Activity.class));
                         finish();

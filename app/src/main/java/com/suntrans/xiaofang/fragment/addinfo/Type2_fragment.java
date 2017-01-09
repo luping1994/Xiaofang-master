@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 
@@ -37,7 +37,7 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/12/13.
  */
 
-public class Type2_fragment extends Fragment {
+public class Type2_fragment extends Fragment implements View.OnClickListener {
     Map<String, String> map;
     @BindView(R.id.add_fireroom)
     Button addFireroom;
@@ -51,10 +51,8 @@ public class Type2_fragment extends Fragment {
     EditText phone;
     @BindView(R.id.membernum)
     EditText membernum;
-    @BindView(R.id.cardisp)
-    EditText cardisp;
-    @BindView(R.id.equipdisp)
-    EditText equipdisp;
+
+
     @BindView(R.id.district)
     Spinner district;
     @BindView(R.id.group)
@@ -62,13 +60,23 @@ public class Type2_fragment extends Fragment {
     @BindView(R.id.scroll)
     ScrollView scroll;
     @BindView(R.id.content1)
-    RelativeLayout content1;
+    LinearLayout content1;
     @BindView(R.id.lng)
     EditText lng;
     @BindView(R.id.lat)
     EditText lat;
     @BindView(R.id.getposition)
     Button getposition;
+    @BindView(R.id.ll_condition)
+    LinearLayout llCondition;
+
+
+    @BindView(R.id.add_eq)
+    Button addEq;
+    @BindView(R.id.sub_eq)
+    Button subEq;
+    @BindView(R.id.ll_condition_eq)
+    LinearLayout llConditionEq;
     private ImmutableMap.Builder<String, String> builder;
     private String district1;
     private AlertDialog dialog;
@@ -83,8 +91,41 @@ public class Type2_fragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
+        initView(view);
         initData();
+    }
+
+    private void initView(View view) {
+        Button add = (Button) view.findViewById(R.id.add);
+        Button sub = (Button) view.findViewById(R.id.sub);
+        add.setOnClickListener(this);
+        sub.setOnClickListener(this);
+        addEq.setOnClickListener(this);
+        subEq.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add:
+                View item = LayoutInflater.from(getContext()).inflate(R.layout.item_adddis, null, false);
+                llCondition.addView(item);
+                break;
+            case R.id.sub:
+                if (llCondition.getChildCount()==0)
+                    break;
+                llCondition.removeViewAt(llCondition.getChildCount() - 1);
+                break;
+            case R.id.add_eq:
+                View item2 = LayoutInflater.from(getContext()).inflate(R.layout.item_adddis, null, false);
+                llConditionEq.addView(item2);
+                break;
+            case R.id.sub_eq:
+                if (llConditionEq.getChildCount()==0)
+                    break;
+                llConditionEq.removeViewAt(llConditionEq.getChildCount() - 1);
+                break;
+        }
     }
 
     private void initData() {
@@ -112,13 +153,7 @@ public class Type2_fragment extends Fragment {
                 lng.setText(lng2);
                 lat.setText(lat2);
                 addr.setText(addr2);
-//                if (((Add_detail_activity)getActivity()).myLocation!=null){
-//                    lng.setText(((Add_detail_activity)getActivity()).myLocation.longitude+"");
-//                    lat.setText(((Add_detail_activity)getActivity()).myLocation.latitude+"");
-//                    addr.setText(((Add_detail_activity)getActivity()).myaddr);
-//                }else {
-//                    Snackbar.make(scroll,"获取当前地址失败",Snackbar.LENGTH_SHORT).show();
-//                }
+
             }
         });
     }
@@ -154,8 +189,44 @@ public class Type2_fragment extends Fragment {
         String contact1 = contact.getText().toString();
         String phone1 = phone.getText().toString();
         String membernum1 = membernum.getText().toString();
-        String cardisp1 = cardisp.getText().toString();
-        String equipdisp1 = equipdisp.getText().toString();
+
+        String cardisp1 ="";
+        for (int i =0;i<llCondition.getChildCount();i++){
+            if (i==0)
+                continue;
+            View view = llCondition.getChildAt(i);
+            EditText conType = (EditText) view.findViewById(R.id.con_type);
+            EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
+            String type=conType.getText().toString();
+            String detail=conDetail.getText().toString();
+            cardisp1=new StringBuilder().append(cardisp1)
+                    .append("类型:")
+                    .append(type)
+                    .append(",")
+                    .append("详情:")
+                    .append(detail)
+                    .append(";")
+                    .toString();
+        }
+
+
+
+        String equipdisp1 ="";
+        for (int i =0;i<llConditionEq.getChildCount();i++){
+            if (i==0)
+                continue;
+            View view = llConditionEq.getChildAt(i);
+            EditText conType = (EditText) view.findViewById(R.id.con_type);
+            EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
+            String type=conType.getText().toString();
+            String detail=conDetail.getText().toString();
+            equipdisp1=new StringBuilder().append(cardisp1)
+                    .append("类型:")
+                    .append(type)
+                    .append("详情:")
+                    .append(detail)
+                    .toString();
+        }
         String group1 = group.getText().toString();
         String lng1 = lng.getText().toString();
         String lat1 = lat.getText().toString();
@@ -272,7 +343,7 @@ public class Type2_fragment extends Fragment {
                                         dialog.show();
                                     }
                                 }, 500);
-                            }else {
+                            } else {
                                 UiUtils.showToast(result.msg);
                             }
                         } else {
@@ -284,5 +355,6 @@ public class Type2_fragment extends Fragment {
     }
 
     Handler handler = new Handler();
+
 
 }

@@ -262,20 +262,20 @@ public class Type1_fragment extends Fragment {
         @Override
         public void onClick(View v) {
             bottomDialog = null;
-            if (dangerlevels.equals("1")||dangerlevels.equals("2")){
+            if (dangerlevels.equals("1") || dangerlevels.equals("2")) {
                 AttrSelector selector = new AttrSelector(getActivity());
                 DefaultProvider provider = new DefaultProvider(UiUtils.getContext());
                 selector.setProvider(provider);
-                bottomDialog = new BottomDialog(getActivity(),selector);
-            }else if (dangerlevels.equals("3")){
+                bottomDialog = new BottomDialog(getActivity(), selector);
+            } else if (dangerlevels.equals("3")) {
                 AttrSelector selector = new AttrSelector(getActivity());
                 GeneralProvider provider = new GeneralProvider(UiUtils.getContext());
                 selector.setProvider(provider);
-                bottomDialog = new BottomDialog(getActivity(),selector);
-            }else if (dangerlevels.equals("4")){
+                bottomDialog = new BottomDialog(getActivity(), selector);
+            } else if (dangerlevels.equals("4")) {
                 //隐藏单位属性
                 attributeLl.setVisibility(View.GONE);
-            }else{
+            } else {
                 UiUtils.showToast("请先选择火灾危险等级");
                 return;
             }
@@ -428,15 +428,14 @@ public class Type1_fragment extends Fragment {
                 builder.put("incharge", incharge1);
         }
 
-        if (dangerlevels != null) {
-            dangerlevels = dangerlevels.replace(" ", "");
-            if (!TextUtils.equals("", dangerlevels))
-                builder.put("dangerlevel", dangerlevels);
+        if (Utils.isVaild(dangerlevels)) {
+            builder.put("dangerlevel", dangerlevels);
+        } else {
+            UiUtils.showToast("请选择火灾危险等级!");
+            return;
         }
 
-        if (buildarea1 != null) {
-            buildarea1 = buildarea1.replace(" ", "");
-            if (!TextUtils.equals("", buildarea1))
+        if (Utils.isVaild(buildarea1)) {
                 builder.put("buildarea", buildarea1);
         }
 

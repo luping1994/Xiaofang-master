@@ -37,12 +37,6 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.ViewHolder1> {
     @Override
     public void onBindViewHolder(ViewHolder1 holder, final int position) {
         holder.setdata(position);
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onItemClick(v,position);
-            }
-        });
     }
 
 
@@ -56,6 +50,12 @@ public class PicAdapter extends RecyclerView.Adapter<PicAdapter.ViewHolder1> {
         public ViewHolder1(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.image);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(v,getAdapterPosition());
+                }
+            });
         }
 
         public void setdata(int position) {

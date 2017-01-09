@@ -1,18 +1,23 @@
 package com.suntrans.xiaofang.activity.eventandissue;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
+import com.suntrans.xiaofang.activity.others.DetailPic_Activity;
 import com.suntrans.xiaofang.adapter.PicAdapter;
 import com.suntrans.xiaofang.model.supervise.ResultSup;
 import com.suntrans.xiaofang.model.supervise.Supervise;
@@ -85,7 +90,47 @@ public class SuperviseDetail_activity extends BasedActivity {
         recyclerView_after.setLayoutManager(manager_after);
         recyclerView_after.setAdapter(adapter_after);
 
+        adapter_before.setOnitemClickListener(new PicAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if (url_before==null||url_before.size()==0){
+                    return;
+                }
+                if (Build.VERSION.SDK_INT < 21) {
+                    Intent intent = new Intent();
+                    intent.putExtra("url", url_before.get(position));
+                    intent.setClass(SuperviseDetail_activity.this, DetailPic_Activity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(SuperviseDetail_activity.this, DetailPic_Activity.class);
+                    intent.putExtra("url", url_before.get(position));
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(SuperviseDetail_activity.this, view, getString(R.string.transition_test));
+                    startActivity(intent, options.toBundle());
+                }
+            }
+        });
 
+        adapter_after.setOnitemClickListener(new PicAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if (url_after==null||url_after.size()==0){
+                    return;
+                }
+                if (Build.VERSION.SDK_INT < 21) {
+                    Intent intent = new Intent();
+                    intent.putExtra("url", url_after.get(position));
+                    intent.setClass(SuperviseDetail_activity.this, DetailPic_Activity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(SuperviseDetail_activity.this, DetailPic_Activity.class);
+                    intent.putExtra("url", url_after.get(position));
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(SuperviseDetail_activity.this, view, getString(R.string.transition_test));
+                    startActivity(intent, options.toBundle());
+                }
+            }
+        });
     }
 
     private void initData() {

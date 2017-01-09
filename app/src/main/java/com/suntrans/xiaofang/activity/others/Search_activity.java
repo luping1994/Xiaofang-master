@@ -190,17 +190,10 @@ public class Search_activity extends BasedActivity {
                 super(itemView);
                 name = (TextView) itemView.findViewById(R.id.name);
                 linearLayout = (LinearLayout) itemView.findViewById(R.id.ll);
-            }
-
-            public void setData(final int position) {
-                final String name1 = datas.get(position).get(1);
-//                double lat = Double.valueOf(datas.get(position).get(2));
-//                double lng = Double.valueOf(datas.get(position).get(3));
-//                final LatLng to = new LatLng(lat,lng);
-                name.setText(name1);
                 linearLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        int position = getAdapterPosition();
                         Intent intent = new Intent();
                         intent.putExtra("companyID", datas.get(position).get(0) + "#" + type);
                         intent.putExtra("name", datas.get(position).get(1));
@@ -211,6 +204,15 @@ public class Search_activity extends BasedActivity {
                         startActivity(intent);
                     }
                 });
+            }
+
+            public void setData(final int position) {
+                final String name1 = datas.get(position).get(1);
+//                double lat = Double.valueOf(datas.get(position).get(2));
+//                double lng = Double.valueOf(datas.get(position).get(3));
+//                final LatLng to = new LatLng(lat,lng);
+                name.setText(name1);
+
             }
         }
 

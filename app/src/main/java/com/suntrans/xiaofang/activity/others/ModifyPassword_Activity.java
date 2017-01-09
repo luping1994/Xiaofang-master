@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.model.personal.CPasswordResult;
@@ -57,9 +58,19 @@ public class ModifyPassword_Activity extends BasedActivity {
         actionBar.setDisplayShowTitleEnabled(true);
     }
     public void modify(View view){
+        String password = App.getSharedPreferences().getString("password","-1");
+        if (password.equals("-1")){
+            UiUtils.showToast("修改失败");
+            return;
+        }
         String newPassword = newPasswordEdit.getText().toString();
         if (newPassword==null||newPassword.equals("")){
             UiUtils.showToast("密码为空");
+            return;
+        }
+
+        if (!password.equals(oldPasswordEdit)){
+            UiUtils.showToast("旧密码错误");
             return;
         }
         RetrofitHelper.getApi().changedPassword(newPassword)

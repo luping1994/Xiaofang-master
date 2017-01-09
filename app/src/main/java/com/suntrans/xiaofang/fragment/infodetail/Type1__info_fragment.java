@@ -27,6 +27,7 @@ import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.fragment.BasedFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.DetailInfoFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.EventFragment;
+import com.suntrans.xiaofang.fragment.infodetail_parts.GovApproal_fragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.SuperviseFragment;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
@@ -64,7 +65,10 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
 
     private TabLayout tabLayout;
     private ViewPager pager;
+
+
     private DetailInfoFragment detailInfoFragment0;
+    private GovApproal_fragment govApproal_fragment;
     private EventFragment eventFragment;
     private SuperviseFragment superviseFragment;
 
@@ -94,7 +98,7 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
 
         PagerAdapter adapter = new PagerAdapter(getChildFragmentManager());
         pager.setAdapter(adapter);
-        pager.setOffscreenPageLimit(2);
+        pager.setOffscreenPageLimit(3);
         pager.setVisibility(View.INVISIBLE);
 //        progressBar.setVisibility(View.VISIBLE);
 //        error.setVisibility(View.GONE);
@@ -110,7 +114,8 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
     }
 
     class PagerAdapter extends FragmentStatePagerAdapter {
-        String[] titles = new String[]{"单位信息","单位事件","单位监督"};
+        String[] titles = new String[]{"基本信息","行政审批","单位监督","单位事件"};
+
         public PagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -124,15 +129,19 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
                     detailInfoFragment0 = new DetailInfoFragment();
                     return detailInfoFragment0;
                 case 1:
-                    if (eventFragment==null){
-                        eventFragment = new EventFragment();
-                    }
-                    return eventFragment;
+                    if (govApproal_fragment==null)
+                    govApproal_fragment = new GovApproal_fragment();
+                    return govApproal_fragment;
                 case 2:
                     if (superviseFragment==null){
                         superviseFragment = new SuperviseFragment();
                     }
                     return superviseFragment;
+                case 3:
+                    if (eventFragment==null){
+                        eventFragment = new EventFragment();
+                    }
+                    return eventFragment;
                 default:
                     return null;
             }
