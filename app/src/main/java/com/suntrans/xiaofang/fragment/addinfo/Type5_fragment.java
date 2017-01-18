@@ -3,7 +3,6 @@ package com.suntrans.xiaofang.fragment.addinfo;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +22,8 @@ import com.suntrans.xiaofang.model.license.AddLicenseResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
+import com.trello.rxlifecycle.android.FragmentEvent;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -38,7 +39,7 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/12/13.
  */
 
-public class Type5_fragment extends Fragment {
+public class Type5_fragment extends RxFragment {
 
     //    @BindView(R.id.name)
 //    EditText name;
@@ -319,6 +320,7 @@ public class Type5_fragment extends Fragment {
 
 
         RetrofitHelper.getApi().createLicense(map)
+                .compose(this.<AddLicenseResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AddLicenseResult>() {

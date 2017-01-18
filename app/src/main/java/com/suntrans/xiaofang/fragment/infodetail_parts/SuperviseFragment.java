@@ -3,7 +3,6 @@ package com.suntrans.xiaofang.fragment.infodetail_parts;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -20,6 +19,8 @@ import com.suntrans.xiaofang.model.supervise.Supervise;
 import com.suntrans.xiaofang.model.supervise.SuperviseListResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.trello.rxlifecycle.android.FragmentEvent;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
 
@@ -31,7 +32,7 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/12/22.
  */
 
-public class SuperviseFragment extends Fragment {
+public class SuperviseFragment extends RxFragment {
 
 
     private RecyclerView recyclerView;
@@ -79,6 +80,7 @@ public class SuperviseFragment extends Fragment {
 
     private void getData(String id) {
         RetrofitHelper.getApi().getSuperviseList(id)
+                .compose(this.<SuperviseListResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<SuperviseListResult>() {
@@ -109,5 +111,11 @@ public class SuperviseFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
     }
 }

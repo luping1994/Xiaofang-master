@@ -35,16 +35,16 @@ import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.model.company.CompanyList;
 import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Looney on 2016/11/24.
@@ -263,197 +263,226 @@ public class Search_activity extends BasedActivity {
 
 
     private void searchCompany(String text) {
-        RetrofitHelper.getApi().queryCompany(text).enqueue(new Callback<CompanyListResult>() {
-            @Override
-            public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
-                CompanyListResult result = response.body();
-//                System.out.println("和大嫂大嫂等等等等等等等等等等等等"+result.status);
-                if (result != null) {
-                    if (result.status.equals("1")) {
-                        datas.clear();
-                        List<CompanyList> lists = result.results;
-                        for (CompanyList info : lists) {
-                            SparseArray<String> map = new SparseArray<String>();
+        RetrofitHelper.getApi().queryCompany(text)
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 500);
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                datas.clear();
+                                List<CompanyList> lists = result.results;
+                                for (CompanyList info : lists) {
+                                    SparseArray<String> map = new SparseArray<String>();
 //                            System.out.println("我的id是:====>"+info.id);
-                            map.put(0, info.id);
-                            map.put(1, info.name);
+                                    map.put(0, info.id);
+                                    map.put(1, info.name);
 //                            map.put(2,info.lat);
 //                            map.put(3,info.lng);
-                            datas.add(map);
+                                    datas.add(map);
+                                }
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                UiUtils.showToast(App.getApplication(), result.msg);
+                            }
                         }
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        UiUtils.showToast(App.getApplication(), result.msg);
-                    }
-                }
 
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing())
-                            dialog.dismiss();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 500);
                     }
-                }, 800);
-            }
+                });
 
-            @Override
-            public void onFailure(Call<CompanyListResult> call, Throwable t) {
-                LogUtil.e(t.toString());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing())
-                            dialog.dismiss();
-                    }
-                }, 800);
-            }
-        });
     }
 
 
     private void searchRoom(String text) {
-        RetrofitHelper.getApi().queryFireroom(text).enqueue(new Callback<CompanyListResult>() {
-            @Override
-            public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
-                CompanyListResult result = response.body();
-//                System.out.println("和大嫂大嫂等等等等等等等等等等等等"+result.status);
-                if (result != null) {
-                    if (result.status.equals("1")) {
-                        datas.clear();
-                        List<CompanyList> lists = result.results;
-                        for (CompanyList info : lists) {
-                            SparseArray<String> map = new SparseArray<String>();
+        RetrofitHelper.getApi().queryFireroom(text)
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 500);
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                datas.clear();
+                                List<CompanyList> lists = result.results;
+                                for (CompanyList info : lists) {
+                                    SparseArray<String> map = new SparseArray<String>();
 //                            System.out.println("我的id是:====>"+info.id);
-                            map.put(0, info.id);
-                            map.put(1, info.name);
+                                    map.put(0, info.id);
+                                    map.put(1, info.name);
 //                            map.put(2,info.lat);
 //                            map.put(3,info.lng);
-                            datas.add(map);
+                                    datas.add(map);
+                                }
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                UiUtils.showToast(App.getApplication(), result.msg);
+                            }
                         }
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        UiUtils.showToast(App.getApplication(), result.msg);
-                    }
-                }
 
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing())
-                            dialog.dismiss();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 500);
                     }
-                }, 800);
-            }
-
-            @Override
-            public void onFailure(Call<CompanyListResult> call, Throwable t) {
-                LogUtil.e(t.toString());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing())
-                            dialog.dismiss();
-                    }
-                }, 800);
-            }
-        });
+                });
     }
 
 
     private void searchStation(String text) {
-        RetrofitHelper.getApi().queryFirestation(text).enqueue(new Callback<CompanyListResult>() {
-            @Override
-            public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
-                CompanyListResult result = response.body();
-//                System.out.println("和大嫂大嫂等等等等等等等等等等等等"+result.status);
-                if (result != null) {
-                    if (result.status.equals("1")) {
-                        datas.clear();
-                        List<CompanyList> lists = result.results;
-                        for (CompanyList info : lists) {
-                            SparseArray<String> map = new SparseArray<String>();
-//                            System.out.println("我的id是:====>"+info.id);
-                            map.put(0, info.id);
-                            map.put(1, info.name);
-//                            map.put(2,info.lat);
-//                            map.put(3,info.lng);
-                            datas.add(map);
+        RetrofitHelper.getApi().queryFirestation(text)
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 800);
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                datas.clear();
+                                List<CompanyList> lists = result.results;
+                                for (CompanyList info : lists) {
+                                    SparseArray<String> map = new SparseArray<String>();
+                                    map.put(0, info.id);
+                                    map.put(1, info.name);
+                                    datas.add(map);
+                                }
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                UiUtils.showToast(App.getApplication(), result.msg);
+                            }
                         }
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        UiUtils.showToast(App.getApplication(), result.msg);
-                    }
-                }
 
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing())
-                            dialog.dismiss();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 800);
                     }
-                }, 800);
-            }
+                });
 
-            @Override
-            public void onFailure(Call<CompanyListResult> call, Throwable t) {
-                LogUtil.e(t.toString());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing())
-                            dialog.dismiss();
-                    }
-                }, 800);
-            }
-        });
+
     }
 
     private void searchGroup(String text) {
-        RetrofitHelper.getApi().queryFiregroup(text).enqueue(new Callback<CompanyListResult>() {
-            @Override
-            public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
-                CompanyListResult result = response.body();
-//                System.out.println("和大嫂大嫂等等等等等等等等等等等等"+result.status);
-                if (result != null) {
-                    if (result.status.equals("1")) {
-                        datas.clear();
-                        List<CompanyList> lists = result.results;
-                        for (CompanyList info : lists) {
-                            SparseArray<String> map = new SparseArray<String>();
+        RetrofitHelper.getApi().queryFiregroup(text)
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 800);
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                datas.clear();
+                                List<CompanyList> lists = result.results;
+                                for (CompanyList info : lists) {
+                                    SparseArray<String> map = new SparseArray<String>();
 //                            System.out.println("我的id是:====>"+info.id);
-                            map.put(0, info.id);
-                            map.put(1, info.name);
+                                    map.put(0, info.id);
+                                    map.put(1, info.name);
 //                            map.put(2,info.lat);
 //                            map.put(3,info.lng);
-                            datas.add(map);
+                                    datas.add(map);
+                                }
+                            } else {
+                                UiUtils.showToast(App.getApplication(), result.msg);
+                            }
                         }
-                    } else {
-                        UiUtils.showToast(App.getApplication(), result.msg);
-                    }
-                }
 
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing())
-                            adapter.notifyDataSetChanged();
-                        dialog.dismiss();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        }, 800);
                     }
-                }, 800);
-            }
+                });
 
-            @Override
-            public void onFailure(Call<CompanyListResult> call, Throwable t) {
-                LogUtil.e(t.toString());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing())
-                            dialog.dismiss();
-                    }
-                }, 800);
-            }
-        });
+
     }
 
 
@@ -467,5 +496,12 @@ public class Search_activity extends BasedActivity {
             }
         });
         builder.create().show();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 }

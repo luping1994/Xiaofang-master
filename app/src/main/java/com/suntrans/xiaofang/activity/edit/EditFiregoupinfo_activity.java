@@ -2,6 +2,7 @@ package com.suntrans.xiaofang.activity.edit;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,6 +23,7 @@ import com.suntrans.xiaofang.model.firegroup.FireGroupDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.Map;
 
@@ -83,9 +85,7 @@ public class EditFiregoupinfo_activity extends BasedActivity {
     }
 
     private void initView() {
-//        IntentFilter filter = new IntentFilter();
-//        filter.addAction("com.suntrans.addr.RECEIVE");
-//        registerReceiver(broadcastReceiver, filter);
+
         info = (FireGroupDetailInfo) getIntent().getSerializableExtra("info");
 
     }
@@ -259,6 +259,7 @@ public class EditFiregoupinfo_activity extends BasedActivity {
             System.out.println(key + "," + value);
         }
         RetrofitHelper.getApi().updateFireGroup(map)
+                .compose(this.<AddFireGroupResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AddFireGroupResult>() {

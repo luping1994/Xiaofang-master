@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by Looney on 2016/12/17.
  */
 
-public class AddCompanyResult {
+public class  AddCompanyResult {
     @SerializedName("status")
     public String status;
 

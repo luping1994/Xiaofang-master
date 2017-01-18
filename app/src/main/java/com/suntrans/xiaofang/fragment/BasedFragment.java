@@ -2,7 +2,6 @@ package com.suntrans.xiaofang.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +10,13 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.suntrans.xiaofang.R;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 /**
  * Created by Looney on 2016/12/30.
  */
 
-public abstract class BasedFragment extends Fragment {
+public abstract class BasedFragment extends RxFragment {
 
     protected ProgressBar progressBar;
     protected Button btFailed;

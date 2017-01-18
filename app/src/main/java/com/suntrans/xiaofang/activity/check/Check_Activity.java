@@ -216,7 +216,9 @@ public class Check_Activity extends BaseActivity {
         }
     }
 
-    {
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 }

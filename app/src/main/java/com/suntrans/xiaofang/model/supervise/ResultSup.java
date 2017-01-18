@@ -8,15 +8,8 @@ import java.util.List;
 public class ResultSup {
 
     public Supervise item;
+
     public List<String> imgs;
     public List<String> imgraws;
 
-    @Override
-    public String toString() {
-        return "ResultSup{" +
-                "item=" + item.toString()+
-                ", imgs=" + imgs.get(0) +
-                ", imgraws=" + imgraws.get(0) +
-                '}';
-    }
 }

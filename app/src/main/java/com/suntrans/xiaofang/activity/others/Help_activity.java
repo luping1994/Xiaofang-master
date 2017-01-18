@@ -24,6 +24,7 @@ import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.suntrans.xiaofang.views.IViewPager;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,6 +83,7 @@ public class Help_activity extends BasedActivity {
         }
         String value1 = value.getText().toString().replace(" ","");
         RetrofitHelper.getApi().commitGuesBook(value1)
+                .compose(this.<AddCompanyResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AddCompanyResult>() {

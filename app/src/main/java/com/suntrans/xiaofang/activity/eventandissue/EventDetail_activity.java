@@ -37,6 +37,7 @@ import com.suntrans.xiaofang.model.event.Result;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.views.MyVideoView;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -147,6 +148,7 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         array6.put(0, "单位地址:");
         array6.put(1, "");
         datas.add(array6);
+        getData();
     }
 
 
@@ -179,7 +181,7 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         adapter_after.setOnitemClickListener(new PicAdapter.onItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (url_after==null||url_after.size()==0){
+                if (url_after == null || url_after.size() == 0) {
                     return;
                 }
                 if (Build.VERSION.SDK_INT < 21) {
@@ -199,7 +201,7 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         adapter_before.setOnitemClickListener(new PicAdapter.onItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (url_before==null||url_before.size()==0){
+                if (url_before == null || url_before.size() == 0) {
                     return;
                 }
                 if (Build.VERSION.SDK_INT < 21) {
@@ -245,12 +247,11 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
     @Override
     protected void onResume() {
         super.onResume();
-        getData();
     }
 
     private void getData() {
-        System.out.println("我的ID是==>"+id);
         RetrofitHelper.getApi().getEventDetail(id)
+                .compose(this.<EventDetailResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<EventDetailResult>() {
@@ -352,6 +353,7 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
     @Override
     protected void onDestroy() {
         videoView.stopPlayback();
+        handler.removeCallbacksAndMessages(null);
         super.onDestroy();
 
     }

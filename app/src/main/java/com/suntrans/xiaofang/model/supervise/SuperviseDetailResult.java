@@ -6,14 +6,5 @@ package com.suntrans.xiaofang.model.supervise;
 
 public class SuperviseDetailResult {
     public String status;
-
     public ResultSup result;
-
-    @Override
-    public String toString() {
-        return "SuperviseDetailResult{" +
-                "status='" + status + '\'' +
-                ", result=" + result.toString() +
-                '}';
-    }
 }

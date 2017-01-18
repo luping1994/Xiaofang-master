@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.suntrans.xiaofang.R;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Created by Looney on 2017/1/3.
@@ -23,7 +22,6 @@ public class DetailPic_Activity extends AppCompatActivity {
     ImageView imageView;
     String url;
     TextView errorText;
-    private PhotoViewAttacher attacher;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

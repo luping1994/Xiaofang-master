@@ -88,6 +88,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white"
@@ -209,59 +210,98 @@
                     android:text="消防队员人数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
-
                 <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="干部："
+                            android:textSize="@dimen/text_size" />
+                        <EditText
+                            android:inputType="number"
+                            android:id="@+id/servingnum"
+                            android:layout_width="wrap_content"
+                            android:minWidth="60dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="left|center"
+                            android:textColor="@color/balck"
+                            android:textSize="@dimen/text_size1" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="人"
+                            android:textSize="@dimen/text_size" />
+                    </LinearLayout>
 
-                    <TextView
+
+                    <LinearLayout
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="现役："
-                        android:textSize="@dimen/text_size" />
+                        >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="士兵："
+                            android:textSize="@dimen/text_size" />
+                        <EditText
+                            android:inputType="number"
+                            android:id="@+id/fulltimenum"
+                            android:layout_width="wrap_content"
+                            android:minWidth="60dp"
+                            android:layout_height="match_parent"
+                            android:gravity="left|center"
+                            android:textColor="@color/balck"
+                            android:textSize="@dimen/text_size1" />
 
-                    <EditText
-                        android:id="@+id/servingnum"
-                        android:layout_width="40dp"
-                        android:layout_height="match_parent"
-                        android:gravity="left|center"
-                        android:inputType="number"
-                        android:textColor="@color/balck"
-                        android:textSize="@dimen/text_size1" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="人"
+                            android:textSize="@dimen/text_size"
+                            />
+                    </LinearLayout>
 
-                    <TextView
+                    <LinearLayout
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="人"
-                        android:textSize="@dimen/text_size" />
+                        >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="合同制："
+                            android:textSize="@dimen/text_size" />
+                        <EditText
+                            android:inputType="number"
+                            android:id="@+id/hetong"
+                            android:layout_width="wrap_content"
+                            android:minWidth="60dp"
+                            android:layout_height="match_parent"
+                            android:gravity="left|center"
+                            android:textColor="@color/balck"
+                            android:textSize="@dimen/text_size1" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="40dp"
-                        android:gravity="center"
-                        android:text="专职："
-                        android:textSize="@dimen/text_size" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="人"
+                            android:textSize="@dimen/text_size"
+                            />
+                    </LinearLayout>
 
-                    <EditText
-                        android:id="@+id/fulltimenum"
-                        android:layout_width="40dp"
-                        android:layout_height="match_parent"
-                        android:gravity="left|center"
-                        android:inputType="number"
-                        android:textColor="@color/balck"
-                        android:textSize="@dimen/text_size1" />
-
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="人"
-                        android:textSize="@dimen/text_size" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -305,6 +345,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_condition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1px"
@@ -313,24 +354,35 @@
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:text="车辆配置情况"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
-
-                <EditText
-                    android:id="@+id/cardisp"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:background="@null"
-                    android:gravity="left|start"
-                    android:hint="请输入"
-                    android:inputType="text"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1" />
+                    android:layout_height="30dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="车辆配置情况"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size" />
+
+                    <Button
+                        android:id="@+id/add"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentRight="true"
+                        android:background="@null"
+                        android:text="＋" />
+
+                    <Button
+                        android:layout_toLeftOf="@+id/add"
+                        android:id="@+id/sub"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@null"
+                        android:text="－" />
+                </RelativeLayout>
+
             </LinearLayout>
 
             <LinearLayout

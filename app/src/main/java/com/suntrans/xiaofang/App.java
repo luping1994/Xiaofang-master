@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.suntrans.xiaofang.utils.LogUtil;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,7 +26,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-//        PgyCrashManager.register(this);
+////        PgyCrashManager.register(this);
 //        if (LeakCanary.isInAnalyzerProcess(this)) {
 //            // This process is dedicated to LeakCanary for heap analysis.
 //            // You should not init your app in this process.
@@ -35,7 +34,7 @@ public class App extends Application {
 //        }
 //        LeakCanary.install(this);
 //        // Normal app init code...
-        CrashReport.initCrashReport(getApplicationContext(), "7d01f61d8c", true);//初始化腾讯bug分析工具
+//        CrashReport.initCrashReport(getApplicationContext(), "7d01f61d8c", true);//初始化腾讯bug分析工具
         application=this;
         mainTid=android.os.Process.myTid();
         mHandler=new Handler();

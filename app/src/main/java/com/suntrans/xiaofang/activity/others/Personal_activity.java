@@ -28,6 +28,7 @@ import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.model.personal.UserInfo;
 import com.suntrans.xiaofang.model.personal.UserInfoResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.ArrayList;
 
@@ -110,6 +111,7 @@ public class Personal_activity extends BasedActivity {
     private void getData() {
         RetrofitHelper.getUserInfoApi()
                 .getUserInfo()
+                .compose(this.<UserInfoResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribeOn(Schedulers.io())
                 .filter(new Func1<UserInfoResult, Boolean>() {
                     @Override
@@ -258,5 +260,12 @@ public class Personal_activity extends BasedActivity {
                 }
             }
         }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 }

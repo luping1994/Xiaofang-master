@@ -36,7 +36,7 @@ public class CompanyList {
     public String location;
     public String lng;
     public String lat;
-    public int special;
+    public String special;
     public String address;
     public String leader;
 

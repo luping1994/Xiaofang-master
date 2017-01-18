@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -23,6 +22,8 @@ import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.trello.rxlifecycle.android.FragmentEvent;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.Map;
 
@@ -37,26 +38,34 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/12/13.
  */
 
-public class Type2_fragment extends Fragment implements View.OnClickListener {
+public class Type2_fragment extends RxFragment implements View.OnClickListener {
     Map<String, String> map;
+
     @BindView(R.id.add_fireroom)
     Button addFireroom;
+
     @BindView(R.id.name)
     EditText name;
+
     @BindView(R.id.addr)
     EditText addr;
+
     @BindView(R.id.contact)
     EditText contact;
+
     @BindView(R.id.phone)
     EditText phone;
+
     @BindView(R.id.membernum)
     EditText membernum;
 
 
     @BindView(R.id.district)
     Spinner district;
+
     @BindView(R.id.group)
     EditText group;
+
     @BindView(R.id.scroll)
     ScrollView scroll;
     @BindView(R.id.content1)
@@ -112,7 +121,7 @@ public class Type2_fragment extends Fragment implements View.OnClickListener {
                 llCondition.addView(item);
                 break;
             case R.id.sub:
-                if (llCondition.getChildCount()==0)
+                if (llCondition.getChildCount()==1)
                     break;
                 llCondition.removeViewAt(llCondition.getChildCount() - 1);
                 break;
@@ -121,7 +130,7 @@ public class Type2_fragment extends Fragment implements View.OnClickListener {
                 llConditionEq.addView(item2);
                 break;
             case R.id.sub_eq:
-                if (llConditionEq.getChildCount()==0)
+                if (llConditionEq.getChildCount()==1)
                     break;
                 llConditionEq.removeViewAt(llConditionEq.getChildCount() - 1);
                 break;
@@ -153,7 +162,6 @@ public class Type2_fragment extends Fragment implements View.OnClickListener {
                 lng.setText(lng2);
                 lat.setText(lat2);
                 addr.setText(addr2);
-
             }
         });
     }
@@ -200,15 +208,14 @@ public class Type2_fragment extends Fragment implements View.OnClickListener {
             String type=conType.getText().toString();
             String detail=conDetail.getText().toString();
             cardisp1=new StringBuilder().append(cardisp1)
-                    .append("类型:")
+//                    .append("类型:")
                     .append(type)
                     .append(",")
-                    .append("详情:")
+//                    .append("详情:")
                     .append(detail)
                     .append(";")
                     .toString();
         }
-
 
 
         String equipdisp1 ="";
@@ -220,13 +227,17 @@ public class Type2_fragment extends Fragment implements View.OnClickListener {
             EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
             String type=conType.getText().toString();
             String detail=conDetail.getText().toString();
-            equipdisp1=new StringBuilder().append(cardisp1)
-                    .append("类型:")
+            equipdisp1=new StringBuilder().append(equipdisp1)
+//                    .append("类型:")
                     .append(type)
-                    .append("详情:")
+                    .append(",")
+//                    .append("详情:")
                     .append(detail)
+                    .append(";")
                     .toString();
         }
+
+
         String group1 = group.getText().toString();
         String lng1 = lng.getText().toString();
         String lat1 = lat.getText().toString();
@@ -307,6 +318,7 @@ public class Type2_fragment extends Fragment implements View.OnClickListener {
             System.out.println(key + "," + value);
         }
         RetrofitHelper.getApi().createFireRoom(map)
+                .compose(this.<AddFireRoomResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AddFireRoomResult>() {

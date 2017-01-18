@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +30,7 @@ import com.suntrans.xiaofang.model.firegroup.FireGroupDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.trello.rxlifecycle.android.FragmentEvent;
 
 import java.util.ArrayList;
 
@@ -203,12 +203,6 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
             }
 
             public void setData(int position) {
-                if (position==datas.size()){
-                    value.setGravity(Gravity.CENTER|Gravity.LEFT);
-
-                }else {
-                    value.setGravity(Gravity.CENTER|Gravity.RIGHT);
-                }
                 name.setText(datas.get(position).get(0));
                 value.setText(datas.get(position).get(1));
             }
@@ -219,6 +213,7 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
     LatLng to ;//导航的目的地
     private void getData() {
         RetrofitHelper.getApi().getFireGroupDetailInfo(((InfoDetail_activity)getActivity()).companyId)
+                .compose(this.<FireGroupDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<FireGroupDetailResult>() {
@@ -268,7 +263,7 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
         datas.get(1).put(1,info.addr);//地址
         datas.get(2).put(1,info.area==null?"--":info.area+"平方公里");
         datas.get(3).put(1,info.phone==null?"--":info.phone);
-        datas.get(4).put(1,info.membernum==null?"--":info.membernum+"人");
+        datas.get(4).put(1,info.membernum==null?"--":info.membernum);
         datas.get(5).put(1,info.carnum==null?"--":info.carnum);
         datas.get(6).put(1,info.cardisp==null?"--":info.cardisp);
         datas.get(7).put(1,info.waterweight==null?"--":info.waterweight);
@@ -343,6 +338,7 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
 
     private void delete() {
         RetrofitHelper.getApi().deleteGroup(myInfo.id)
+                .compose(this.<AddFireGroupResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AddFireGroupResult>() {
@@ -383,5 +379,12 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
                         }
                     }
                 });
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacksAndMessages(null);
     }
 }

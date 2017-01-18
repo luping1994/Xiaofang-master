@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -26,7 +25,6 @@ import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.suntrans.xiaofang.views.dialog.AttrSelector;
@@ -36,6 +34,8 @@ import com.suntrans.xiaofang.views.dialog.GeneralProvider;
 import com.suntrans.xiaofang.views.dialog.MainAttr;
 import com.suntrans.xiaofang.views.dialog.SubAttr;
 import com.suntrans.xiaofang.views.dialog.onAttrSelectedListener;
+import com.trello.rxlifecycle.android.FragmentEvent;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,16 +44,16 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Looney on 2016/12/13.
  * 增加社会单位fragment
  */
 
-public class Type1_fragment extends Fragment {
+public class Type1_fragment extends RxFragment {
     @BindView(R.id.name)
     EditText name;
     @BindView(R.id.addr)
@@ -237,6 +237,9 @@ public class Type1_fragment extends Fragment {
         dangerlevel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                attribute.setText("");
+                mainAttrId="";
+                subAttrId="";
                 if (checkedId == R.id.dangerlevel1) {
                     attributeLl.setVisibility(View.VISIBLE);
                     dangerlevels = "1";
@@ -646,51 +649,62 @@ public class Type1_fragment extends Fragment {
             String value = entry.getValue().toString();
             System.out.println(key + "," + value);
         }
-        RetrofitHelper.getApi().createCompany(map).enqueue(new Callback<AddCompanyResult>() {
-            @Override
-            public void onResponse(Call<AddCompanyResult> call, Response<AddCompanyResult> response) {
-                AddCompanyResult result = response.body();
-                try {
-                    if (result != null) {
-                        if (result.status.equals("1")) {
-                            final AlertDialog dialog1;
+        RetrofitHelper.getApi().createCompany(map)
+                .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<AddCompanyResult>() {
+                    @Override
+                    public void onCompleted() {
 
-                            dialog1 = new AlertDialog.Builder(getActivity())
-                                    .setMessage(result.result)
-                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            getActivity().finish();
-                                        }
-                                    })
-                                    .create();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dialog1.show();
-                                }
-                            }, 500);
-                        } else {
-
-                            UiUtils.showToast(UiUtils.getContext(), result.msg);
-                        }
-                    } else {
-                        UiUtils.showToast(UiUtils.getContext(), "添加失败");
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        UiUtils.showToast("添加失败");
+                    }
 
-            @Override
-            public void onFailure(Call<AddCompanyResult> call, Throwable t) {
-                UiUtils.showToast(UiUtils.getContext(), "添加单位失败!");
-                LogUtil.e(t.toString());
-            }
-        });
+                    @Override
+                    public void onNext(AddCompanyResult result) {
+                        try {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    final AlertDialog dialog1;
+                                    dialog1 = new AlertDialog.Builder(getActivity())
+                                            .setMessage(result.result)
+                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getActivity().finish();
+                                                }
+                                            })
+                                            .create();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            dialog1.show();
+                                        }
+                                    },500);
+                                } else {
+
+                                    UiUtils.showToast(UiUtils.getContext(), result.msg);
+                                }
+                            } else {
+                                UiUtils.showToast(UiUtils.getContext(), "添加失败");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     Handler handler = new Handler();
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacksAndMessages(null);
+    }
 }

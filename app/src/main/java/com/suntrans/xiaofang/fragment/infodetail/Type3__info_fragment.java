@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +30,7 @@ import com.suntrans.xiaofang.model.firestation.FireStationDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.trello.rxlifecycle.android.FragmentEvent;
 
 import java.util.ArrayList;
 
@@ -221,12 +221,7 @@ public class Type3__info_fragment extends BasedFragment implements View.OnClickL
             }
 
             public void setData(int position) {
-                if (position==datas.size()){
-                    value.setGravity(Gravity.CENTER|Gravity.LEFT);
 
-                }else {
-                    value.setGravity(Gravity.CENTER|Gravity.RIGHT);
-                }
                 name.setText(datas.get(position).get(0));
                 value.setText(datas.get(position).get(1));
             }
@@ -236,6 +231,7 @@ public class Type3__info_fragment extends BasedFragment implements View.OnClickL
     public FireStationDetailInfo myInfo;
     private void getData() {
         RetrofitHelper.getApi().getFireStationDetailInfo(((InfoDetail_activity)getActivity()).companyId)
+                .compose(this.<FireStationDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<FireStationDetailResult>() {
@@ -365,6 +361,7 @@ public class Type3__info_fragment extends BasedFragment implements View.OnClickL
 
     private void delete() {
         RetrofitHelper.getApi().deleteStation(myInfo.id)
+                .compose(this.<AddFireStationResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AddFireStationResult>() {
@@ -405,5 +402,12 @@ public class Type3__info_fragment extends BasedFragment implements View.OnClickL
                         }
                     }
                 });
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacksAndMessages(null);
     }
 }

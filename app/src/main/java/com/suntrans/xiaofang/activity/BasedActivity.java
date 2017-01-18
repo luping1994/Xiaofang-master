@@ -2,7 +2,8 @@ package com.suntrans.xiaofang.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,12 +12,8 @@ import java.util.List;
  * Created by Looney on 2016/12/27.
  */
 
-public class  BasedActivity extends AppCompatActivity {
-
-
+public class  BasedActivity extends RxAppCompatActivity {
     public final static List<BasedActivity> mList = new LinkedList<BasedActivity>();
-
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

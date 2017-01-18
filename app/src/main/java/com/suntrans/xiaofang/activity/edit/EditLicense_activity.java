@@ -27,6 +27,7 @@ import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -305,6 +306,7 @@ public class EditLicense_activity extends BasedActivity {
             System.out.println(key + "," + value);
         }
         RetrofitHelper.getApi().completeLicense(map2)
+                .compose(this.<AddLicenseResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AddLicenseResult>() {
@@ -340,6 +342,7 @@ public class EditLicense_activity extends BasedActivity {
 
 
         RetrofitHelper.getApi().openLicense(map)
+                .compose(this.<AddLicenseResult>bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AddLicenseResult>() {

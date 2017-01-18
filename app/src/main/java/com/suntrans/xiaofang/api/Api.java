@@ -73,7 +73,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/company/range")
-    Call<CompanyListResult> getCompanyList(@Field("lng") String lng,
+    Observable<CompanyListResult> getCompanyList(@Field("lng") String lng,
                                            @Field("lat") String Lat,
                                            @Field("lngbias") String lngbias,
                                            @Field("latbias") String latbias);
@@ -107,7 +107,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/company/detail")
-    Call<CompanyDetailnfoResult> getCompanyDetail(@Field("id") String id);
+    Observable<CompanyDetailnfoResult> getCompanyDetail(@Field("id") String id);
 
 
     /**
@@ -118,7 +118,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/company/create")
-    Call<AddCompanyResult> createCompany(@FieldMap Map<String, String> info);
+    Observable<AddCompanyResult> createCompany(@FieldMap Map<String, String> info);
 
     /**
      * 删除公司信息
@@ -138,7 +138,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/company/update")
-    Call<AddCompanyResult> updateCompany(@FieldMap Map<String, String> info);
+    Observable<AddCompanyResult> updateCompany(@FieldMap Map<String, String> info);
 
 
     /**
@@ -149,7 +149,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/company/search")
-    Call<CompanyListResult> queryCompany(@Field("name") String name);
+    Observable<CompanyListResult> queryCompany(@Field("name") String name);
 
 
     /**
@@ -160,7 +160,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/fireroom/search")
-    Call<CompanyListResult> queryFireroom(@Field("name") String name);
+    Observable<CompanyListResult> queryFireroom(@Field("name") String name);
 
 
     /**
@@ -171,7 +171,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/firestation/search")
-    Call<CompanyListResult> queryFirestation(@Field("name") String name);
+    Observable<CompanyListResult> queryFirestation(@Field("name") String name);
 
 
     /**
@@ -182,9 +182,9 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/firegroup/search")
-    Call<CompanyListResult> queryFiregroup(@Field("name") String name);
+    Observable<CompanyListResult> queryFiregroup(@Field("name") String name);
 
-    /**
+    /**社会单位审查通过
      * @param id
      * @return
      */
@@ -194,8 +194,7 @@ public interface Api {
 
 
     /**
-     * 社会单位通过
-     *
+     * 社会单位不通过
      * @param id
      * @return
      */
@@ -238,7 +237,7 @@ public interface Api {
                                                               @Field("lat") String lat);
 
     /**
-     * 新增设去消防室
+     * 新增社区消防室
      *
      * @param map
      * @return
@@ -428,7 +427,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/issued/detail")
-    Observable<SuperviseDetailResult> getSuperviseDetail(@Field("id") String id);
+    Observable<SuperviseDetailResult>  getSuperviseDetail(@Field("id") String id);
 
     //api/v1/license/range
 
@@ -453,5 +452,8 @@ public interface Api {
     @POST("/api/v1/user/password")
     Observable<CPasswordResult> changedPassword(@Field("password") String contents);
 
+    @FormUrlEncoded
+    @POST("/api/v1/admindivi/area")
+    Observable<Map<String,String>> getArea(@Field("pid") String pid);
 }
 

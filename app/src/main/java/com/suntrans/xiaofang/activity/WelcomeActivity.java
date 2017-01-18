@@ -132,4 +132,11 @@ public class WelcomeActivity extends BasedActivity {
                     }
                 });
     }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+    }
 }

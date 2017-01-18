@@ -1,9 +1,11 @@
 package com.suntrans.xiaofang.fragment.infodetail;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -34,12 +36,10 @@ import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.trello.rxlifecycle.android.FragmentEvent;
 
 import java.util.ArrayList;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -73,17 +73,29 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
     private SuperviseFragment superviseFragment;
 
 
-    LatLng to ;
+    LatLng to;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_info_type1, container, false);
+        View view =  inflater.inflate(R.layout.fragment_info_type1, container, false);
+        initView(view);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
 
-        super.onViewCreated(view,savedInstanceState);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+
+
+    private void initView(View view) {
         menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
         menuRed.setClosedOnTouchOutside(true);
         fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
@@ -103,8 +115,9 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
 //        progressBar.setVisibility(View.VISIBLE);
 //        error.setVisibility(View.GONE);
         tabLayout.setupWithViewPager(pager);
-
     }
+
+
 
     @Override
     public void reLoadData(View view) {
@@ -114,7 +127,7 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
     }
 
     class PagerAdapter extends FragmentStatePagerAdapter {
-        String[] titles = new String[]{"基本信息","行政审批","单位监督","单位事件"};
+        String[] titles = new String[]{"基本信息", "行政审批", "单位监督", "单位事件"};
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
@@ -125,20 +138,20 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
 
             switch (position) {
                 case 0:
-                    if (detailInfoFragment0==null)
-                    detailInfoFragment0 = new DetailInfoFragment();
+                    if (detailInfoFragment0 == null)
+                        detailInfoFragment0 = new DetailInfoFragment();
                     return detailInfoFragment0;
                 case 1:
-                    if (govApproal_fragment==null)
-                    govApproal_fragment = new GovApproal_fragment();
+                    if (govApproal_fragment == null)
+                        govApproal_fragment = new GovApproal_fragment();
                     return govApproal_fragment;
                 case 2:
-                    if (superviseFragment==null){
+                    if (superviseFragment == null) {
                         superviseFragment = new SuperviseFragment();
                     }
                     return superviseFragment;
                 case 3:
-                    if (eventFragment==null){
+                    if (eventFragment == null) {
                         eventFragment = new EventFragment();
                     }
                     return eventFragment;
@@ -165,74 +178,88 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
         getData();
     }
 
-
-
-    public CompanyDetailnfo myInfo;
-    //获取单位详情信息
-    private void getData() {
-        RetrofitHelper.getApi().getCompanyDetail(((InfoDetail_activity) getActivity()).companyId).enqueue(new Callback<CompanyDetailnfoResult>() {
-            @Override
-            public void onResponse(Call<CompanyDetailnfoResult> call, Response<CompanyDetailnfoResult> response) {
-                CompanyDetailnfoResult result = response.body();
-                if (result != null) {
-                    if (!result.status.equals("0")) {
-                        final CompanyDetailnfo info = result.info;
-                        if (info.lat!=null||info.lng!=null){
-                            try {
-                                to = new LatLng(Double.valueOf(info.lat),Double.valueOf(info.lng));
-                            }catch (Exception e){
-                                to=null;
-                            }
-                        }
-                        myInfo = info;
-//                        System.out.println(info.toString());
-                        detailInfoFragment0.setData(info);
-                        eventFragment.setId(info.id);
-                        superviseFragment.setId(info.id);
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (info.name!=null&&!info.name.equals("")){
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            ((InfoDetail_activity)getActivity()).toolbar.setTitle(info.name);
-                                        }
-                                    },600);
-                                }
-                                progressBar.setVisibility(View.INVISIBLE);
-                                pager.setVisibility(View.VISIBLE);
-                                error.setVisibility(View.GONE);
-
-                            }
-                        },500);
-
-                    }else {
-                        UiUtils.showToast(result.msg);
-
-                    }
-                } else {
-                    UiUtils.showToast(App.getApplication(), "请求失败!");
-                    progressBar.setVisibility(View.INVISIBLE);
-                    error.setVisibility(View.VISIBLE);
-                }
-            }
-
-
-            @Override
-            public void onFailure(Call<CompanyDetailnfoResult> call, Throwable t) {
-                UiUtils.showToast(App.getApplication(), "请求失败!");
-                progressBar.setVisibility(View.INVISIBLE);
-                error.setVisibility(View.VISIBLE);
-            }
-        });
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
     }
 
-    Handler handler = new Handler();
+    public CompanyDetailnfo myInfo;
+
+    //获取单位详情信息
+    private void getData() {
+        RetrofitHelper.getApi().getCompanyDetail(((InfoDetail_activity) getActivity()).companyId)
+                .compose(this.<CompanyDetailnfoResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<CompanyDetailnfoResult>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println("onCompleted被执行了");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(CompanyDetailnfoResult result) {
+                        System.out.println("onNext被执行了");
+
+                        if (result != null) {
+                            if (!result.status.equals("0")) {
+                                final CompanyDetailnfo info = result.info;
+                                if (info.lat != null || info.lng != null) {
+                                    try {
+                                        to = new LatLng(Double.valueOf(info.lat), Double.valueOf(info.lng));
+                                    } catch (Exception e) {
+                                        to = null;
+                                    }
+                                }
+                                myInfo = info;
+                                if (detailInfoFragment0 != null)
+                                    detailInfoFragment0.setData(info);
+                                if (eventFragment != null)
+                                    eventFragment.setId(info.id);
+                                if (superviseFragment != null)
+                                    superviseFragment.setId(info.id);
+                                handler.sendMessageDelayed(Message.obtain(handler, 100, info.name), 500);
+                            } else {
+                                UiUtils.showToast(result.msg);
+
+                            }
+                        } else {
+                            UiUtils.showToast(App.getApplication(), "请求失败!");
+                            progressBar.setVisibility(View.INVISIBLE);
+                            error.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+    }
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 100) {
+                System.out.println("我被执行了");
+                String name = (String) msg.obj;
+                if (name != null && !name.equals("")) {
+                    if (((InfoDetail_activity) getActivity()).toolbar != null)
+                        if (((InfoDetail_activity) getActivity()).toolbar.getTitle().toString().equals(""))
+                            ((InfoDetail_activity) getActivity()).toolbar.setTitle(name);
+                }
+                progressBar.setVisibility(View.INVISIBLE);
+                pager.setVisibility(View.VISIBLE);
+                error.setVisibility(View.GONE);
+            }
+        }
+    };
+
     @Override
     public void onClick(View v) {
-        if (myInfo==null){
-            UiUtils.showToast(UiUtils.getContext(),"无法获取单位信息");
+        if (myInfo == null) {
+            UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
             return;
         }
         switch (v.getId()) {
@@ -241,7 +268,7 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                            delete();
+                        delete();
                     }
                 });
                 builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -268,7 +295,7 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
             case R.id.fab3:
                 Intent intent1 = new Intent();
                 intent1.setClass(getActivity(), CalculateRoute_Activity.class);
-                if (getActivity().getIntent().getParcelableExtra("from") == null||to==null) {
+                if (getActivity().getIntent().getParcelableExtra("from") == null || to == null) {
                     final AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
                     builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
@@ -291,6 +318,7 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
 
     private void delete() {
         RetrofitHelper.getApi().deleteCompany(myInfo.id)
+                .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AddCompanyResult>() {
@@ -301,15 +329,15 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
 
                     @Override
                     public void onError(Throwable e) {
-                        UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                        UiUtils.showToast(UiUtils.getContext(), "删除失败错误");
                         e.printStackTrace();
                     }
 
                     @Override
                     public void onNext(AddCompanyResult result) {
-                        AlertDialog.Builder builder= new AlertDialog.Builder(getActivity());
-                        if (result!=null){
-                            if (result.status.equals("1")){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        if (result != null) {
+                            if (result.status.equals("1")) {
                                 builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -317,7 +345,7 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
                                     }
                                 });
                                 builder.create().show();
-                            }else {
+                            } else {
                                 builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -326,11 +354,17 @@ public class Type1__info_fragment extends BasedFragment implements View.OnClickL
                                 });
                                 builder.create().show();
                             }
-                        }else {
-                            UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                        } else {
+                            UiUtils.showToast(UiUtils.getContext(), "删除失败错误");
                         }
                     }
                 });
     }
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+       handler.removeCallbacksAndMessages(null);
+    }
 }

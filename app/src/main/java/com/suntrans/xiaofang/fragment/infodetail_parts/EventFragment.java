@@ -3,7 +3,6 @@ package com.suntrans.xiaofang.fragment.infodetail_parts;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -19,6 +18,8 @@ import com.suntrans.xiaofang.adapter.RecycleviewAdapter;
 import com.suntrans.xiaofang.model.event.Event;
 import com.suntrans.xiaofang.model.event.EventListResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.trello.rxlifecycle.android.FragmentEvent;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
 
@@ -30,12 +31,13 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/12/22.
  */
 
-public class EventFragment extends Fragment {
+public class EventFragment extends RxFragment {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
     private ArrayList<SparseArray<String>> datas;
     private RecycleviewAdapter adapter;
+    private String id;
 
     @Nullable
     @Override
@@ -71,11 +73,19 @@ public class EventFragment extends Fragment {
     }
 
     public void setId(String id){
+        this.id = id;
         getData(id);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
     }
 
     private void getData(String id) {
         RetrofitHelper.getApi().getEventList(id)
+                .compose(this.<EventListResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<EventListResult>() {

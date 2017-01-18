@@ -30,6 +30,7 @@ import com.suntrans.xiaofang.model.license.LicenseDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.trello.rxlifecycle.android.FragmentEvent;
 
 import java.util.ArrayList;
 
@@ -279,6 +280,7 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
     LatLng to ;
     private void getData() {
         RetrofitHelper.getApi().getLicenseDetailInfo(((InfoDetail_activity) getActivity()).companyId)
+                .compose(this.<LicenseDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<LicenseDetailResult>() {
@@ -409,6 +411,7 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
 
     private void delete() {
         RetrofitHelper.getApi().deleteLicense(myInfo.id)
+                .compose(this.<AddLicenseResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AddLicenseResult>() {
@@ -449,5 +452,12 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
                         }
                     }
                 });
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacksAndMessages(null);
     }
 }

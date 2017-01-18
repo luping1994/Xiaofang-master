@@ -19,6 +19,7 @@ import com.suntrans.xiaofang.model.personal.CPasswordResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -74,6 +75,7 @@ public class ModifyPassword_Activity extends BasedActivity {
             return;
         }
         RetrofitHelper.getApi().changedPassword(newPassword)
+                .compose(this.<CPasswordResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<CPasswordResult>() {

@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.App;
@@ -25,6 +24,7 @@ import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.Map;
 
@@ -57,8 +57,7 @@ public class EditFirestationnfo_activity extends BasedActivity {
     EditText servingnum;
     @BindView(R.id.fulltimenum)
     EditText fulltimenum;
-    @BindView(R.id.textView3)
-    TextView textView3;
+
     @BindView(R.id.carnum)
     EditText carnum;
     @BindView(R.id.cardisp)
@@ -78,6 +77,8 @@ public class EditFirestationnfo_activity extends BasedActivity {
     EditText group;
     @BindView(R.id.scroll)
     ScrollView scroll;
+    @BindView(R.id.hetong)
+    EditText hetong;
     private Toolbar toolbar;
     private EditText txName;
     private FireStationDetailInfo info;
@@ -234,7 +235,12 @@ public class EditFirestationnfo_activity extends BasedActivity {
         String street1 = street.getText().toString();
         String community1 = community.getText().toString();
         String group1 = group.getText().toString();
+
+        String hetong1 = hetong.getText().toString();
+
         builder.put("id", info.id);
+
+
 
         if (Utils.isVaild(name1)) {
             builder.put("name", name1.replace(" ", ""));
@@ -291,6 +297,10 @@ public class EditFirestationnfo_activity extends BasedActivity {
         if (Utils.isVaild(group1)) {
             builder.put("group", group1.replace(" ", ""));
         }
+
+        if (Utils.isVaild(hetong1)){
+
+        }
         map = builder.build();
 
         for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -299,6 +309,7 @@ public class EditFirestationnfo_activity extends BasedActivity {
             System.out.println(key + "," + value);
         }
         RetrofitHelper.getApi().updateFireStation(map)
+                .compose(this.<AddFireStationResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AddFireStationResult>() {

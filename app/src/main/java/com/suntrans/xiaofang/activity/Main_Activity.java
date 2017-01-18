@@ -1,7 +1,5 @@
 package com.suntrans.xiaofang.activity;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -63,7 +61,6 @@ import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.pgyersdk.update.PgyUpdateManager;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.add.Add_activity;
@@ -82,6 +79,8 @@ import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.SensorEventHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.tencent.bugly.Bugly;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
@@ -89,11 +88,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+
+//import com.pgyersdk.update.PgyUpdateManager;
 
 
 public class Main_Activity extends BasedActivity implements LocationSource, View.OnClickListener, AMap.OnMarkerClickListener, AMapLocationListener {
@@ -123,7 +123,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     private LinearLayout detail;//单位详情
 
 
-//    private Spinner spinner;
+    //    private Spinner spinner;
     LinearLayout llNearby;//底部菜单附近单位按钮
     LinearLayout llAdd;//底部菜单附近添加单位按钮
     LinearLayout llResume;//底部菜单个人中心按钮
@@ -149,6 +149,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     Bitmap firegroupBitmap;
     Bitmap firestationBitmap;
     Bitmap companyBitmap;
+    Bitmap zddwBitmap;
     private TextView textView;
 
 
@@ -167,23 +168,22 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Bugly.init(getApplicationContext(), "7d01f61d8c", false);
         initView();
         initMap(savedInstanceState);
     }
 
-    @SuppressLint("NewApi")
     private void initView() {
 
         /**
          *模拟武汉大学地址，release时删除
          */
-        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        a();
-        new Thread(new RunnableMockLocation()).start();
+//        manager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+//        a();
+//        new Thread(new RunnableMockLocation()).start();
 
 
-
-            PgyUpdateManager.register(this);
+//            PgyUpdateManager.register(this);
         fireRoomMarkers = new ArrayList<>();
         fireRoomOptions = new ArrayList<>();
 
@@ -209,26 +209,27 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         firegroupBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_firegroup);
         firestationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.firestation_marker);
         companyBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.company);
+        zddwBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.zddw);
 
 
         company = (AppCompatCheckBox) findViewById(R.id.type1);
         fireroom = (AppCompatCheckBox) findViewById(R.id.type2);
         firestation = (AppCompatCheckBox) findViewById(R.id.type3);
         firegroup = (AppCompatCheckBox) findViewById(R.id.type4);
-        firelicense = (AppCompatCheckBox) findViewById(R.id.type5);
+//        firelicense = (AppCompatCheckBox) findViewById(R.id.type5);
 
-        company.setButtonTintList(ColorStateList.valueOf(Color.WHITE));
-        fireroom.setButtonTintList(ColorStateList.valueOf(Color.WHITE));
-        firestation.setButtonTintList(ColorStateList.valueOf(Color.WHITE));
-        firegroup.setButtonTintList(ColorStateList.valueOf(Color.WHITE));
-        firelicense.setButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        company.setSupportButtonTintList(ColorStateList.valueOf(Color.parseColor("#03a9f4")));
+        fireroom.setSupportButtonTintList(ColorStateList.valueOf(Color.parseColor("#03a9f4")));
+        firestation.setSupportButtonTintList(ColorStateList.valueOf(Color.parseColor("#03a9f4")));
+        firegroup.setSupportButtonTintList(ColorStateList.valueOf(Color.parseColor("#03a9f4")));
+//        firelicense.setButtonTintList(ColorStateList.valueOf(Color.WHITE));
 
 
         company.setOnCheckedChangeListener(listener);
         fireroom.setOnCheckedChangeListener(listener);
         firestation.setOnCheckedChangeListener(listener);
         firegroup.setOnCheckedChangeListener(listener);
-        firelicense.setOnCheckedChangeListener(listener);
+//        firelicense.setOnCheckedChangeListener(listener);
 
 //        rootview = (LinearLayout) findViewById(R.id.rootview);
 //        spinner = (Spinner) findViewById(R.id.spinner);
@@ -296,7 +297,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
                 @Override
                 public void onCameraChangeFinish(CameraPosition cameraPosition) {
-//                    LogUtil.i("onCameraChangeFinish:" + cameraPosition.zoom);
+                    LogUtil.i("onCameraChangeFinish:" + cameraPosition.zoom);
                     if (mMyLocation != null) {
                         showCompanyMarker();
                         showFireRoomMarker();
@@ -390,7 +391,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         getFireRoomList(mMyLocation);
                         getFirStationList(mMyLocation);
                         getFireGroupList(mMyLocation);
-                        getLicenseList(mMyLocation);
+//                        getLicenseList(mMyLocation);
                     }
                 } else {
                     mCircle.setCenter(location);
@@ -472,7 +473,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             mLocationClient.setLocationListener(this);
             mLocationOption = new AMapLocationClientOption();
 //      //设置定位模式为AMapLocationMode.Hight_Accuracy，默认为高精度模式。
-        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
             //设置定位间隔,单位毫秒,默认为2000ms，最低1000ms。
             mLocationOption.setInterval(10000);
             //设置允许模拟定位
@@ -529,9 +530,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         if (result != null && result.getRegeocodeAddress() != null
                                 && result.getRegeocodeAddress().getFormatAddress() != null) {
                             addressName = result.getRegeocodeAddress().getFormatAddress();
-                            LogUtil.i(addressName);
                             if (addrDes != null) {
-                                handler.post(new Runnable() {
+                                handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         String dist;
@@ -542,7 +542,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                                         }
                                         addrDes.setText("距离您" + dist + "| " + addressName);
                                     }
-                                });
+                                }, 500);
                             }
                         } else {
 
@@ -576,16 +576,16 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         String result = "";
         if (resultCode == 300) {
             result = data.getStringExtra("result");
-            if (result!=null&&!result.equals("")){
-                if (result.contains("http://xf.egird.com/weixin/company/show/")){
-                    String id=result.split("company/show/")[1];
+            if (result != null && !result.equals("")) {
+                if (result.contains("http://xf.egird.com/weixin/company/show/")) {
+                    String id = result.split("company/show/")[1];
                     Intent intent = new Intent();
                     intent.putExtra("name", "");
                     intent.putExtra("from", mMyLocation);
-                    intent.putExtra("companyID", id+"#"+S0CIETY);
+                    intent.putExtra("companyID", id + "#" + S0CIETY);
                     intent.setClass(Main_Activity.this, InfoDetail_activity.class);
                     startActivity(intent);
-                }else {
+                } else {
                     UiUtils.showToast("无效的二维码");
                 }
                 Intent intent = new Intent();
@@ -599,21 +599,21 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             IntentResult result1 = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             if (result1 != null) {
                 if (result1.getContents() == null) {
-                    UiUtils.showToast("无效的二维码");
+//                    UiUtils.showToast("无效的二维码");
                 } else {
 //                    LogUtil.i("扫描结果为:" + result1.getContents());
 //                    UiUtils.showToast(App.getApplication(), result1.getContents());
-                    if (result1.getContents().contains("http://xf.egird.com/weixin/company/show/")){
-                        String id=result1.getContents().split("company/show/")[1];
+                    if (result1.getContents().contains("http://xf.egird.com/weixin/company/show/")) {
+                        String id = result1.getContents().split("company/show/")[1];
                         Intent intent1 = new Intent();
                         intent1.putExtra("name", "");
                         intent1.putExtra("from", mMyLocation);
 //                        intent1.putExtra("to", currentMarker.getPosition());
-                        intent1.putExtra("companyID", id+"#"+S0CIETY);
+                        intent1.putExtra("companyID", id + "#" + S0CIETY);
 //                        .snippet(info.id + "#" + S0CIETY + "#" + "1")
                         intent1.setClass(Main_Activity.this, InfoDetail_activity.class);
                         startActivity(intent1);
-                    }else {
+                    } else {
                         UiUtils.showToast("无效的二维码");
                     }
 //                    Intent intent = new Intent();
@@ -652,7 +652,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         options.anchor(0.5f, 0.5f);
         options.position(latlng);
         mLocMarker = aMap.addMarker(options);
-        mLocMarker.setTitle(LOCATION_MARKER_FLAG + "#" + addr);
+        String title = addr==null?"null":addr;
+        mLocMarker.setTitle(LOCATION_MARKER_FLAG + "#" + title);
         mLocMarker.setSnippet(addr);
     }
 
@@ -673,6 +674,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
             mHits[mHits.length - 1] = SystemClock.uptimeMillis();
             if (mHits[0] >= (SystemClock.uptimeMillis() - 2000)) {
+//                finish();
                 android.os.Process.killProcess(android.os.Process.myPid());
             } else {
                 Snackbar.make(mapView, "再按一次退出", Snackbar.LENGTH_SHORT).show();
@@ -783,13 +785,14 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     @Override
     protected void onPause() {
         super.onPause();
-        PgyUpdateManager.unregister();
         mapView.onPause();
+        isrun = false;
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+//        PgyUpdateManager.unregister();/
+        handler.removeCallbacksAndMessages(null);
         mapView.onDestroy();
         if (mSensorHelper != null) {
             mSensorHelper.unRegisterSensorListener();
@@ -798,6 +801,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         }
         deactivate();
         mFirstFix = false;
+        super.onDestroy();
     }
 
 
@@ -856,42 +860,56 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         LatLng location = new LatLng(30.547186, 114.342014);
 //        if (CompanyMarkers.size() < 5)
 //            aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16));
-        RetrofitHelper.getApi().getCompanyList(String.valueOf(center.longitude), String.valueOf(center.latitude), "0.01", "0.001").enqueue(new Callback<CompanyListResult>() {
-//        RetrofitHelper.getApi().getCompanyList("114.342014", "30.547186", "0.01", "0.001").enqueue(new Callback<CompanyListResult>() {
-            @Override
-            public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
-                CompanyListResult result = response.body();
-                if (result == null) {
-                    UiUtils.showToast(App.getApplication(), "获取服务器单位信息数据失败!");
-                    return;
-                }
-                if (!result.status.equals("0") && result != null) {
-                    List<CompanyList> lists = result.results;
-                    for (CompanyList info : lists) {
-                        if (info.lat == null || info.lng == null) {
-                            continue;
+        RetrofitHelper.getApi().getCompanyList(String.valueOf(center.longitude), String.valueOf(center.latitude), "0.01", "0.001")
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<CompanyListResult>() {
+                    @Override
+                    public void call(CompanyListResult result) {
+
+                        if (result == null) {
+                            UiUtils.showToast(App.getApplication(), "获取服务器单位信息数据失败!");
+                            return;
                         }
-                        double lat = Double.valueOf(info.lat);
-                        double lng = Double.valueOf(info.lng);
-                        LatLng src = new LatLng(lat, lng);
-                        MarkerOptions marker = new MarkerOptions()
-                                .position(src).title(info.name + "#" + info.address)
-                                .snippet(info.id + "#" + S0CIETY + "#" + "1")
-                                .icon(BitmapDescriptorFactory.fromBitmap(companyBitmap));
-                        CompanyMarkerOptions.add(marker);
-                    }
-                    showCompanyMarker();
-                } else {
+                        if (!result.status.equals("0") && result != null) {
+                            List<CompanyList> lists = result.results;
+                            for (CompanyList info : lists) {
+                                if (info.lat == null || info.lng == null) {
+                                    continue;
+                                }
+                                double lat = Double.valueOf(info.lat);
+                                double lng = Double.valueOf(info.lng);
+                                LatLng src = new LatLng(lat, lng);
+                                if (info.special != null) {
+                                    if (info.special.equals("1")) {
+                                        MarkerOptions marker = new MarkerOptions()
+                                                .position(src).title(info.name + "#" + info.address)
+                                                .snippet(info.id + "#" + S0CIETY + "#" + "1")
+                                                .icon(BitmapDescriptorFactory.fromBitmap(zddwBitmap));
+                                        CompanyMarkerOptions.add(marker);
+                                    } else {
+                                        MarkerOptions marker = new MarkerOptions()
+                                                .position(src).title(info.name + "#" + info.address)
+                                                .snippet(info.id + "#" + S0CIETY + "#" + "1")
+                                                .icon(BitmapDescriptorFactory.fromBitmap(companyBitmap));
+                                        CompanyMarkerOptions.add(marker);
+                                    }
+                                }
+                            }
+                            showCompanyMarker();
+                        } else {
 //                    UiUtils.showToast(App.getApplication(), result.msg);
-                    LogUtil.i(result.msg);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CompanyListResult> call, Throwable t) {
-
-            }
-        });
+                            LogUtil.i(result.msg);
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                        UiUtils.showToast("请求失败");
+                    }
+                });
     }
 
     /**
@@ -933,7 +951,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
      */
     public void getFireRoomList(LatLng center) {
 
-        RetrofitHelper.getApi().getFireroomList(String.valueOf(center.longitude),String.valueOf(center.latitude))
+        RetrofitHelper.getApi().getFireroomList(String.valueOf(center.longitude), String.valueOf(center.latitude))
+                .compose(this.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
 //        RetrofitHelper.getApi().getFireroomList("114.342014", "30.547186")
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
@@ -971,7 +990,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                                         .icon(BitmapDescriptorFactory.fromBitmap(fireroomBitmap));
                                 fireRoomOptions.add(markerOptions);
                             }
-//                            
+//
                         } else {
                             LogUtil.i("fireroom", list.msg);
                         }
@@ -1019,8 +1038,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
      */
     public void getFirStationList(LatLng center) {
 
-        RetrofitHelper.getApi().getFirestationList(String.valueOf(center.longitude),String.valueOf(center.latitude))
-//        RetrofitHelper.getApi().getFirestationList("114.342014", "30.547186")
+        RetrofitHelper.getApi().getFirestationList(String.valueOf(center.longitude), String.valueOf(center.latitude))
+                .compose(this.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<FireComponentGeneralInfoList>() {
@@ -1108,7 +1127,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
      */
     public void getFireGroupList(LatLng center) {
 
-        RetrofitHelper.getApi().getFireGroupList(String.valueOf(center.longitude),String.valueOf(center.latitude))
+        RetrofitHelper.getApi().getFireGroupList(String.valueOf(center.longitude), String.valueOf(center.latitude))
+                .compose(this.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
 //        RetrofitHelper.getApi().getFireGroupList("114.342014", "30.547186")
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
@@ -1194,7 +1214,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
      */
     public void getLicenseList(LatLng center) {
 
-        RetrofitHelper.getApi().getLicenseList(String.valueOf(center.longitude),String.valueOf(center.latitude))
+        RetrofitHelper.getApi().getLicenseList(String.valueOf(center.longitude), String.valueOf(center.latitude))
+                .compose(this.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
 //        RetrofitHelper.getApi().getLicenseList("114.342014", "30.547186")
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
@@ -1334,14 +1355,16 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     };
 
 
+    boolean isrun = true;
+
     private class RunnableMockLocation implements Runnable {
 
         @Override
         public void run() {
-            while (true) {
+            while (isrun) {
                 try {
                     Thread.sleep(1000);
-
+                    System.out.println("正在模拟位置");
                     if (hasAddTestProvider == false) {
                         continue;
                     }
@@ -1374,8 +1397,10 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             }
         }
     }
+
     boolean hasAddTestProvider = false;
-    private void  a(){
+
+    private void a() {
 
         boolean canMockPosition = (Settings.Secure.getInt(getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION, 0) != 0)
                 || Build.VERSION.SDK_INT > 22;

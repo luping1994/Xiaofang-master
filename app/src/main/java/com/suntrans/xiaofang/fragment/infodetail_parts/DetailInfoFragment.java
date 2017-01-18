@@ -1,10 +1,10 @@
 package com.suntrans.xiaofang.fragment.infodetail_parts;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -19,6 +19,7 @@ import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.utils.DbHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ import java.util.ArrayList;
  * Created by Looney on 2016/12/22.
  */
 
-public class DetailInfoFragment extends Fragment {
+public class DetailInfoFragment extends RxFragment {
 
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -39,6 +40,7 @@ public class DetailInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detailinfo, container, false);
         initData();
+        System.out.println("onCreateView");
         return view;
     }
 
@@ -54,7 +56,19 @@ public class DetailInfoFragment extends Fragment {
         recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.VERTICAL));
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        System.out.println("onActivityCreated");
+    }
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        System.out.println("onAttach");
+
+    }
 
     private void initData() {
         SparseArray<String> array = new SparseArray<>();
@@ -226,7 +240,6 @@ public class DetailInfoFragment extends Fragment {
         array31.put(0, "备注");
         array31.put(1, "--");
         datas.add(array31);
-
     }
 
 
@@ -368,7 +381,7 @@ public class DetailInfoFragment extends Fragment {
             datas.get(30).put(1, "--");
         } else {
 
-            datas.get(30).put(1, info.east + "\n" + "西:" + info.west + "\n" + "南:" + info.south + "\n" + "北:" + info.north);
+            datas.get(30).put(1,"东:"+ info.east + "\n" + "西:" + info.west + "\n" + "南:" + info.south + "\n" + "北:" + info.north);
         }
         datas.get(31).put(1, info.remark);
 

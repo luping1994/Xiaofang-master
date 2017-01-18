@@ -8,54 +8,14 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
     <include layout="@layout/toolbar"></include>
-    <HorizontalScrollView
-        android:scrollbars="none"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-        <LinearLayout
-            android:gravity="center"
-            android:background="@color/colorPrimary"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-            <android.support.v7.widget.AppCompatCheckBox
-                android:checked="true"
-                android:id="@+id/type1"
-                android:text="社会单位"
-                android:textColor="@color/white"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <android.support.v7.widget.AppCompatCheckBox
-                android:id="@+id/type2"
-                android:text="社区消防室"
-                android:textColor="@color/white"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <android.support.v7.widget.AppCompatCheckBox
-                android:id="@+id/type3"
-                android:text="政府专职小型站"
-                android:textColor="@color/white"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <android.support.v7.widget.AppCompatCheckBox
-                android:id="@+id/type4"
-                android:text="消防中队"
-                android:textColor="@color/white"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <android.support.v7.widget.AppCompatCheckBox
-                android:id="@+id/type5"
-                android:text="行政许可"
-                android:textColor="@color/white"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </HorizontalScrollView>
+
     <RelativeLayout
         android:id="@+id/root_rl"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         tools:context="com.suntrans.xiaofang.activity.Main_Activity">
+
 
         <com.amap.api.maps.MapView
             android:id="@+id/mapview"
@@ -65,6 +25,48 @@
 
         </com.amap.api.maps.MapView>
 
+
+
+        <LinearLayout
+            android:layout_alignParentTop="true"
+            android:orientation="vertical"
+            android:gravity="center|left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.AppCompatCheckBox
+                android:textColor="@color/secondtextcolor"
+                android:checked="true"
+                android:id="@+id/type1"
+                android:text="一般单位"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:textColor="@color/secondtextcolor"
+                android:id="@+id/type2"
+                android:text="社区消防室"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <android.support.v7.widget.AppCompatCheckBox
+                android:textColor="@color/secondtextcolor"
+
+                android:id="@+id/type3"
+                android:text="政府专职小型站"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <android.support.v7.widget.AppCompatCheckBox
+                android:textColor="@color/secondtextcolor"
+                android:id="@+id/type4"
+                android:text="消防中队"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <!--<android.support.v7.widget.AppCompatCheckBox-->
+            <!--android:id="@+id/type5"-->
+            <!--android:text="行政许可"-->
+            <!--android:textColor="@color/white"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+        </LinearLayout>
         <!--<Spinner-->
             <!--android:visibility="gone"-->
             <!--android:layout_marginRight="10dp"-->
@@ -122,7 +124,6 @@
             android:scaleType="centerCrop"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:src="@drawable/ic_mylocation"
-            android:elevation="6dp"
             android:layout_marginBottom="50dp"
             android:layout_above="@+id/bottom_menu"
             android:onClick="changedViewType"

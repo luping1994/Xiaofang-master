@@ -89,6 +89,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white"
@@ -585,7 +586,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="消防安全管理人身份证"
+                    android:text="管理人身份证"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -616,7 +617,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="消防安全管理人电话"
+                    android:text="管理人电话"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -678,7 +679,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="消防安全责任人身份证"
+                    android:text="责任人身份证"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -708,7 +709,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="消防安全责任人电话"
+                    android:text="责任人电话"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 

@@ -8,9 +8,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -24,6 +27,7 @@ import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.Map;
 
@@ -38,7 +42,7 @@ import rx.schedulers.Schedulers;
  * 修改消防室信息
  */
 
-public class EditFireroomInfo_activity extends BasedActivity {
+public class EditFireroomInfo_activity extends BasedActivity implements View.OnClickListener {
 
     @BindView(R.id.addr)
     EditText addr;
@@ -48,10 +52,10 @@ public class EditFireroomInfo_activity extends BasedActivity {
     EditText phone;
     @BindView(R.id.membernum)
     EditText membernum;
-    @BindView(R.id.cardisp)
-    EditText cardisp;
-    @BindView(R.id.equipdisp)
-    EditText equipdisp;
+//    @BindView(R.id.cardisp)
+//    EditText cardisp;
+//    @BindView(R.id.equipdisp)
+//    EditText equipdisp;
     @BindView(R.id.district)
     EditText district;
     @BindView(R.id.group)
@@ -66,6 +70,21 @@ public class EditFireroomInfo_activity extends BasedActivity {
     EditText lat;
     @BindView(R.id.textView2)
     TextView textView2;
+
+
+    @BindView(R.id.ll_condition)
+    LinearLayout llCondition;
+
+
+    @BindView(R.id.add_eq)
+    Button addEq;
+    @BindView(R.id.sub_eq)
+    Button subEq;
+
+    @BindView(R.id.ll_condition_eq)
+    LinearLayout llConditionEq;
+
+
     private Toolbar toolbar;
     private EditText txName;
     private FireRoomDetailInfo info;
@@ -82,11 +101,16 @@ public class EditFireroomInfo_activity extends BasedActivity {
     }
 
     private void initView() {
-//        IntentFilter filter = new IntentFilter();
-//        filter.addAction("com.suntrans.addr.RECEIVE");
-//        registerReceiver(broadcastReceiver,filter);
+
 
         info = (FireRoomDetailInfo) getIntent().getSerializableExtra("info");
+
+        Button add = (Button) findViewById(R.id.add);
+        Button sub = (Button) findViewById(R.id.sub);
+        add.setOnClickListener(this);
+        sub.setOnClickListener(this);
+        addEq.setOnClickListener(this);
+        subEq.setOnClickListener(this);
 
     }
 
@@ -135,8 +159,8 @@ public class EditFireroomInfo_activity extends BasedActivity {
         contact.setText(info.contact);
         phone.setText(info.phone);
         membernum.setText(info.membernum);
-        cardisp.setText(info.cardisp);
-        equipdisp.setText(info.equipdisp);
+//        cardisp.setText(info.cardisp);
+//        equipdisp.setText(info.equipdisp);
         district.setText(info.district);
         group.setText(info.group);
 
@@ -200,8 +224,46 @@ public class EditFireroomInfo_activity extends BasedActivity {
         String contact1 = contact.getText().toString();
         String phone1 = phone.getText().toString();
         String membernum1 = membernum.getText().toString();
-        String cardisp1 = cardisp.getText().toString();
-        String equipdisp1 = equipdisp.getText().toString();
+
+        String cardisp1 ="";
+        for (int i =0;i<llCondition.getChildCount();i++){
+            if (i==0)
+                continue;
+            View view = llCondition.getChildAt(i);
+            EditText conType = (EditText) view.findViewById(R.id.con_type);
+            EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
+            String type=conType.getText().toString();
+            String detail=conDetail.getText().toString();
+            cardisp1=new StringBuilder().append(cardisp1)
+                    .append("类型:")
+                    .append(type)
+                    .append(",")
+                    .append("详情:")
+                    .append(detail)
+                    .append(";")
+                    .toString();
+        }
+
+
+        String equipdisp1 ="";
+        for (int i =0;i<llConditionEq.getChildCount();i++){
+            if (i==0)
+                continue;
+            View view = llConditionEq.getChildAt(i);
+            EditText conType = (EditText) view.findViewById(R.id.con_type);
+            EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
+            String type=conType.getText().toString();
+            String detail=conDetail.getText().toString();
+            equipdisp1=new StringBuilder().append(cardisp1)
+                    .append("类型:")
+                    .append(type)
+                    .append(",")
+                    .append("详情:")
+                    .append(detail)
+                    .append(";")
+                    .toString();
+        }
+
         String district1 = district.getText().toString();
         String group1 = group.getText().toString();
         builder.put("name", name1.replace(" ", ""));
@@ -245,6 +307,7 @@ public class EditFireroomInfo_activity extends BasedActivity {
             System.out.println(key + "," + value);
         }
         RetrofitHelper.getApi().updateFireRoom(map1)
+                .compose(this.<AddFireRoomResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AddFireRoomResult>() {
@@ -275,5 +338,29 @@ public class EditFireroomInfo_activity extends BasedActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add:
+                View item = LayoutInflater.from(this).inflate(R.layout.item_adddis, null, false);
+                llCondition.addView(item);
+                break;
+            case R.id.sub:
+                if (llCondition.getChildCount()==1)
+                    break;
+                llCondition.removeViewAt(llCondition.getChildCount() - 1);
+                break;
+            case R.id.add_eq:
+                View item2 = LayoutInflater.from(this).inflate(R.layout.item_adddis, null, false);
+                llConditionEq.addView(item2);
+                break;
+            case R.id.sub_eq:
+                if (llConditionEq.getChildCount()==1)
+                    break;
+                llConditionEq.removeViewAt(llConditionEq.getChildCount() - 1);
+                break;
+        }
     }
 }

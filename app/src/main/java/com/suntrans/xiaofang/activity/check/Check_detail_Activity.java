@@ -242,7 +242,6 @@ public class Check_detail_Activity extends BaseActivity {
                     if (!result.status.equals("0")) {
                         CompanyDetailnfo info = result.info;
                         myInfo = info;
-                        System.out.println(info.toString());
                         refreshView(info);
                     }
                 }
@@ -338,7 +337,20 @@ public class Check_detail_Activity extends BaseActivity {
         datas.get(29).put(1, info.refugepos);
         datas.get(30).put(1, "东:" + info.east + "西" + info.west + "南" + info.south + "北" + info.north);
         adapter.notifyDataSetChanged();
+
     }
+
+//    final int REFRESH_VIEW = 0;
+//    Handler handler =new Handler(){
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            if (msg.what==REFRESH_VIEW){
+//                CompanyDetailnfo info = (CompanyDetailnfo) msg.obj;
+//            }
+//        }
+//    };
+//
 
     public void passCheck(View view) {
         RetrofitHelper.getApi().passCompany("id").enqueue(new Callback<CompanyPassResult>() {

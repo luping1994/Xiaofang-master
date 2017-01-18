@@ -5,11 +5,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.suntrans.xiaofang.R;
@@ -22,7 +22,7 @@ import com.suntrans.xiaofang.utils.StatusBarCompat;
 public class Add_activity  extends BasedActivity {
     private Toolbar toolbar;
     RadioGroup group;
-    RadioButton button;
+    AppCompatRadioButton button;
     Button nextButton;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class Add_activity  extends BasedActivity {
 
     public void next(View view){
         int selectId = group.getCheckedRadioButtonId();
-        button = (RadioButton) findViewById(selectId);
+        button = (AppCompatRadioButton) findViewById(selectId);
         Intent intent = new Intent();
         switch (selectId){
             case R.id.type1:

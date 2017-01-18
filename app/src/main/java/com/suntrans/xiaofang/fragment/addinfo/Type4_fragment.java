@@ -3,7 +3,6 @@ package com.suntrans.xiaofang.fragment.addinfo;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +21,8 @@ import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
+import com.trello.rxlifecycle.android.FragmentEvent;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.Map;
 
@@ -36,7 +37,7 @@ import rx.schedulers.Schedulers;
  * Created by Looney on 2016/12/13.
  */
 
-public class Type4_fragment extends Fragment {
+public class Type4_fragment extends RxFragment {
     @BindView(R.id.name)
     EditText name;
     @BindView(R.id.addr)
@@ -53,8 +54,7 @@ public class Type4_fragment extends Fragment {
     EditText membernum;
     @BindView(R.id.carnum)
     EditText carnum;
-    @BindView(R.id.cardisp)
-    EditText cardisp;
+
     @BindView(R.id.waterweight)
     EditText waterweight;
     @BindView(R.id.soapweight)
@@ -71,6 +71,10 @@ public class Type4_fragment extends Fragment {
     Button getposition;
     @BindView(R.id.content1)
     LinearLayout content1;
+
+    @BindView(R.id.ll_condition)
+    LinearLayout llCondition;
+
     private String district1;
     Map<String, String> map;
     private AlertDialog dialog;
@@ -85,6 +89,8 @@ public class Type4_fragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        initView(view);
+
         district.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -120,6 +126,25 @@ public class Type4_fragment extends Fragment {
         });
     }
 
+    private void initView(View view) {
+        Button add = (Button) view.findViewById(R.id.add);
+        Button sub = (Button) view.findViewById(R.id.sub);
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View item = LayoutInflater.from(getContext()).inflate(R.layout.item_adddis, null, false);
+                llCondition.addView(item);
+            }
+        });
+        sub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (llCondition.getChildCount()==1)
+                llCondition.removeViewAt(llCondition.getChildCount() - 1);
+            }
+        });
+
+    }
 
     @OnClick(R.id.commit_group)
     public void onClick() {
@@ -155,7 +180,28 @@ public class Type4_fragment extends Fragment {
         String phone1 = phone.getText().toString();
         String membernum1 = membernum.getText().toString();
         String carnum1 = carnum.getText().toString();
-        String cardisp1 = cardisp.getText().toString();
+
+
+        String cardisp1 ="";
+        for (int i =0;i<llCondition.getChildCount();i++){
+            if (i==0)
+                continue;
+            View view = llCondition.getChildAt(i);
+            EditText conType = (EditText) view.findViewById(R.id.con_type);
+            EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
+            String type=conType.getText().toString();
+            String detail=conDetail.getText().toString();
+            cardisp1=new StringBuilder().append(cardisp1)
+                    .append("类型:")
+                    .append(type)
+                    .append(",")
+                    .append("详情:")
+                    .append(detail)
+                    .append(";")
+                    .toString();
+        }
+
+
         String waterweight1 = waterweight.getText().toString();
         String soapweight1 = soapweight.getText().toString();
 
@@ -223,6 +269,7 @@ public class Type4_fragment extends Fragment {
         }
 
         RetrofitHelper.getApi().createGroup(map)
+                .compose(this.<AddFireGroupResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AddFireGroupResult>() {
@@ -262,4 +309,6 @@ public class Type4_fragment extends Fragment {
                 });
 
     }
+
+
 }

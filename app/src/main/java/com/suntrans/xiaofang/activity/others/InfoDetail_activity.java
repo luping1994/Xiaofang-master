@@ -39,7 +39,6 @@ public class InfoDetail_activity extends BasedActivity {
 
     public String companyId;//单位的id,通过id查找详细信息
     public String companyType;//单位
-    private Type1__info_fragment type1__info_fragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,7 +71,7 @@ public class InfoDetail_activity extends BasedActivity {
         System.out.println("InfodetailActivity:"+"公司id="+companyId);
         switch (Integer.valueOf(companyType)){
             case 0:
-                type1__info_fragment = new Type1__info_fragment();
+                Type1__info_fragment type1__info_fragment = new Type1__info_fragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type1__info_fragment).commit();
                 break;
             case 1:

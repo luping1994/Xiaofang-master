@@ -31,7 +31,6 @@ import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.DbHelper;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
@@ -42,6 +41,7 @@ import com.suntrans.xiaofang.views.dialog.GeneralProvider;
 import com.suntrans.xiaofang.views.dialog.MainAttr;
 import com.suntrans.xiaofang.views.dialog.SubAttr;
 import com.suntrans.xiaofang.views.dialog.onAttrSelectedListener;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,9 +49,9 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Looney on 2016/12/3.
@@ -241,54 +241,54 @@ public class EditCompanyInfo_activity extends BasedActivity {
                 } else if (checkedId == R.id.dangerlevel4) {
                     attributeLl.setVisibility(View.GONE);
                     dangerlevels = "4";
-                    mainAttrId= "";
-                    subAttrId= "";
+                    mainAttrId = "";
+                    subAttrId = "";
                 }
             }
         });
     }
 
-    String mainAttrId= "";
-    String subAttrId= "";
+    String mainAttrId = "";
+    String subAttrId = "";
     private BottomDialog bottomDialog;
 
     private View.OnClickListener attrlistener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             bottomDialog = null;
-            if (dangerlevels.equals("1")||dangerlevels.equals("2")){
+            if (dangerlevels.equals("1") || dangerlevels.equals("2")) {
                 AttrSelector selector = new AttrSelector(EditCompanyInfo_activity.this);
                 DefaultProvider provider = new DefaultProvider(EditCompanyInfo_activity.this);
                 selector.setProvider(provider);
-                bottomDialog = new BottomDialog(EditCompanyInfo_activity.this,selector);
-            }else if (dangerlevels.equals("3")){
+                bottomDialog = new BottomDialog(EditCompanyInfo_activity.this, selector);
+            } else if (dangerlevels.equals("3")) {
                 AttrSelector selector = new AttrSelector(EditCompanyInfo_activity.this);
                 GeneralProvider provider = new GeneralProvider(EditCompanyInfo_activity.this);
                 selector.setProvider(provider);
-                bottomDialog = new BottomDialog(EditCompanyInfo_activity.this,selector);
-            }else if (dangerlevels.equals("4")){
+                bottomDialog = new BottomDialog(EditCompanyInfo_activity.this, selector);
+            } else if (dangerlevels.equals("4")) {
                 //隐藏单位属性
                 attributeLl.setVisibility(View.GONE);
-            }else{
+            } else {
                 UiUtils.showToast("请先选择火灾危险等级");
                 return;
             }
             bottomDialog.setSelectorListener(new onAttrSelectedListener() {
                 @Override
                 public void onSelectSuccess(MainAttr mainAttr, ArrayList<SubAttr> subData, int type) {
-                    if (type==1){
+                    if (type == 1) {
                         attribute.setText(mainAttr.name);
-                        String mainid1 = mainAttr.id+"";
-                        mainAttrId =mainid1;
-                    }else {
+                        String mainid1 = mainAttr.id + "";
+                        mainAttrId = mainid1;
+                    } else {
                         attribute.setText(mainAttr.name);
-                       String mainid = mainAttr.id+"";
+                        String mainid = mainAttr.id + "";
                         String subid = "";
                         for (SubAttr attr :
                                 subData) {
-                            subid=subid+"#"+attr.id;
+                            subid = subid + "#" + attr.id;
                         }
-                        mainAttrId =mainid;
+                        mainAttrId = mainid;
                         subAttrId = subid;
                     }
                     bottomDialog.dismiss();
@@ -296,10 +296,10 @@ public class EditCompanyInfo_activity extends BasedActivity {
 
                 @Override
                 public void onSelectFailed(String msg) {
-                    if (msg.equals("取消")){
+                    if (msg.equals("取消")) {
                         bottomDialog.dismiss();
-                    }else
-                    UiUtils.showToast(UiUtils.getContext(),msg);
+                    } else
+                        UiUtils.showToast(UiUtils.getContext(), msg);
                 }
             });
             bottomDialog.show();
@@ -368,9 +368,9 @@ public class EditCompanyInfo_activity extends BasedActivity {
                 dangerlevel1.setChecked(true);
             else if (level.equals("2"))
                 dangerlevel2.setChecked(true);
-            else if (level.equals("3")){
+            else if (level.equals("3")) {
                 dangerlevel3.setChecked(true);
-            }else if (level.equals("4")){
+            } else if (level.equals("4")) {
                 dangerlevel4.setChecked(true);
             }
         } else {
@@ -434,13 +434,13 @@ public class EditCompanyInfo_activity extends BasedActivity {
         marker.setText(info.remark);
 
         String mainId = info.mainattribute;
-        if (mainId!=null){
-            DbHelper helper = new DbHelper(this,"Fire",null,1);
+        if (mainId != null) {
+            DbHelper helper = new DbHelper(this, "Fire", null, 1);
             SQLiteDatabase db = helper.getReadableDatabase();
             db.beginTransaction();
-            Cursor cursor = db.rawQuery("select Name from attr_main where Id=?",new String[]{mainId});
-            if (cursor.getCount()>0){
-                while (cursor.moveToNext()){
+            Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
+            if (cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
                     attribute.setText(cursor.getString(0));
                 }
             }
@@ -758,16 +758,16 @@ public class EditCompanyInfo_activity extends BasedActivity {
 
         }
 
-        if (Utils.isVaild(info.cmystate)){
-            builder.put("cmystate",info.cmystate);
+        if (Utils.isVaild(info.cmystate)) {
+            builder.put("cmystate", info.cmystate);
         }
 
-        if (Utils.isVaild(mainAttrId)){
-            builder.put("mainattribute",mainAttrId);
+        if (Utils.isVaild(mainAttrId)) {
+            builder.put("mainattribute", mainAttrId);
         }
 
-        if (Utils.isVaild(subAttrId)){
-            builder.put("subattribute",subAttrId);
+        if (Utils.isVaild(subAttrId)) {
+            builder.put("subattribute", subAttrId);
         }
 
         map1 = builder.build();
@@ -776,31 +776,41 @@ public class EditCompanyInfo_activity extends BasedActivity {
             String value = entry.getValue().toString();
             System.out.println(key + "," + value);
         }
-        RetrofitHelper.getApi().updateCompany(map1).enqueue(new Callback<AddCompanyResult>() {
-            @Override
-            public void onResponse(Call<AddCompanyResult> call, Response<AddCompanyResult> response) {
-                dialog.dismiss();
+        RetrofitHelper.getApi().updateCompany(map1)
+                .compose(this.<AddCompanyResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<AddCompanyResult>() {
+                    @Override
+                    public void onCompleted() {
 
-                AddCompanyResult result = response.body();
-                try {
-                    if (result == null) {
-                        UiUtils.showToast(UiUtils.getContext(), "修改单位信息失败!");
-                    } else {
-                        UiUtils.showToast(UiUtils.getContext(), "提示:" + result.result);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        dialog.dismiss();
+                        UiUtils.showToast(UiUtils.getContext(), "修改单位信息失败!");
 
-            @Override
-            public void onFailure(Call<AddCompanyResult> call, Throwable t) {
-                dialog.dismiss();
-                UiUtils.showToast(UiUtils.getContext(), "修改单位信息失败!");
-                LogUtil.e(t.toString());
-            }
-        });
+                    }
+
+                    @Override
+                    public void onNext(AddCompanyResult result) {
+                        dialog.dismiss();
+                        try {
+                            if (result == null) {
+                                UiUtils.showToast(UiUtils.getContext(), "修改单位信息失败!");
+                            } else {
+                                UiUtils.showToast(UiUtils.getContext(), "提示:" + result.result);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+//                UiUtils.showToast(UiUtils.getContext(), "修改单位信息失败!");
+//                LogUtil.e(t.toString());
+
     }
 
 

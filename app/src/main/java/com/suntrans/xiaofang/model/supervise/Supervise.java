@@ -28,6 +28,9 @@ public class Supervise {
     public String video_path;
     public String created_at;
     public String updated_at;
+    public String deleted_at;
+
+
 
     @Override
     public String toString() {
