@@ -3,62 +3,82 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include layout="@layout/fragment_loading"/>
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tablayout"
+
+    <android.support.v7.widget.Toolbar
+        android:background="@color/colorPrimary"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="3dp"
+        app:layout_collapseMode="pin"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" >
 
-    </android.support.design.widget.TabLayout>
-    <android.support.v4.view.ViewPager
-        android:layout_below="@+id/tablayout"
-        android:id="@+id/pager"
+    </android.support.v7.widget.Toolbar>
+    <RelativeLayout
+        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-    </android.support.v4.view.ViewPager>
+        android:layout_height="match_parent">
+        <include layout="@layout/fragment_loading"/>
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.design.widget.TabLayout>
+        <android.support.v4.view.ViewPager
+            android:layout_below="@+id/tablayout"
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+        </android.support.v4.view.ViewPager>
 
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/menu_red"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        app:menu_colorNormal="@color/colorPrimary"
-        app:menu_colorPressed="@color/colorAccent"
-        app:menu_colorRipple="#62B2FF"
-        app:menu_labels_ellipsize="end"
-        app:menu_labels_singleLine="true">
+        <com.github.clans.fab.FloatingActionMenu
+            android:visibility="gone"
+            android:id="@+id/menu_red"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            app:menu_colorNormal="@color/colorPrimary"
+            app:menu_colorPressed="@color/colorAccent"
+            app:menu_colorRipple="#62B2FF"
+            app:menu_labels_ellipsize="end"
+            app:menu_labels_singleLine="true">
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_delete"
-            app:fab_label="删除"
-            app:fab_size="mini" />
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_delete"
+                app:fab_label="删除"
+                app:fab_size="mini" />
 
-        <com.github.clans.fab.FloatingActionButton
+            <com.github.clans.fab.FloatingActionButton
 
-            android:id="@+id/fab2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_edit"
-            app:fab_label="修改"
-            app:fab_size="mini" />
+                android:id="@+id/fab2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_edit"
+                app:fab_label="修改"
+                app:fab_size="mini" />
 
-        <com.github.clans.fab.FloatingActionButton
+            <com.github.clans.fab.FloatingActionButton
 
-            android:id="@+id/fab3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_gaode"
-            app:fab_label="到这去"
-            app:fab_size="mini" />
+                android:id="@+id/fab3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_gaode"
+                app:fab_label="到这去"
+                app:fab_size="mini" />
 
-    </com.github.clans.fab.FloatingActionMenu>
+        </com.github.clans.fab.FloatingActionMenu>
+    </RelativeLayout>
+
 </RelativeLayout>

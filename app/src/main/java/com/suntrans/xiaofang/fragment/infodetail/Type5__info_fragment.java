@@ -2,14 +2,20 @@ package com.suntrans.xiaofang.fragment.infodetail;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -65,8 +71,8 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view,savedInstanceState);
-
+        super.onViewCreated(view, savedInstanceState);
+        setupToolbar(view);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
         manager = new LinearLayoutManager(getActivity());
         myAdapter = new MyAdapter();
@@ -76,16 +82,16 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
         recyclerView.setVisibility(View.INVISIBLE);
 
 
-        menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
-        menuRed.setClosedOnTouchOutside(true);
-        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
-        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
-        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
-
-
-        fab1.setOnClickListener(this);
-        fab2.setOnClickListener(this);
-        fab3.setOnClickListener(this);
+//        menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
+//        menuRed.setClosedOnTouchOutside(true);
+//        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
+//        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
+//        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
+//
+//
+//        fab1.setOnClickListener(this);
+//        fab2.setOnClickListener(this);
+//        fab3.setOnClickListener(this);
     }
 
     @Override
@@ -238,17 +244,17 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
 
             public void setData(int position) {
                 if (position < 5) {
-                    name.setText(datas.get(position-1).get(0));
-                    value.setText(datas.get(position-1).get(1));
-                }else if (position<9){
-                    name.setText(datas.get(position-2).get(0));
-                    value.setText(datas.get(position-2).get(1));
-                }else if (position<13){
-                    name.setText(datas.get(position-3).get(0));
-                    value.setText(datas.get(position-3).get(1));
-                }else {
-                    name.setText(datas.get(position-4).get(0));
-                    value.setText(datas.get(position-4).get(1));
+                    name.setText(datas.get(position - 1).get(0));
+                    value.setText(datas.get(position - 1).get(1));
+                } else if (position < 9) {
+                    name.setText(datas.get(position - 2).get(0));
+                    value.setText(datas.get(position - 2).get(1));
+                } else if (position < 13) {
+                    name.setText(datas.get(position - 3).get(0));
+                    value.setText(datas.get(position - 3).get(1));
+                } else {
+                    name.setText(datas.get(position - 4).get(0));
+                    value.setText(datas.get(position - 4).get(1));
                 }
             }
         }
@@ -277,7 +283,8 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
     }
 
     public LicenseDetailInfo myInfo;
-    LatLng to ;
+    LatLng to;
+
     private void getData() {
         RetrofitHelper.getApi().getLicenseDetailInfo(((InfoDetail_activity) getActivity()).companyId)
                 .compose(this.<LicenseDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
@@ -289,11 +296,11 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
                         if (result != null) {
                             if (!result.status.equals("0")) {
                                 LicenseDetailInfo info = result.result;
-                                if (info.lat!=null||info.lng!=null){
+                                if (info.lat != null || info.lng != null) {
                                     try {
-                                        to = new LatLng(Double.valueOf(info.lat),Double.valueOf(info.lng));
-                                    }catch (Exception e){
-                                        to=null;
+                                        to = new LatLng(Double.valueOf(info.lat), Double.valueOf(info.lng));
+                                    } catch (Exception e) {
+                                        to = null;
                                     }
                                 }
                                 myInfo = info;
@@ -306,7 +313,7 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
                                         recyclerView.setVisibility(View.VISIBLE);
                                         error.setVisibility(View.GONE);
                                     }
-                                },500);
+                                }, 500);
                             }
                         } else {
                             progressBar.setVisibility(View.INVISIBLE);
@@ -323,6 +330,7 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
                     }
                 });
     }
+
     Handler handler = new Handler();
 
     private void refreshView(LicenseDetailInfo info) {
@@ -332,18 +340,18 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
         datas.get(3).put(1, info.building.phone);
 
 
-        datas.get(4).put(1, info.building.number==null?"--":info.building.number);
-        datas.get(5).put(1, info.building.created_at==null?"--":info.building.created_at);
-        datas.get(6).put(1, info.building.isqualified==null?"--":info.building.isqualified);
+        datas.get(4).put(1, info.building.number == null ? "--" : info.building.number);
+        datas.get(5).put(1, info.building.created_at == null ? "--" : info.building.created_at);
+        datas.get(6).put(1, info.building.isqualified == null ? "--" : info.building.isqualified);
 
-        datas.get(7).put(1, info.cnumber==null?"--":info.cnumber);
-        datas.get(8).put(1, info.completetime==null?"--":info.completetime);
-        datas.get(9).put(1, info.cisqualified==null?"--":info.cisqualified);
+        datas.get(7).put(1, info.cnumber == null ? "--" : info.cnumber);
+        datas.get(8).put(1, info.completetime == null ? "--" : info.completetime);
+        datas.get(9).put(1, info.cisqualified == null ? "--" : info.cisqualified);
 
 
-        datas.get(10).put(1, info.onumber==null?"--":info.onumber);
-        datas.get(11).put(1, info.opentime==null?"--":info.opentime);
-        datas.get(12).put(1, info.oisqualified==null?"--":info.oisqualified);
+        datas.get(10).put(1, info.onumber == null ? "--" : info.onumber);
+        datas.get(11).put(1, info.opentime == null ? "--" : info.opentime);
+        datas.get(12).put(1, info.oisqualified == null ? "--" : info.oisqualified);
 
 
         myAdapter.notifyDataSetChanged();
@@ -352,8 +360,8 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        if (myInfo==null){
-            UiUtils.showToast(UiUtils.getContext(),"无法获取单位信息");
+        if (myInfo == null) {
+            UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
             return;
         }
         switch (v.getId()) {
@@ -379,7 +387,7 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
 
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), EditLicense_activity.class);
-                intent.putExtra("title", ((InfoDetail_activity) getActivity()).title);
+                intent.putExtra("title", title);
                 intent.putExtra("id", ((InfoDetail_activity) getActivity()).companyId);
                 intent.putExtra("info", myInfo);
                 startActivity(intent);
@@ -388,7 +396,7 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
             case R.id.fab3:
                 Intent intent1 = new Intent();
                 intent1.setClass(getActivity(), CalculateRoute_Activity.class);
-                if (getActivity().getIntent().getParcelableExtra("from") == null||to==null) {
+                if (getActivity().getIntent().getParcelableExtra("from") == null || to == null) {
                     final AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
                     builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
@@ -422,15 +430,15 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
 
                     @Override
                     public void onError(Throwable e) {
-                        UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                        UiUtils.showToast(UiUtils.getContext(), "删除失败错误");
                         e.printStackTrace();
                     }
 
                     @Override
                     public void onNext(AddLicenseResult result) {
-                        AlertDialog.Builder builder= new AlertDialog.Builder(getActivity());
-                        if (result!=null){
-                            if (result.status.equals("1")){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        if (result != null) {
+                            if (result.status.equals("1")) {
                                 builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -438,7 +446,7 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
                                     }
                                 });
                                 builder.create().show();
-                            }else {
+                            } else {
                                 builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -447,8 +455,8 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
                                 });
                                 builder.create().show();
                             }
-                        }else {
-                            UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                        } else {
+                            UiUtils.showToast(UiUtils.getContext(), "删除失败错误");
                         }
                     }
                 });
@@ -459,5 +467,97 @@ public class Type5__info_fragment extends BasedFragment implements View.OnClickL
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacksAndMessages(null);
+    }
+
+    public Toolbar toolbar;
+    public String title;
+
+    private void setupToolbar(View view) {
+        setHasOptionsMenu(true);
+
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
+        title = getActivity().getIntent().getStringExtra("name").split("#")[0];
+        toolbar.setTitle(title);
+        ((InfoDetail_activity) getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionBar = ((InfoDetail_activity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+
+                getActivity().finish();
+                return true;
+            case R.id.delete:
+                if (myInfo == null) {
+                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+                    break;
+                }
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        delete();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.setTitle("确定删除该单位?");
+                dialog.show();
+                break;
+            case R.id.gohere:
+                if (myInfo == null) {
+                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+                    break;
+                }
+                Intent intent1 = new Intent();
+                intent1.setClass(getActivity(), CalculateRoute_Activity.class);
+                if (getActivity().getIntent().getParcelableExtra("from") == null || to == null) {
+                    final AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                    builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog dialog1 = builder1.create();
+                    dialog1.setTitle("单位未添加地理坐标,无法导航!");
+                    dialog1.show();
+                    break;
+                }
+                intent1.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
+                intent1.putExtra("to", to);
+                startActivity(intent1);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+            case R.id.xiugai:
+                if (myInfo == null) {
+                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+                    break;
+                }
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), EditLicense_activity.class);
+                intent.putExtra("title", title);
+                intent.putExtra("id", ((InfoDetail_activity) getActivity()).companyId);
+                intent.putExtra("info", myInfo);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_detailinfo,menu);
     }
 }

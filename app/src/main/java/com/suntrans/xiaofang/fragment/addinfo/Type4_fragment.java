@@ -1,6 +1,8 @@
 package com.suntrans.xiaofang.fragment.addinfo;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -8,33 +10,50 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 
+import com.amap.api.services.core.PoiItem;
 import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
+import com.suntrans.xiaofang.model.company.InchargeInfo;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
+import com.suntrans.xiaofang.model.firegroup.FireGroupDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.suntrans.xiaofang.R.id.map;
+
 /**
  * Created by Looney on 2016/12/13.
+ *
+ * 消防中队
  */
 
 public class Type4_fragment extends RxFragment {
@@ -50,8 +69,7 @@ public class Type4_fragment extends RxFragment {
     EditText area;
     @BindView(R.id.phone)
     EditText phone;
-    @BindView(R.id.membernum)
-    EditText membernum;
+
     @BindView(R.id.carnum)
     EditText carnum;
 
@@ -59,14 +77,13 @@ public class Type4_fragment extends RxFragment {
     EditText waterweight;
     @BindView(R.id.soapweight)
     EditText soapweight;
-    @BindView(R.id.district)
-    Spinner district;
-    @BindView(R.id.group)
-    EditText group;
+    @BindView(R.id.dadui)
+    Spinner dadui;
+    //    @BindView(R.id.group)
+//    EditText group;
     @BindView(R.id.scroll)
     ScrollView scroll;
-    @BindView(R.id.commit_group)
-    Button commitGroup;
+
     @BindView(R.id.getposition)
     Button getposition;
     @BindView(R.id.content1)
@@ -75,9 +92,24 @@ public class Type4_fragment extends RxFragment {
     @BindView(R.id.ll_condition)
     LinearLayout llCondition;
 
+
+    @BindView(R.id.ganbu)
+    EditText ganbu;
+    @BindView(R.id.shibing)
+    EditText shibing;
+    @BindView(R.id.zhuanzhi)
+    EditText zhuanzhi;
+
     private String district1;
-    Map<String, String> map;
     private AlertDialog dialog;
+
+    private ArrayAdapter<String> daduiAdapter;
+
+    List<String> daduiName;
+    List<String> daduiId;
+    List<String> daduiIdPath;
+    int flag = 0;
+    private String pid;//需要提交的daduipath
 
     @Nullable
     @Override
@@ -91,10 +123,65 @@ public class Type4_fragment extends RxFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         initView(view);
 
-        district.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 601) {
+            if (resultCode == -1) {
+                PoiItem poiItem = data.getParcelableExtra("addrinfo");
+//                name.setText(poiItem.getTitle());
+                lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
+                lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
+                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+            }
+        }
+
+    }
+
+    private void initView(View view) {
+        view.findViewById(R.id.add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final View item = LayoutInflater.from(getContext()).inflate(R.layout.item_adddis, null, false);
+                item.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        llCondition.removeView(item);
+                    }
+                });
+                llCondition.addView(item);
+            }
+        });
+
+        getposition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MapChoose_Activity.class);
+                startActivityForResult(intent, 601);
+                getActivity().overridePendingTransition(android.support.design.R.anim.abc_slide_in_bottom, android.support.design.R.anim.abc_slide_out_bottom);
+
+            }
+        });
+
+        daduiName = new ArrayList<>();
+        daduiId = new ArrayList<>();
+        daduiIdPath = new ArrayList<>();
+
+        daduiAdapter = new ArrayAdapter(getActivity(), R.layout.item_spinner, R.id.tv_spinner, daduiName);
+
+        dadui.setAdapter(daduiAdapter);
+
+        dadui.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                district1 = getResources().getStringArray(R.array.area)[position];
+                if (flag == 1) {
+                    if (position == 0)
+                        return;
+                    pid = daduiId.get(position - 1);
+                }
             }
 
             @Override
@@ -102,72 +189,19 @@ public class Type4_fragment extends RxFragment {
 
             }
         });
-        getposition.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String lat2 = App.getSharedPreferences().getString("lat", "-1");
-                String lng2 = App.getSharedPreferences().getString("lng", "-1");
-                String addr2 = App.getSharedPreferences().getString("addr", "-1");
-                if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
-                    UiUtils.showToast(App.getApplication(), "获取地址失败");
-                    return;
-                }
-                lng.setText(lng2);
-                lat.setText(lat2);
-                addr.setText(addr2);
-//                if (((Add_detail_activity)getActivity()).myLocation!=null){
-//                    lng.setText(((Add_detail_activity)getActivity()).myLocation.longitude+"");
-//                    lat.setText(((Add_detail_activity)getActivity()).myLocation.latitude+"");
-//                    addr.setText(((Add_detail_activity)getActivity()).myaddr);
-//                }else {
-//                    Snackbar.make(scroll,"获取当前地址失败",Snackbar.LENGTH_SHORT).show();
-//                }
-            }
-        });
-    }
 
-    private void initView(View view) {
-        Button add = (Button) view.findViewById(R.id.add);
-        Button sub = (Button) view.findViewById(R.id.sub);
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View item = LayoutInflater.from(getContext()).inflate(R.layout.item_adddis, null, false);
-                llCondition.addView(item);
-            }
-        });
-        sub.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (llCondition.getChildCount()==1)
-                llCondition.removeViewAt(llCondition.getChildCount() - 1);
-            }
-        });
 
     }
 
-    @OnClick(R.id.commit_group)
-    public void onClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加单位吗")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        addCommit();
-
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-        builder.create().show();
+    @Override
+    public void onResume() {
+        super.onResume();
+        getIncharge("0", 0, "0");
+        LogUtil.i("fragmentOnResume");
     }
 
-
-    private void addCommit() {
+    public void addCommit() {
+        Map<String, String> map;
         map = null;
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
         String name1 = name.getText().toString();
@@ -178,51 +212,75 @@ public class Type4_fragment extends RxFragment {
 
         String area1 = area.getText().toString();
         String phone1 = phone.getText().toString();
-        String membernum1 = membernum.getText().toString();
         String carnum1 = carnum.getText().toString();
 
+        String membernum1 = "";
+        String ganbunum = ganbu.getText().toString();
+        String shibingnum = shibing.getText().toString();
+        String zhuanzhinum = zhuanzhi.getText().toString();
 
-        String cardisp1 ="";
-        for (int i =0;i<llCondition.getChildCount();i++){
-            if (i==0)
+
+        String cardisp1 = "";
+        if (!Utils.isVaild(name1)) {
+            UiUtils.showToast("公司名称不不能为空!");
+            return;
+        }
+        if (!Utils.isVaild(addr1)) {
+            UiUtils.showToast("公司地址不不能为空!");
+            return;
+        }
+
+        if (!Utils.isVaild(pid)) {
+            UiUtils.showToast("请选择消防大队!");
+            return;
+        }
+        if (!Utils.isVaild(ganbunum)) {
+            UiUtils.showToast("请输入干部消防员人数");
+            return;
+        }
+
+        if (!Utils.isVaild(shibingnum)) {
+            UiUtils.showToast("请输入士兵人数");
+            return;
+        }
+        if (!Utils.isVaild(zhuanzhinum)) {
+            UiUtils.showToast("请输入专职消防员人数");
+            return;
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("干部", ganbunum);
+            jsonObject.put("士兵", shibingnum);
+            jsonObject.put("专职", zhuanzhinum);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        membernum1 = jsonObject.toString();
+
+        JSONObject jsonObject2 = new JSONObject();
+        for (int i = 0; i < llCondition.getChildCount(); i++) {
+            if (i == 0)
                 continue;
             View view = llCondition.getChildAt(i);
             EditText conType = (EditText) view.findViewById(R.id.con_type);
             EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
-            String type=conType.getText().toString();
-            String detail=conDetail.getText().toString();
-            cardisp1=new StringBuilder().append(cardisp1)
-                    .append("类型:")
-                    .append(type)
-                    .append(",")
-                    .append("详情:")
-                    .append(detail)
-                    .append(";")
-                    .toString();
+            String type = conType.getText().toString();
+            String detail = conDetail.getText().toString();
+            try {
+                jsonObject2.put(type, detail);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
-
+        cardisp1 = jsonObject2.toString();
         String waterweight1 = waterweight.getText().toString();
         String soapweight1 = soapweight.getText().toString();
 
-        String group1 = group.getText().toString();
 
-        if (name1.equals("") || name1 == null) {
-            UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
-            return;
-        }
-        if (addr1== null || addr1.equals("")) {
-            UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
-            return;
-        }
-
-        if (Utils.isVaild(name1)) {
-            builder.put("name", name1.replace(" ", ""));
-        }
-
-        if (Utils.isVaild(addr1)) {
-            builder.put("addr", addr1.replace(" ", ""));
-        }
+        builder.put("name", name1 + "中队".replace(" ", ""));
+        builder.put("addr", addr1.replace(" ", ""));
         if (Utils.isVaild(lng1)) {
             builder.put("lng", lng1.replace(" ", ""));
         }
@@ -236,17 +294,14 @@ public class Type4_fragment extends RxFragment {
         if (Utils.isVaild(phone1)) {
             builder.put("phone", phone1.replace(" ", ""));
         }
-        if (Utils.isVaild(membernum1)) {
-            builder.put("membernum", membernum1.replace(" ", ""));
-        }
-
+        builder.put("membernum", membernum1);
 
         if (Utils.isVaild(carnum1)) {
             builder.put("carnum", carnum1.replace(" ", ""));
         }
 
         if (Utils.isVaild(cardisp1)) {
-            builder.put("cardisp", cardisp1.replace(" ", ""));
+            builder.put("cardisp", cardisp1);
         }
         if (Utils.isVaild(waterweight1)) {
             builder.put("waterweight", waterweight1.replace(" ", ""));
@@ -255,11 +310,7 @@ public class Type4_fragment extends RxFragment {
         if (Utils.isVaild(soapweight1)) {
             builder.put("soapweight", soapweight1.replace(" ", ""));
         }
-        builder.put("district", district1);
-
-        if (Utils.isVaild(group1)) {
-            builder.put("group", group1.replace(" ", ""));
-        }
+        builder.put("pid", pid);
         map = builder.build();
 
         for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -280,7 +331,7 @@ public class Type4_fragment extends RxFragment {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        UiUtils.showToast(App.getApplication(),"服务器内部错误");
+                        UiUtils.showToast(App.getApplication(), "服务器内部错误");
                     }
 
                     @Override
@@ -299,7 +350,7 @@ public class Type4_fragment extends RxFragment {
                                         })
                                         .create();
                                 dialog.show();
-                            }else {
+                            } else {
                                 UiUtils.showToast(result.msg);
                             }
                         } else {
@@ -308,6 +359,289 @@ public class Type4_fragment extends RxFragment {
                     }
                 });
 
+    }
+
+    public void updateFireGroup() {
+        Map<String, String> map1;
+
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        String name1 = name.getText().toString();
+        String addr1 = addr.getText().toString();
+        String lng1 = lng.getText().toString();
+        String lat1 = lat.getText().toString();
+
+
+        String area1 = area.getText().toString();
+        String phone1 = phone.getText().toString();
+        String carnum1 = carnum.getText().toString();
+
+        String membernum1 = "";
+        String ganbunum = ganbu.getText().toString();
+        String shibingnum = shibing.getText().toString();
+        String zhuanzhinum = zhuanzhi.getText().toString();
+
+
+        String cardisp1 = "";
+        if (!Utils.isVaild(name1)) {
+            UiUtils.showToast("公司名称不不能为空!");
+            return;
+        }
+        if (!Utils.isVaild(addr1)) {
+            UiUtils.showToast("公司地址不不能为空!");
+            return;
+        }
+
+//        if (!Utils.isVaild(pid)) {
+//            UiUtils.showToast("请选择消防中队!");
+//            return;
+//        }
+        if (!Utils.isVaild(ganbunum)) {
+            UiUtils.showToast("请输入干部消防员人数");
+            return;
+        }
+
+        if (!Utils.isVaild(shibingnum)) {
+            UiUtils.showToast("请输入士兵人数");
+            return;
+        }
+        if (!Utils.isVaild(zhuanzhinum)) {
+            UiUtils.showToast("请输入专职消防员人数");
+            return;
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("干部", ganbunum);
+            jsonObject.put("士兵", shibingnum);
+            jsonObject.put("专职", zhuanzhinum);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        membernum1 = jsonObject.toString();
+
+        JSONObject jsonObject2 = new JSONObject();
+        for (int i = 0; i < llCondition.getChildCount(); i++) {
+            if (i == 0)
+                continue;
+            View view = llCondition.getChildAt(i);
+            EditText conType = (EditText) view.findViewById(R.id.con_type);
+            EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
+            String type = conType.getText().toString();
+            String detail = conDetail.getText().toString();
+            try {
+                jsonObject2.put(type, detail);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        cardisp1 = jsonObject2.toString();
+        String waterweight1 = waterweight.getText().toString();
+        String soapweight1 = soapweight.getText().toString();
+
+
+        builder.put("name", name1.replace(" ", ""));
+        builder.put("addr", addr1.replace(" ", ""));
+        if (Utils.isVaild(lng1)) {
+            builder.put("lng", lng1.replace(" ", ""));
+        }
+        if (Utils.isVaild(lat1)) {
+            builder.put("lat", lat1.replace(" ", ""));
+        }
+        if (Utils.isVaild(area1)) {
+            builder.put("area", area1.replace(" ", ""));
+        }
+
+        if (Utils.isVaild(phone1)) {
+            builder.put("phone", phone1.replace(" ", ""));
+        }
+        builder.put("membernum", membernum1);
+
+        if (Utils.isVaild(carnum1)) {
+            builder.put("carnum", carnum1.replace(" ", ""));
+        }
+
+        if (Utils.isVaild(cardisp1)) {
+            builder.put("cardisp", cardisp1);
+        }
+        if (Utils.isVaild(waterweight1)) {
+            builder.put("waterweight", waterweight1.replace(" ", ""));
+        }
+
+        if (Utils.isVaild(soapweight1)) {
+            builder.put("soapweight", soapweight1.replace(" ", ""));
+        }
+        if (Utils.isVaild(pid)) {
+
+            builder.put("pid", pid.replace(" ", ""));
+        }
+        builder.put("id", info.id);
+
+        map1 = builder.build();
+
+        for (Map.Entry<String, String> entry : map1.entrySet()) {
+            String key = entry.getKey().toString();
+            String value = entry.getValue().toString();
+            System.out.println(key + "," + value);
+        }
+
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMessage("正在修改请稍后");
+        dialog.show();
+        RetrofitHelper.getApi().updateFireGroup(map1)
+                .compose(this.<AddFireGroupResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<AddFireGroupResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (dialog.isShowing())
+                            dialog.dismiss();
+                        UiUtils.showToast(UiUtils.getContext(), "服务器错误!");
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(AddFireGroupResult result) {
+                        if (dialog.isShowing())
+                            dialog.dismiss();
+                        try {
+                            if (result == null) {
+                                UiUtils.showToast("修改单位信息失败!");
+                            } else {
+                                UiUtils.showToast("提示:" + result.result);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    private void getIncharge(String pid, final int type, String vtype) {
+        RetrofitHelper.getApi().getFireChargeArea(pid, vtype)
+                .compose(this.<List<InchargeInfo>>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<InchargeInfo>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(List<InchargeInfo> inchargeInfos) {
+
+                        if (inchargeInfos != null) {
+                            if (type == 0) {
+                                daduiName.clear();
+                                daduiId.clear();
+                                daduiIdPath.clear();
+                                if (info != null) {
+                                    if (Utils.isVaild(info.brigade_path))
+                                        daduiName.add(info.brigade_path);
+                                    else
+                                        daduiName.add("请选择");
+                                } else {
+                                    daduiName.add("请选择");
+                                }
+                                for (InchargeInfo info :
+                                        inchargeInfos) {
+                                    daduiName.add(info.name);
+                                    daduiId.add(info.id);
+                                    daduiIdPath.add(info.parent_id_path);
+                                }
+                                daduiAdapter.notifyDataSetChanged();
+                                flag = 1;
+                            } else if (type == 1) {
+
+                            }
+
+                        }
+                    }
+                });
+
+    }
+
+    boolean isAdd = true;
+    private FireGroupDetailInfo info;
+
+    public void setData(FireGroupDetailInfo info) {
+        this.info = info;
+        isAdd = false;
+        name.setText(info.name == null ? "--" : info.name);
+        addr.setText(info.addr == null ? "--" : info.addr);
+        lng.setText(info.lng == null ? "--" : info.lng);
+        lat.setText(info.lat == null ? "--" : info.lat);
+
+        area.setText(info.area == null ? "--" : info.area);
+        phone.setText(info.phone == null ? "--" : info.phone);
+
+        carnum.setText(info.carnum == null ? "--" : info.carnum);
+        waterweight.setText(info.waterweight == null ? "--" : info.waterweight);
+        soapweight.setText(info.soapweight == null ? "--" : info.soapweight);
+
+        String membernum = info.membernum;
+        if (membernum != null) {
+            try {
+                membernum = membernum.replace(" ", "");
+                JSONObject obj = new JSONObject(membernum);
+                String ganbunum = obj.optString("干部");
+                String shibingnum = obj.optString("士兵");
+                String zhuanzhinum = obj.optString("专职");
+
+                ganbu.setText(ganbunum == null ? "" : ganbunum);
+                shibing.setText(shibingnum == null ? "" : shibingnum);
+                zhuanzhi.setText(zhuanzhinum == null ? "" : zhuanzhinum);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        Map<String, String> cardisMap = new HashMap<>();
+        try {
+            if (info.cardisp != null) {
+                JSONObject jsonObject = new JSONObject(info.cardisp);
+                JSONArray jsonArray = jsonObject.names();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    String name = jsonArray.getString(i);
+                    String value = jsonObject.getString(name);
+                    cardisMap.put(name, value);
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Iterator iter = cardisMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<String, String> entry = (Map.Entry) iter.next();
+            String key = entry.getKey();
+            String value = entry.getValue();
+            final View item = LayoutInflater.from(getActivity()).inflate(R.layout.item_adddis, null, false);
+            ((EditText) item.findViewById(R.id.con_type)).setText(key);
+            ((EditText) item.findViewById(R.id.con_detail)).setText(value);
+            item.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    llCondition.removeView(item);
+                }
+            });
+            llCondition.addView(item);
+        }
     }
 
 

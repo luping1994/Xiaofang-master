@@ -82,6 +82,12 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
     TextView status;
     @BindView(R.id.companyaddr)
     TextView companyaddr;
+    @BindView(R.id.contactname)
+    TextView contactname;
+    @BindView(R.id.contactphone)
+    TextView contactphone;
+    @BindView(R.id.finishtime)
+    TextView finishtime;
     private Toolbar toolbar;
     private String id;
     private RecyclerView recyclerView_before;
@@ -135,7 +141,7 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         datas.add(array3);
 
         SparseArray<String> array4 = new SparseArray<>();
-        array4.put(0, "安全类型:");
+        array4.put(0, "事件类型:");
         array4.put(1, "");
         datas.add(array4);
 
@@ -148,6 +154,14 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         array6.put(0, "单位地址:");
         array6.put(1, "");
         datas.add(array6);
+        SparseArray<String> array7 = new SparseArray<>();
+        array7.put(0, "联系人姓名:");
+        array7.put(1, "");
+        datas.add(array7);
+        SparseArray<String> array8 = new SparseArray<>();
+        array8.put(0, "联系人电话:");
+        array8.put(1, "");
+        datas.add(array8);
         getData();
     }
 
@@ -289,6 +303,9 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         datas.get(2).put(1, event.user_id);
         datas.get(3).put(1, event.created_at);
         datas.get(4).put(1, event.type_ids);
+        datas.get(7).put(1,event.company_leader);
+        datas.get(8).put(1,event.company_phone);
+
         String str = "";
         if (event.is_done.equals("1")) {
             str = "已处置";
@@ -348,6 +365,9 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         type.setText(datas.get(4).get(0) + datas.get(4).get(1));
         status.setText(datas.get(5).get(0) + datas.get(5).get(1));
         companyaddr.setText(datas.get(6).get(0) + datas.get(6).get(1));
+        contactname.setText(datas.get(7).get(0)+datas.get(7).get(1));
+        contactphone.setText(datas.get(8).get(0)+datas.get(8).get(1));
+
     }
 
     @Override

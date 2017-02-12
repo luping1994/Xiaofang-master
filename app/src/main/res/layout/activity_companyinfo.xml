@@ -8,24 +8,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:background="@color/colorPrimary"
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:elevation="3dp"
-        app:layout_collapseMode="pin"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" >
-
-    </android.support.v7.widget.Toolbar>
-
-
     <FrameLayout
         android:id="@+id/fl_content"
         android:background="@color/bg_color"
-        android:layout_below="@+id/toolbar"
         android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

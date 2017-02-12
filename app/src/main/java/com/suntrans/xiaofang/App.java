@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 
 import com.suntrans.xiaofang.utils.LogUtil;
 
@@ -17,7 +19,7 @@ import java.io.OutputStream;
  * Created by Looney on 2016/8/11.
  * Des:代表当前应用.
  */
-public class App extends Application {
+public class App extends MultiDexApplication {
 
     private static App application;
     private static int mainTid;
@@ -124,6 +126,13 @@ public class App extends Application {
 
         }
         return file.getPath();
+    }
+
+    /** * 分割 Dex 支持 * @param base */
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
 }

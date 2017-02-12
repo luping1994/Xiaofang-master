@@ -2,35 +2,47 @@ package com.suntrans.xiaofang.fragment.infodetail;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.amap.api.maps.model.LatLng;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.edit.EditFireAdminStationInfo_activity;
 import com.suntrans.xiaofang.activity.edit.EditFirestationnfo_activity;
 import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.fragment.BasedFragment;
+import com.suntrans.xiaofang.fragment.addinfo.Type3_fragment;
 import com.suntrans.xiaofang.model.firestation.AddFireStationResult;
 import com.suntrans.xiaofang.model.firestation.FireStationDetailInfo;
 import com.suntrans.xiaofang.model.firestation.FireStationDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -39,56 +51,72 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.suntrans.xiaofang.R.id.gonganganbu;
+import static com.suntrans.xiaofang.R.id.xianyiganbu;
+
 /**
  * Created by Looney on 2016/12/13.
- * 小型工作站详情信息fragment
+ * xiangcun消防队详情信息fragment+政府专职小型站fragment
  */
 
-public class Type3__info_fragment extends BasedFragment implements View.OnClickListener {
+public class Type3__info_fragment extends BasedFragment  {
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
     private MyAdapter myAdapter;
 
+//
+//    private FloatingActionMenu menuRed;
+//    private FloatingActionButton fab1;
+//    private FloatingActionButton fab2;
+//    private FloatingActionButton fab3;
 
-    private FloatingActionMenu menuRed;
-    private FloatingActionButton fab1;
-    private FloatingActionButton fab2;
-    private FloatingActionButton fab3;
 
+    public static Type3__info_fragment newInstance(int stationType){
+        Type3__info_fragment fragment = new Type3__info_fragment();
+        Bundle args = new Bundle();
+        args.putInt("type", stationType);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-    LatLng to ;
-
+    LatLng to;
+    int type;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initData();
+        if (getArguments()!=null){
+            type = getArguments().getInt("type");
+        }
         return inflater.inflate(R.layout.fragment_info_type1_backup, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view,savedInstanceState);
+        super.onViewCreated(view, savedInstanceState);
+
+        setupToolbar(view);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
         manager = new LinearLayoutManager(getActivity());
         myAdapter = new MyAdapter();
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(myAdapter);
-        recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(),LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.VERTICAL));
 
         recyclerView.setVisibility(View.INVISIBLE);
-
-        menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
-        menuRed.setClosedOnTouchOutside(true);
-        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
-        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
-        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
-
-
-        fab1.setOnClickListener(this);
-        fab2.setOnClickListener(this);
-        fab3.setOnClickListener(this);
+//
+//        menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
+//        menuRed.setClosedOnTouchOutside(true);
+//        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
+//        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
+//        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
+//
+//
+//        fab1.setOnClickListener(this);
+//        fab2.setOnClickListener(this);
+//        fab3.setOnClickListener(this);
     }
 
     @Override
@@ -116,19 +144,19 @@ public class Type3__info_fragment extends BasedFragment implements View.OnClickL
 
 
         SparseArray<String> array3 = new SparseArray<>();
-        array3.put(0, "消防队站联系电话");
+        array3.put(0, "联系电话");
         array3.put(1, "--");
         datas.add(array3);
 
         SparseArray<String> array4 = new SparseArray<>();
-        array4.put(0, "消防队员人数（现役）");
+        array4.put(0, "人员组成");
         array4.put(1, "--");
         datas.add(array4);
 
-        SparseArray<String> array5 = new SparseArray<>();
-        array5.put(0, "消防队员人数（专职）");
-        array5.put(1, "--");
-        datas.add(array5);
+//        SparseArray<String> array5 = new SparseArray<>();
+//        array5.put(0, "消防队员人数（专职）");
+//        array5.put(1, "--");
+//        datas.add(array5);
 
         SparseArray<String> array6 = new SparseArray<>();
         array6.put(0, "消防车总数");
@@ -146,31 +174,30 @@ public class Type3__info_fragment extends BasedFragment implements View.OnClickL
         datas.add(array8);
 
 
-
         SparseArray<String> array10 = new SparseArray<>();
         array10.put(0, "车载泡沫总量（吨）");
         array10.put(1, "--");
         datas.add(array10);
 
         SparseArray<String> array11 = new SparseArray<>();
-        array11.put(0, "所属区");
+        array11.put(0, "所属大队");
         array11.put(1, "--");
         datas.add(array11);
 
         SparseArray<String> array12 = new SparseArray<>();
-        array12.put(0, "所属街");
+        array12.put(0, "联动中队");
         array12.put(1, "--");
         datas.add(array12);
 
-        SparseArray<String> array13= new SparseArray<>();
-        array13.put(0, "所属社区");
-        array13.put(1, "--");
-        datas.add(array13);
-
-        SparseArray<String> array14 = new SparseArray<>();
-        array14.put(0, "所属大队");
-        array14.put(1, "--");
-        datas.add(array14);
+//        SparseArray<String> array13 = new SparseArray<>();
+//        array13.put(0, "所属社区");
+//        array13.put(1, "--");
+//        datas.add(array13);
+//
+//        SparseArray<String> array14 = new SparseArray<>();
+//        array14.put(0, "所属大队");
+//        array14.put(1, "--");
+//        datas.add(array14);
 
     }
 
@@ -179,7 +206,6 @@ public class Type3__info_fragment extends BasedFragment implements View.OnClickL
         super.onResume();
         getData();
     }
-
 
 
     class MyAdapter extends RecyclerView.Adapter {
@@ -229,85 +255,277 @@ public class Type3__info_fragment extends BasedFragment implements View.OnClickL
     }
 
     public FireStationDetailInfo myInfo;
+
     private void getData() {
-        RetrofitHelper.getApi().getFireStationDetailInfo(((InfoDetail_activity)getActivity()).companyId)
-                .compose(this.<FireStationDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<FireStationDetailResult>() {
-                    @Override
-                    public void call(FireStationDetailResult result) {
-                        if (result!=null){
-                            if (result.status.equals("1")){
-                                FireStationDetailInfo info = result.result;
-                                if (info.lat!=null||info.lng!=null){
-                                    try {
-                                        to = new LatLng(Double.valueOf(info.lat),Double.valueOf(info.lng));
-                                    }catch (Exception e){
-                                        to=null;
+        if (type== MarkerHelper.FIRESTATION){
+            RetrofitHelper.getApi().getFireStationDetailInfo(((InfoDetail_activity) getActivity()).companyId)
+                    .compose(this.<FireStationDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Action1<FireStationDetailResult>() {
+                        @Override
+                        public void call(FireStationDetailResult result) {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    FireStationDetailInfo info = result.result;
+                                    if (info.lat != null || info.lng != null) {
+                                        try {
+                                            to = new LatLng(Double.valueOf(info.lat), Double.valueOf(info.lng));
+                                        } catch (Exception e) {
+                                            to = null;
+                                        }
                                     }
+                                    myInfo = info;
+                                    LogUtil.i(info.toString());
+                                    refreshView(info);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                            recyclerView.setVisibility(View.VISIBLE);
+                                            error.setVisibility(View.GONE);
+                                        }
+                                    }, 500);
                                 }
-                                myInfo=info;
-                                LogUtil.i(info.toString());
-                                refreshView(info);
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        progressBar.setVisibility(View.INVISIBLE);
-                                        recyclerView.setVisibility(View.VISIBLE);
-                                        error.setVisibility(View.GONE);
-                                    }
-                                },500);
+                            } else {
+                                UiUtils.showToast(App.getApplication(), "请求失败!");
+                                progressBar.setVisibility(View.INVISIBLE);
+                                error.setVisibility(View.VISIBLE);
+
                             }
-                        }else {
-                            UiUtils.showToast(App.getApplication(),"请求失败!");
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            throwable.printStackTrace();
+                            UiUtils.showToast(App.getApplication(), "请求失败!");
                             progressBar.setVisibility(View.INVISIBLE);
                             error.setVisibility(View.VISIBLE);
-
                         }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        UiUtils.showToast(App.getApplication(),"请求失败了!");
-                        progressBar.setVisibility(View.INVISIBLE);
-                        error.setVisibility(View.VISIBLE);
-                    }
-                });
+                    });
+        }else if (type==MarkerHelper.FIREADMINSTATION){
+            RetrofitHelper.getApi().getFireAdminStationDetailInfo(((InfoDetail_activity) getActivity()).companyId)
+                    .compose(this.<FireStationDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Action1<FireStationDetailResult>() {
+                        @Override
+                        public void call(FireStationDetailResult result) {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    FireStationDetailInfo info = result.result;
+                                    if (info.lat != null || info.lng != null) {
+                                        try {
+                                            to = new LatLng(Double.valueOf(info.lat), Double.valueOf(info.lng));
+                                        } catch (Exception e) {
+                                            to = null;
+                                        }
+                                    }
+                                    myInfo = info;
+                                    LogUtil.i(info.toString());
+                                    refreshView(info);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                            recyclerView.setVisibility(View.VISIBLE);
+                                            error.setVisibility(View.GONE);
+                                        }
+                                    }, 500);
+                                }
+                            } else {
+                                UiUtils.showToast(App.getApplication(), "请求失败!");
+                                progressBar.setVisibility(View.INVISIBLE);
+                                error.setVisibility(View.VISIBLE);
+
+                            }
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            throwable.printStackTrace();
+                            UiUtils.showToast(App.getApplication(), "请求失败!");
+                            progressBar.setVisibility(View.INVISIBLE);
+                            error.setVisibility(View.VISIBLE);
+                        }
+                    });
+        }
+
     }
 
 
     Handler handler = new Handler();
+
     private void refreshView(FireStationDetailInfo info) {
-        datas.get(0).put(1,info.name);//名字
-        datas.get(1).put(1,info.addr);//地址
-        datas.get(2).put(1,info.area==null?"--":info.area+"平方公里");
-        datas.get(3).put(1,info.phone==null?"--":info.phone);
-        datas.get(4).put(1,info.servingnum==null?"--":info.servingnum+"人");
-        datas.get(5).put(1,info.fulltimenum==null?"--":info.fulltimenum);
-        datas.get(6).put(1,info.carnum==null?"--":info.carnum);
-        datas.get(7).put(1,info.cardisp==null?"--":info.cardisp);
-        datas.get(8).put(1,info.waterweight==null?"--":info.waterweight);
-        datas.get(9).put(1,info.soapweight==null?"--":info.soapweight);
-        datas.get(10).put(1,info.district==null?"--":info.district);
-        datas.get(11).put(1,info.street+info.street);
-        datas.get(12).put(1,info.community+info.community);
-        datas.get(13).put(1,info.group+info.group);
+        datas.get(0).put(1, info.name);//名字
+        datas.get(1).put(1, info.addr);//地址
+        datas.get(2).put(1, info.area == null ? "--" : info.area + "平方公里");
+        datas.get(3).put(1, info.phone == null ? "--" : info.phone);
+
+        String member = info.membernum;
+        if (member!=null&&!member.equals("")){
+            try {
+
+                String a = Utils.parseJson(member);
+                datas.get(4).put(1, a==null?"--":a);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        String cardis="";
+        try {
+            if (info.cardisp!=null){
+                JSONObject jsonObject = new JSONObject(info.cardisp);
+                JSONArray jsonArray = jsonObject.names();
+                for(int i=0;i<jsonArray.length();i++){
+                    String name = jsonArray.getString(i);
+                    String value = jsonObject.getString(name);
+                    cardis+=name+":"+value+"\n";
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        datas.get(5).put(1, info.carnum == null ? "--" : info.carnum);
+        datas.get(6).put(1, info.cardisp == null ? "--" : cardis);
+        datas.get(7).put(1, info.waterweight == null ? "--" : info.waterweight);
+        datas.get(8).put(1, info.soapweight == null ? "--" : info.soapweight);
+        datas.get(9).put(1, info.brigade_name == null ? "--" : info.brigade_name);
+        datas.get(10).put(1, info.group_name==null?"--":info.group_name);
+//        datas.get(12).put(1, info.community + info.community);
+//        datas.get(13).put(1, info.group + info.group);
         myAdapter.notifyDataSetChanged();
-//        System.out.println("更新成功");
     }
 
 
+    private void delete() {
+        if (type==MarkerHelper.FIRESTATION){
+            RetrofitHelper.getApi().deleteStation(myInfo.id)
+                    .compose(this.<AddFireStationResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Subscriber<AddFireStationResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            UiUtils.showToast(UiUtils.getContext(), "删除失败错误");
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onNext(AddFireStationResult result) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
+                                        }
+                                    });
+                                    builder.create().show();
+                                } else {
+                                    builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    });
+                                    builder.create().show();
+                                }
+                            } else {
+                                UiUtils.showToast(UiUtils.getContext(), "删除失败错误");
+                            }
+                        }
+                    });
+        }else if (type==MarkerHelper.FIREADMINSTATION){
+            RetrofitHelper.getApi().deleteFireAdminStation(myInfo.id)
+                    .compose(this.<AddFireStationResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Subscriber<AddFireStationResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            UiUtils.showToast(UiUtils.getContext(), "删除失败错误");
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onNext(AddFireStationResult result) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
+                                        }
+                                    });
+                                    builder.create().show();
+                                } else {
+                                    builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    });
+                                    builder.create().show();
+                                }
+                            } else {
+                                UiUtils.showToast(UiUtils.getContext(), "删除失败错误");
+                            }
+                        }
+                    });
+        }
+
+    }
+
 
     @Override
-    public void onClick(View v) {
-        if (myInfo==null){
-            UiUtils.showToast(UiUtils.getContext(),"无法获取单位信息");
-            return;
-        }
-        switch (v.getId()){
-            case R.id.fab1:
-                final AlertDialog.Builder builder =new AlertDialog.Builder(getActivity());
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacksAndMessages(null);
+    }
+
+    public Toolbar toolbar;
+    public String title;
+
+    private void setupToolbar(View view) {
+        setHasOptionsMenu(true);
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
+        title = getActivity().getIntent().getStringExtra("name").split("#")[0];
+        toolbar.setTitle(title);
+        ((InfoDetail_activity) getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionBar = ((InfoDetail_activity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().finish();
+                return true;
+            case R.id.delete:
+                if (myInfo == null) {
+                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+                    break;
+                }
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -320,94 +538,56 @@ public class Type3__info_fragment extends BasedFragment implements View.OnClickL
                         dialog.dismiss();
                     }
                 });
-                AlertDialog dialog =builder.create();
+                AlertDialog dialog = builder.create();
                 dialog.setTitle("确定删除该单位?");
                 dialog.show();
                 break;
-            case R.id.fab2:
-
-                Intent intent = new Intent();
-                intent.setClass(getActivity(), EditFirestationnfo_activity.class);
-                intent.putExtra("title",((InfoDetail_activity)getActivity()).title);
-//                intent.putExtra("id",((InfoDetail_activity)getActivity()).companyId);
-//                intent.putExtra("from",getActivity().getIntent().getParcelableExtra("from"));
-                intent.putExtra("info",myInfo);
-                startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                break;
-            case R.id.fab3:
+            case R.id.gohere:
+                if (myInfo == null) {
+                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+                    break;
+                }
                 Intent intent1 = new Intent();
-                intent1.setClass(getActivity(),CalculateRoute_Activity.class);
-                if (getActivity().getIntent().getParcelableExtra("from")==null||to==null){
-                    final AlertDialog.Builder builder1 =new AlertDialog.Builder(getActivity());
+                intent1.setClass(getActivity(), CalculateRoute_Activity.class);
+                if (getActivity().getIntent().getParcelableExtra("from") == null || to == null) {
+                    final AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
                     builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
                         }
                     });
-                    AlertDialog dialog1 =builder1.create();
+                    AlertDialog dialog1 = builder1.create();
                     dialog1.setTitle("单位未添加地理坐标,无法导航!");
                     dialog1.show();
                     break;
                 }
-                intent1.putExtra("from",getActivity().getIntent().getParcelableExtra("from"));
-                intent1.putExtra("to",to);
+                intent1.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
+                intent1.putExtra("to", to);
                 startActivity(intent1);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
+            case R.id.xiugai:
+                if (myInfo == null) {
+                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+                    break;
+                }
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), EditFirestationnfo_activity.class);
+                intent.putExtra("title", title);
+                intent.putExtra("type",type);
+//                intent.putExtra("id",((InfoDetail_activity)getActivity()).companyId);
+//                intent.putExtra("from",getActivity().getIntent().getParcelableExtra("from"));
+                intent.putExtra("info", myInfo);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
-
-    private void delete() {
-        RetrofitHelper.getApi().deleteStation(myInfo.id)
-                .compose(this.<AddFireStationResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<AddFireStationResult>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(AddFireStationResult result) {
-                        AlertDialog.Builder builder= new AlertDialog.Builder(getActivity());
-                        if (result!=null){
-                            if (result.status.equals("1")){
-                                builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        getActivity().finish();
-                                    }
-                                });
-                                builder.create().show();
-                            }else {
-                                builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                });
-                                builder.create().show();
-                            }
-                        }else {
-                            UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
-                        }
-                    }
-                });
-    }
-
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        handler.removeCallbacksAndMessages(null);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_detailinfo,menu);
     }
 }

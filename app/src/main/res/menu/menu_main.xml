@@ -16,24 +16,43 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/search"
-        android:title="搜索"
-        android:icon="@drawable/ic_menu_search"
-        app:showAsAction="always"
-        android:actionViewClass="android.widget.SearchView"
-        />
+
     <item
-        android:id="@+id/per"
-        android:icon="@drawable/ic_mine"
-        android:title="@string/menu_personal"
+        android:id="@+id/add"
+        android:icon="@drawable/ic_add"
+        android:title="@string/menu_add"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/check"
+        android:icon="@drawable/ic_shenghe"
+        android:title="@string/menu_check"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/ic_menu_search"
+        android:title="搜索"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/danwei"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/ic_danwei"
+        android:title="更多"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/scan1"
         android:icon="@drawable/ic_saoyisao"
         android:title="@string/menu_scan"
-        app:showAsAction="never"
-        />
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/per"
+        android:icon="@drawable/ic_mine"
+        android:title="@string/menu_personal"
+        app:showAsAction="never" />
 
     <!--<item-->
     <!--android:icon="@drawable/ic_add"-->
@@ -46,14 +65,6 @@
         android:icon="@drawable/ic_help"
         android:title="@string/menu_help"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/check"
-        android:icon="@drawable/ic_shenghe"
-        android:title="@string/menu_check"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/add"
-        android:icon="@drawable/ic_add"
-        android:title="@string/menu_add"
-        app:showAsAction="never" />
+
+
 </menu>

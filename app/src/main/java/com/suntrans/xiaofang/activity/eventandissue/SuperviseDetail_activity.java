@@ -20,8 +20,10 @@ import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.activity.others.DetailPic_Activity;
 import com.suntrans.xiaofang.adapter.PicAdapter;
 import com.suntrans.xiaofang.model.supervise.ResultSup;
+import com.suntrans.xiaofang.model.supervise.Supervise;
 import com.suntrans.xiaofang.model.supervise.SuperviseDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.ArrayList;
@@ -134,6 +136,11 @@ public class SuperviseDetail_activity extends BasedActivity {
     }
 
     private void initData() {
+
+        id = getIntent().getStringExtra("id");
+        LogUtil.i(TAG,"监督事件id" + id);
+
+
         datas = new ArrayList<>();
         SparseArray<String> array = new SparseArray<>();
         array.put(0, "地点:");
@@ -174,8 +181,7 @@ public class SuperviseDetail_activity extends BasedActivity {
     }
 
     private void setupToolBar() {
-        id = getIntent().getStringExtra("id");
-        System.out.println("监督事件id" + id);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setTitle("监督详情");
@@ -233,14 +239,14 @@ public class SuperviseDetail_activity extends BasedActivity {
 
     private void refreshView(SuperviseDetailResult result1) {
         ResultSup data = result1.result;
-        System.out.println(result1.toString());
-//        Supervise supervise = data.item;
+        System.out.println(result1.result.imgraws.get(0));
+        Supervise supervise = data.item;
 
-//        datas.get(0).put(1, supervise.company_name);
-//        datas.get(1).put(1, "   " + supervise.contents);
-//        datas.get(2).put(1, supervise.user_id);
-//        datas.get(3).put(1, supervise.created_at);
-//        datas.get(4).put(1, supervise.is_done.equals("1") ? "已处理" : "未处理");
+        datas.get(0).put(1, supervise.company_name+" "+supervise.company_address);
+        datas.get(1).put(1, "   " + supervise.contents);
+        datas.get(2).put(1, supervise.user_id);
+        datas.get(3).put(1, supervise.created_at);
+        datas.get(4).put(1, supervise.is_done.equals("1") ? "已处理" : "未处理");
 
         refreshlayout();
         for (String s :

@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "E:\\workspace\\Xiaofang-master\\zxing-android-embedded\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-hi\\values-hi.xml",
+        "outputFile": "E:\\androidProject\\Xiaofang-master\\zxing-android-embedded\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-hi\\values-hi.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 107
                 },
                 "from": {
-                    "file": "E:\\workspace\\Xiaofang-master\\zxing-android-embedded\\res-orig\\values-hi\\zxing_strings.xml",
+                    "file": "E:\\androidProject\\Xiaofang-master\\zxing-android-embedded\\res-orig\\values-hi\\zxing_strings.xml",
                     "position": {
                         "startLine": 17,
                         "startColumn": 2,
@@ -30,7 +30,7 @@
                     "endOffset": 158
                 },
                 "from": {
-                    "file": "E:\\workspace\\Xiaofang-master\\zxing-android-embedded\\res-orig\\values-hi\\zxing_strings.xml",
+                    "file": "E:\\androidProject\\Xiaofang-master\\zxing-android-embedded\\res-orig\\values-hi\\zxing_strings.xml",
                     "position": {
                         "startLine": 18,
                         "startColumn": 2,
@@ -49,7 +49,7 @@
                     "endOffset": 324
                 },
                 "from": {
-                    "file": "E:\\workspace\\Xiaofang-master\\zxing-android-embedded\\res-orig\\values-hi\\zxing_strings.xml",
+                    "file": "E:\\androidProject\\Xiaofang-master\\zxing-android-embedded\\res-orig\\values-hi\\zxing_strings.xml",
                     "position": {
                         "startLine": 19,
                         "startColumn": 2,
@@ -68,7 +68,7 @@
                     "endOffset": 427
                 },
                 "from": {
-                    "file": "E:\\workspace\\Xiaofang-master\\zxing-android-embedded\\res-orig\\values-hi\\zxing_strings.xml",
+                    "file": "E:\\androidProject\\Xiaofang-master\\zxing-android-embedded\\res-orig\\values-hi\\zxing_strings.xml",
                     "position": {
                         "startLine": 20,
                         "startColumn": 2,

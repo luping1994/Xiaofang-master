@@ -29,17 +29,42 @@
         <item>武昌大队</item>
         <item>洪山大队</item>
         <item>青山大队</item>
+        <item>东西湖大队</item>
+        <item>洪山大队</item>
+        <item>沌口大队</item>
+        <item>东湖高新大队</item>
+        <item>江夏大队</item>
+        <item>黄陂大队</item>
+    </string-array>
+
+    <string-array name="paichusuo">
+        <item>唐家墩派出所</item>
+        <item>车站派出所</item>
+        <item>常青街派出所</item>
+        <item>汉口客运站派出所</item>
+        <item>姑嫂树派出所</item>
+        <item>开发区派出所</item>
+        <item>满春街派出所</item>
+        <item>民族派出所</item>
+        <item>花楼街派出所</item>
+        <item>水塔派出所</item>
+        <item>民意派出所</item>
     </string-array>
 
     <string-array name="type">
         <item>社会单位</item>
         <item>社区消防室</item>
-        <item>政府专职小型站</item>
+        <item>乡村专职消防队</item>
         <item>消防中队</item>
         <item>行政许可</item>
 
+        <item>消防大队</item>
+        <item>政府专职小型站</item>
+
+
     </string-array>
     <string-array name="hege">
+        <item>请选择</item>
         <item>是</item>
         <item>否</item>
     </string-array>

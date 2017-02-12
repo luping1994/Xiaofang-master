@@ -24,6 +24,7 @@ public class FireGroupDetailInfo implements Serializable{
     public String street;
     public String community;
     public String group;
+    public String brigade_path;
 
     @Override
     public String toString() {

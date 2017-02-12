@@ -1,5 +1,7 @@
 package com.suntrans.xiaofang.model.supervise;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  */
 public class ResultSup {
 
+    @SerializedName("item")
     public Supervise item;
 
     public List<String> imgs;

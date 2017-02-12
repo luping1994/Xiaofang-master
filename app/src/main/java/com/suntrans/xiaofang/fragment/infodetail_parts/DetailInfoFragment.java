@@ -125,10 +125,10 @@ public class DetailInfoFragment extends RxFragment {
         array9.put(1, "--");
         datas.add(array9);
 
-        SparseArray<String> array10 = new SparseArray<>();
-        array10.put(0, "法定代表人身份证");
-        array10.put(1, "--");
-        datas.add(array10);
+//        SparseArray<String> array10 = new SparseArray<>();
+//        array10.put(0, "法定代表人身份证");
+//        array10.put(1, "--");
+//        datas.add(array10);
 
 
         SparseArray<String> array11 = new SparseArray<>();
@@ -140,38 +140,50 @@ public class DetailInfoFragment extends RxFragment {
         array12.put(0, "消防安全管理人");
         array12.put(1, "--");
         datas.add(array12);
+
+//        SparseArray<String> array13 = new SparseArray<>();
+//        array13.put(0, "消防安全管理人身份证");
+//        array13.put(1, "--");
+//        datas.add(array13);
+
+
         SparseArray<String> array13 = new SparseArray<>();
-        array13.put(0, "消防安全管理人身份证");
+        array13.put(0, "消防安全管理人电话");
         array13.put(1, "--");
         datas.add(array13);
 
-
         SparseArray<String> array14 = new SparseArray<>();
-        array14.put(0, "消防安全管理人电话");
+        array14.put(0, "消防安全责任人");
         array14.put(1, "--");
         datas.add(array14);
 
+
+//        SparseArray<String> array16 = new SparseArray<>();
+//        array16.put(0, "消防安全责任人身份证");
+//        array16.put(1, "--");
+//        datas.add(array16);
+
         SparseArray<String> array15 = new SparseArray<>();
-        array15.put(0, "消防安全责任人");
+        array15.put(0, "消防安全责任人电话");
         array15.put(1, "--");
         datas.add(array15);
 
 
         SparseArray<String> array16 = new SparseArray<>();
-        array16.put(0, "消防安全责任人身份证");
+        array16.put(0, "单位编码");
         array16.put(1, "--");
         datas.add(array16);
 
+
         SparseArray<String> array17 = new SparseArray<>();
-        array17.put(0, "消防安全责任人电话");
+        array17.put(0, "组织机构代码");
         array17.put(1, "--");
         datas.add(array17);
 
         SparseArray<String> array18 = new SparseArray<>();
-        array18.put(0, "组织机构代码");
+        array18.put(0, "单位其它情况");
         array18.put(1, "--");
         datas.add(array18);
-
 
         SparseArray<String> array19 = new SparseArray<>();
         array19.put(0, "上级单位");
@@ -200,7 +212,7 @@ public class DetailInfoFragment extends RxFragment {
         datas.add(array23);
 //
         SparseArray<String> array24 = new SparseArray<>();
-        array24.put(0, "单位专职（志愿）消防员数");
+        array24.put(0, "消防员人数");
         array24.put(1, "--");
         datas.add(array24);
 
@@ -354,36 +366,42 @@ public class DetailInfoFragment extends RxFragment {
 
 
         datas.get(9).put(1, info.artiname == null ? "--" : info.artiname);
-        datas.get(10).put(1, info.artiid == null ? "--" : info.artiid);
-        datas.get(11).put(1, info.artiphone == null ? "--" : info.artiphone);
+//        datas.get(10).put(1, info.artiid == null ? "--" : info.artiid);
+        datas.get(10).put(1, info.artiphone == null ? "--" : info.artiphone);
 
-        datas.get(12).put(1, info.managername == null ? "--" : info.managername);
-        datas.get(13).put(1, info.managerid == null ? "--" : info.managerid);
-        datas.get(14).put(1, info.managerphone == null ? "--" : info.managerphone);
+        datas.get(11).put(1, info.managername == null ? "--" : info.managername);
+//        datas.get(13).put(1, info.managerid == null ? "--" : info.managerid);
+        datas.get(12).put(1, info.managerphone == null ? "--" : info.managerphone);
 
-        datas.get(15).put(1, info.responname == null ? "--" : info.responname);
-        datas.get(16).put(1, info.responid == null ? "--" : info.responid);
-        datas.get(17).put(1, info.responphone == null ? "--" : info.responphone);
+        datas.get(13).put(1, info.responname == null ? "--" : info.responname);
+//        datas.get(16).put(1, info.responid == null ? "--" : info.responid);
+        datas.get(14).put(1, info.responphone == null ? "--" : info.responphone);
+        datas.get(15).put(1, info.companyid == null ? "--" : info.companyid);
 
-        datas.get(18).put(1, info.orgid == null ? "--" : info.orgid);
-        datas.get(19).put(1, info.leaderdepart == null ? "--" : info.leaderdepart);
-        datas.get(20).put(1, info.foundtime == null ? "--" : info.foundtime);
-        datas.get(21).put(1, info.phone == null ? "--" : info.phone);
-        datas.get(22).put(1, info.staffnum==null?"--":info.staffnum+ "人");
-        datas.get(23).put(1, info.area == null ? "--" : info.area + "平方米");
-        datas.get(24).put(1, info.firemannum == null ? "--" : info.firemannum + "人");
-        datas.get(25).put(1, info.lanenum == null ? "--" : info.lanenum + "个");
-        datas.get(26).put(1, info.elevatornum == null ? "--" : info.elevatornum + "个");
-        datas.get(27).put(1, info.lanepos);//数据库暂无该字段
-        datas.get(28).put(1, info.refugenum == null ? "--" : info.refugenum + "个");
-        datas.get(29).put(1, info.refugepos == null ? "--" : info.refugepos + "");
-        if (info.east == null && info.west == null && info.south == null && info.north == null) {
-            datas.get(30).put(1, "--");
-        } else {
+        datas.get(16).put(1, info.orgid == null ? "--" : info.orgid);
+        datas.get(17).put(1, info.otherdisp == null ? "--" : info.otherdisp);
 
-            datas.get(30).put(1,"东:"+ info.east + "\n" + "西:" + info.west + "\n" + "南:" + info.south + "\n" + "北:" + info.north);
+        datas.get(18).put(1, info.leaderdepart == null ? "--" : info.leaderdepart);
+        datas.get(19).put(1, info.foundtime == null ? "--" : info.foundtime);
+        datas.get(20).put(1, info.phone == null ? "--" : info.phone);
+        datas.get(21).put(1, info.staffnum==null?"--":info.staffnum+ "人");
+        datas.get(22).put(1, info.area == null ? "--" : info.area + "平方米");
+        datas.get(23).put(1, info.firemannum == null ? "--" : info.firemannum + "人");
+        datas.get(24).put(1, info.lanenum == null ? "--" : info.lanenum + "个");
+        datas.get(25).put(1, info.elevatornum == null ? "--" : info.elevatornum + "个");
+        datas.get(26).put(1, info.lanepos);//数据库暂无该字段
+        datas.get(27).put(1, info.refugenum == null ? "--" : info.refugenum + "个");
+        datas.get(28).put(1, info.refugepos == null ? "--" : info.refugepos + "");
+//        if (info.east == null && info.west == null && info.south == null && info.north == null) {
+//            datas.get(30).put(1, "--");
+//        } else {
+//
+//            datas.get(30).put(1,"东:"+ info.east + "\n" + "西:" + info.west + "\n" + "南:" + info.south + "\n" + "北:" + info.north);
+//        }
+        if (info.nearby!=null){
+            datas.get(29).put(1,info.nearby);
         }
-        datas.get(31).put(1, info.remark);
+        datas.get(30).put(1, info.remark);
 
         myAdapter.notifyDataSetChanged();
     }

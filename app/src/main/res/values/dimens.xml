@@ -5,5 +5,9 @@
     <dimen name="minSize">100dp</dimen>
     <dimen name="infoitem_pading">10dp</dimen>
     <dimen name="text_size">15sp</dimen>
-    <dimen name="text_size1">17sp</dimen>
+    <dimen name="text_size1">15sp</dimen>
+    <dimen name="textview_height">35dp</dimen>
+    <dimen name="textview_fontsize">14sp</dimen>
+    <dimen name="mintextwidth">100dp</dimen>
+    <dimen name="maxtextwidth">150dp</dimen>
 </resources>

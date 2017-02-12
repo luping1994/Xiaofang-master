@@ -3,6 +3,7 @@ package com.suntrans.xiaofang.fragment.addinfo;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -11,19 +12,26 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.amap.api.services.core.PoiItem;
 import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
+import com.suntrans.xiaofang.model.company.InchargeInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
@@ -39,6 +47,7 @@ import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -53,13 +62,12 @@ import rx.schedulers.Schedulers;
  * 增加社会单位fragment
  */
 
-public class Type1_fragment extends RxFragment {
+public class Type1_fragment extends RxFragment implements View.OnClickListener {
     @BindView(R.id.name)
     EditText name;
     @BindView(R.id.addr)
     EditText addr;
-    @BindView(R.id.incharge)
-    EditText incharge;
+
     @BindView(R.id.fire_dan)
     TextView fireDan;
     @BindView(R.id.dangerlevel)
@@ -160,7 +168,6 @@ public class Type1_fragment extends RxFragment {
     CheckBox eight;
     @BindView(R.id.nine)
     CheckBox nine;
-
     @BindView(R.id.lan_1)
     CheckBox lan1;
     @BindView(R.id.lan_2)
@@ -172,6 +179,27 @@ public class Type1_fragment extends RxFragment {
 
     @BindView(R.id.attribute_ll)
     LinearLayout attributeLl;
+    @BindView(R.id.incharge_tv)
+    TextView inchargeTv;
+    @BindView(R.id.incharge_dadui)
+    Spinner inchargeDadui;
+
+    @BindView(R.id.incharge_paichusuo)
+    Spinner inchargePaichusuo;
+    @BindView(R.id.ll_incharge)
+    RelativeLayout llIncharge;
+    @BindView(R.id.facility)
+    LinearLayout facility;
+    @BindView(R.id.textView8)
+    TextView textView8;
+    @BindView(R.id.companyid)
+    EditText companyid;
+    @BindView(R.id.otherdisp)
+    EditText otherdisp;
+    @BindView(R.id.firemannum)
+    EditText firemannum;
+    @BindView(R.id.nearby)
+    EditText nearby;
 
 
     private int mYear;
@@ -181,6 +209,17 @@ public class Type1_fragment extends RxFragment {
     private CheckBox[] autofire;
     private String dangerlevels;
 
+    private ArrayAdapter<String> daduiAdapter;
+    private ArrayAdapter<String> paichusuoAdapter;
+
+
+    List<String> daduiName;
+    List<String> daduiId;
+    List<String> daduiIdPath;
+
+    List<String> paichusuoName;
+    List<String> paichusuoId;
+    List<String> paichusuoPath;
 
     @Nullable
     @Override
@@ -202,27 +241,16 @@ public class Type1_fragment extends RxFragment {
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
         attributeLl.setOnClickListener(attrlistener);
+
+
         getposition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MapChoose_Activity.class);
+                startActivityForResult(intent, 601);
+                getActivity().overridePendingTransition(android.support.design.R.anim.abc_slide_in_bottom, android.support.design.R.anim.abc_slide_out_bottom);
 
-                String lat2 = App.getSharedPreferences().getString("lat", "-1");
-                String lng2 = App.getSharedPreferences().getString("lng", "-1");
-                String addr2 = App.getSharedPreferences().getString("addr", "-1");
-                if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
-                    UiUtils.showToast(App.getApplication(), "获取地址失败");
-                    return;
-                }
-                lng.setText(lng2);
-                lat.setText(lat2);
-                addr.setText(addr2);
-//                if (((Add_detail_activity)getActivity()).myLocation!=null){
-//                    lng.setText(((Add_detail_activity)getActivity()).myLocation.longitude+"");
-//                    lat.setText(((Add_detail_activity)getActivity()).myLocation.latitude+"");
-//                    addr.setText(((Add_detail_activity)getActivity()).myaddr);
-//                }else {
-//                    Snackbar.make(scroll,"获取当前地址失败",Snackbar.LENGTH_SHORT).show();
-//                }
+
             }
         });
 
@@ -238,23 +266,80 @@ public class Type1_fragment extends RxFragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 attribute.setText("");
-                mainAttrId="";
-                subAttrId="";
+                mainAttrId = "";
+                subAttrId = "";
                 if (checkedId == R.id.dangerlevel1) {
                     attributeLl.setVisibility(View.VISIBLE);
+
+                    inchargeDadui.setVisibility(View.VISIBLE);
+                    inchargePaichusuo.setVisibility(View.GONE);
+
                     dangerlevels = "1";
+
+                    getIncharge("0", 0, "0");
                 } else if (checkedId == R.id.dangerlevel2) {
                     attributeLl.setVisibility(View.VISIBLE);
+
+                    inchargeDadui.setVisibility(View.VISIBLE);
+                    inchargePaichusuo.setVisibility(View.GONE);
                     dangerlevels = "2";
+                    getIncharge("0", 0, "0");
                 } else if (checkedId == R.id.dangerlevel3) {
                     attributeLl.setVisibility(View.VISIBLE);
+
+                    inchargeDadui.setVisibility(View.VISIBLE);
+                    inchargePaichusuo.setVisibility(View.VISIBLE);
                     dangerlevels = "3";
                 } else if (checkedId == R.id.dangerlevel4) {
                     dangerlevels = "4";
                     attributeLl.setVisibility(View.GONE);
+                    inchargeDadui.setVisibility(View.VISIBLE);
+                    inchargePaichusuo.setVisibility(View.VISIBLE);
                 }
             }
         });
+
+        inchargeDadui.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        inchargePaichusuo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        daduiAdapter = new ArrayAdapter(getActivity(), R.layout.item_spinner, R.id.tv_spinner, daduiName);
+        paichusuoAdapter = new ArrayAdapter(getActivity(), R.layout.item_spinner, R.id.tv_spinner, paichusuoName);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 601) {
+            if (resultCode == -1) {
+                PoiItem poiItem = data.getParcelableExtra("addrinfo");
+                name.setText(poiItem.getTitle());
+                lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
+                lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
+                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+            }
+        }
 
     }
 
@@ -279,7 +364,7 @@ public class Type1_fragment extends RxFragment {
                 //隐藏单位属性
                 attributeLl.setVisibility(View.GONE);
             } else {
-                UiUtils.showToast("请先选择火灾危险等级");
+                UiUtils.showToast("  请先选择火灾危险性");
                 return;
             }
             bottomDialog.setSelectorListener(new onAttrSelectedListener() {
@@ -366,51 +451,119 @@ public class Type1_fragment extends RxFragment {
 
     }
 
-    private void addCommit() {
+
+    String incharge1 = "0-1-80";//消防管辖
+
+    public void addCommit() {
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
         map = null;
 
         String name1 = name.getText().toString();
         String addr1 = addr.getText().toString();
-        if (name1.equals("") || name1 == null) {
-            UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
-            return;
-        }
-        if (addr1 == null || addr1.equals("")) {
-            UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
-            return;
-        }
-
-        String incharge1 = incharge.getText().toString();
 
         String buildarea1 = buildarea.getText().toString();
-        String exitnum1 = exitnum.getText().toString();
-        String stairnum1 = stairnum.getText().toString();
+        String exitnum1 = exitnum.getText().toString();//出口数量
+        String stairnum1 = stairnum.getText().toString();//楼梯数量
 
-        String artiname1 = artiname.getText().toString();
+        String artiname1 = artiname.getText().toString();//法人
         String artiid1 = artiid.getText().toString();
         String artiphone1 = artiphone.getText().toString();
-        String managername1 = managername.getText().toString();
+
+        String managername1 = managername.getText().toString();//管理人
         String managerid1 = managerid.getText().toString();
         String managerphone1 = managerphone.getText().toString();
-        String responname1 = responname.getText().toString();
+
+        String responname1 = responname.getText().toString();//责任人
         String responid1 = responid.getText().toString();
         String responphone1 = responphone.getText().toString();
+
         String orgid1 = orgid.getText().toString();
         String leaderdepart1 = leaderdepart.getText().toString();
-        String foundtime1 = foundtime.getText().toString();
+        String foundtime1 = foundtime.getText().toString();//成立时间
         String phone1 = phone.getText().toString();
         String staffnum1 = straffnum.getText().toString();
-        String area1 = area.getText().toString();
+        String area1 = area.getText().toString();//面积
+
         String lanenum1 = lanenum.getText().toString();
-        String elevatornum1 = elevatornum.getText().toString();
+
+        String elevatornum1 = elevatornum.getText().toString();//消防电梯
+
         String refugenum1 = refugenum.getText().toString();
         String refugepos1 = refugepos.getText().toString();
-        String east1 = east.getText().toString();
-        String south1 = south.getText().toString();
-        String north1 = north.getText().toString();
-        String west1 = west.getText().toString();
-        String remark1 = marker.getText().toString();
+
+//        String east1 = east.getText().toString();
+//        String south1 = south.getText().toString();
+//        String north1 = north.getText().toString();
+//        String west1 = west.getText().toString();
+
+        String remark1 = marker.getText().toString();//备注
+
+        String nearby1 = nearby.getText().toString();
+        String firemannum1 = firemannum.getText().toString();//消防队员人数
+        String otherdisp1 = otherdisp.getText().toString();//单位其它情况
+        String companyid1 = companyid.getText().toString();//公司编码
+
+        String facility1 = "";
+        for (int i = 0; i < autofire.length; i++) {
+            if (autofire[i].isChecked()) {
+                facility1 += App.getApplication().getResources().getStringArray(R.array.autofire)[i] + "#";
+            }
+        }
+
+        if (addr1 == null || addr1.equals("")) {
+            UiUtils.showToast("公司地址不不能为空!");
+            return;
+        }
+
+        if (!Utils.isVaild(name1)) {
+            UiUtils.showToast("单位名称不能为空");
+            return;
+        }
+        System.out.println("单位主属性id="+mainAttrId);
+        if (!Utils.isVaild(mainAttrId) ) {
+            UiUtils.showToast("单位属性不能为空");
+            return;
+        }
+
+        if (!Utils.isVaild(buildarea1)) {
+            UiUtils.showToast("请输入建筑面积");
+            return;
+        }
+
+        if (!Utils.isVaild(exitnum1)) {
+            UiUtils.showToast("请输入安全出口数");
+            return;
+        }
+
+        if (!Utils.isVaild(stairnum1)) {
+            UiUtils.showToast("请消防楼梯数");
+            return;
+        }
+
+
+        if (Utils.isVaild(dangerlevels)) {
+            builder.put("dangerlevel", dangerlevels);
+        } else {
+            UiUtils.showToast("请选择火灾危险等级!");
+            return;
+        }
+
+
+        if (!Utils.isVaild(facility1)) {
+            UiUtils.showToast("请选择自动消防设施");
+            return;
+        }
+
+        if (!Utils.isVaild(artiname1)){
+            UiUtils.showToast("请输入法定人姓名");
+            return;
+        }
+
+        if (!Utils.isVaild(artiphone1)){
+            UiUtils.showToast("请输入法定人电话");
+            return;
+        }
+
 
         if (name1 != null) {
             name1 = name1.replace(" ", "");
@@ -422,8 +575,28 @@ public class Type1_fragment extends RxFragment {
             if (!TextUtils.equals(" ", addr1))
                 builder.put("addr", addr1);
         }
+        if (Utils.isVaild(firemannum1)) {
+            builder.put("firemannum", firemannum1);
+        }
 
-        builder.put("cmystate", "0");
+        if (Utils.isVaild(otherdisp1)) {
+            builder.put("otherdisp", otherdisp1);
+        }
+        if (Utils.isVaild(companyid1)) {
+            builder.put("companyid", companyid1);
+        }
+//        if (name1 != null) {
+//            name1 = name1.replace(" ", "");
+//            if (!TextUtils.equals(" ", name1))
+//                builder.put("name", name1);
+//        }
+//        if (addr1 != null) {
+//            addr1 = addr1.replace(" ", "");
+//            if (!TextUtils.equals(" ", addr1))
+//                builder.put("addr", addr1);
+//        }
+
+//        builder.put("cmystate", "0");
 
         if (incharge1 != null) {
             incharge1 = incharge1.replace(" ", "");
@@ -431,15 +604,9 @@ public class Type1_fragment extends RxFragment {
                 builder.put("incharge", incharge1);
         }
 
-        if (Utils.isVaild(dangerlevels)) {
-            builder.put("dangerlevel", dangerlevels);
-        } else {
-            UiUtils.showToast("请选择火灾危险等级!");
-            return;
-        }
 
         if (Utils.isVaild(buildarea1)) {
-                builder.put("buildarea", buildarea1);
+            builder.put("buildarea", buildarea1);
         }
 
         if (exitnum1 != null) {
@@ -455,12 +622,7 @@ public class Type1_fragment extends RxFragment {
         }
 
 
-        String facility1 = "";
-        for (int i = 0; i < autofire.length; i++) {
-            if (autofire[i].isChecked()) {
-                facility1 += App.getApplication().getResources().getStringArray(R.array.autofire)[i] + "#";
-            }
-        }
+
         facility1 = facility1.replace(" ", "");
         if (!TextUtils.equals("", facility1))
             builder.put("facility", facility1);//备注单位属性未添加
@@ -588,38 +750,41 @@ public class Type1_fragment extends RxFragment {
 
         }
 
-        if (east1 != null) {
-            east1 = east1.replace(" ", "");
-            if (!TextUtils.equals("", east1))
-                builder.put("east", east1);
+//        if (east1 != null) {
+//            east1 = east1.replace(" ", "");
+//            if (!TextUtils.equals("", east1))
+//                builder.put("east", east1);
+//
+//        }
+//
+//        if (south1 != null) {
+//            south1 = south1.replace(" ", "");
+//            if (!TextUtils.equals("", south1))
+//                builder.put("south", south1);
+//
+//        }
+//
+//        if (west1 != null) {
+//            west1 = west1.replace(" ", "");
+//            if (!TextUtils.equals("", west1))
+//                builder.put("west", west1);
+//
+//        }
+//        if (north1 != null) {
+//            north1 = north1.replace(" ", "");
+//            if (!TextUtils.equals("", north1))
+//                builder.put("north", north1);
+//
+//        }
 
-        }
-
-        if (south1 != null) {
-            south1 = south1.replace(" ", "");
-            if (!TextUtils.equals("", south1))
-                builder.put("south", south1);
-
-        }
-
-        if (west1 != null) {
-            west1 = west1.replace(" ", "");
-            if (!TextUtils.equals("", west1))
-                builder.put("west", west1);
-
-        }
-        if (north1 != null) {
-            north1 = north1.replace(" ", "");
-            if (!TextUtils.equals("", north1))
-                builder.put("north", north1);
-
+        if (Utils.isVaild(nearby1)){
+            builder.put("nearby", nearby1);
         }
 
         if (remark1 != null) {
             remark1 = remark1.replace(" ", "");
             if (!TextUtils.equals("", remark1))
                 builder.put("remark", remark1);
-
         }
         String lng1 = lng.getText().toString();
         String lat1 = lat.getText().toString();
@@ -685,7 +850,7 @@ public class Type1_fragment extends RxFragment {
                                         public void run() {
                                             dialog1.show();
                                         }
-                                    },500);
+                                    }, 500);
                                 } else {
 
                                     UiUtils.showToast(UiUtils.getContext(), result.msg);
@@ -707,4 +872,113 @@ public class Type1_fragment extends RxFragment {
         super.onDestroyView();
         handler.removeCallbacksAndMessages(null);
     }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+
+//    private void getArea( String pid, final int type) {
+//        RetrofitHelper.getApi().getArea(pid)
+//                .compose(this.<Map<String, String>>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(Schedulers.io())
+//                .subscribe(new Subscriber<Map<String, String>>() {
+//                    @Override
+//                    public void onCompleted() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    @Override
+//                    public void onNext(Map<String, String> map) {
+//                        if (type==0){
+//                            qvyuItems=null;
+//                            qvyuItems = new String[map.keySet().size()];
+//                            qvyuItems_id = new String[map.keySet().size()];
+//
+//                            ArrayList<String> list = new ArrayList<String>();
+//                            ArrayList<String> list1 = new ArrayList<String>();
+//                            for (String key :
+//                                    map.keySet()) {
+//                                list.add(key);
+//                                list1.add(map.get(key));
+//                                System.out.println(key + ":" + map.get(key));
+//                            }
+//                            list1.toArray(qvyuItems_id);
+//                            list.toArray(qvyuItems);
+//                        }else if (type==1){
+//                            jiedaoItems=null;
+//                            jiedaoItems = new String[map.keySet().size()];
+//                            jiedaoItems_id = new String[map.keySet().size()];
+//
+//                            ArrayList<String> list = new ArrayList<String>();
+//                            ArrayList<String> list1 = new ArrayList<String>();
+//                            for (String key :
+//                                    map.keySet()) {
+//                                list.add(key);
+//                                list1.add(map.get(key));
+//                                System.out.println(key + ":" + map.get(key));
+//                            }
+//                            list1.toArray(jiedaoItems_id);
+//                            list.toArray(jiedaoItems);
+//                        }else if (type==2){
+//                            sheqvItem=null;
+//                            sheqvItem = new String[map.keySet().size()];
+//                            sheqvItem_id = new String[map.keySet().size()];
+//
+//                            ArrayList<String> list = new ArrayList<String>();
+//                            ArrayList<String> list1 = new ArrayList<String>();
+//                            for (String key :
+//                                    map.keySet()) {
+//                                list.add(key);
+//                                list1.add(map.get(key));
+//                                System.out.println(key + ":" + map.get(key));
+//                            }
+//                            list.toArray(sheqvItem);
+//                            list1.toArray(sheqvItem_id);
+//                        }
+//
+//                    }
+//                });
+//    }
+
+
+    private void getIncharge(String pid, int type, String vtype) {
+        RetrofitHelper.getApi().getFireChargeArea(pid, vtype)
+                .compose(this.<List<InchargeInfo>>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<InchargeInfo>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(List<InchargeInfo> inchargeInfos) {
+
+                        if (inchargeInfos != null) {
+
+                            for (InchargeInfo info :
+                                    inchargeInfos) {
+                                System.out.println(info.toString());
+                            }
+                        }
+                    }
+                });
+
+    }
+
+
 }

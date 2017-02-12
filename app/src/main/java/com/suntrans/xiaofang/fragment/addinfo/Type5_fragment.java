@@ -1,5 +1,6 @@
 package com.suntrans.xiaofang.fragment.addinfo;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -20,12 +23,14 @@ import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.model.license.AddLicenseResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -34,6 +39,9 @@ import butterknife.OnClick;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static com.amap.api.mapcore.util.af.a.n;
+import static com.suntrans.xiaofang.R.id.foundtime;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -57,6 +65,9 @@ public class Type5_fragment extends RxFragment {
 //    LinearLayout content1;
     @BindView(R.id.commit_license)
     Button commitLicense;
+    @BindView(R.id.ll_content)
+    LinearLayout llContent;
+
 
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
 
@@ -66,8 +77,13 @@ public class Type5_fragment extends RxFragment {
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
     private MyAdapter adapter;
-    private String isqualified="1";
+    private String isqualified = "1";
+    private Button additem;
 
+
+    private int mYear;
+    private int mMonth;
+    private int mDay;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -84,12 +100,98 @@ public class Type5_fragment extends RxFragment {
         adapter = new MyAdapter();
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+        additem = (Button) view.findViewById(R.id.addItem);
+        additem.setOnClickListener(listener);
 
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
     }
 
+    static class ViewTag{
+        int position;
+        String title;
+    }
+    final String[] items = new String[]{"建审","验收","开业前"};
+    View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+
+            new AlertDialog.Builder(getContext())
+                    .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            System.out.println("选择的条目为:"+which);
+                            final View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhenxuke3,null);
+                            ViewTag tag = new ViewTag();
+                            tag.position = llContent.getChildCount();
+                            switch (which){
+                                case 0:
+                                    ((TextView)(view.findViewById(R.id.title))).setText("建审");
+                                    tag.title = "建审";
+                                    break;
+                                case 1:
+                                    ((TextView)(view.findViewById(R.id.title))).setText("验收");
+                                    tag.title = "验收";
+                                    break;
+                                case 2:
+                                    ((TextView)(view.findViewById(R.id.title))).setText("开业前");
+                                    tag.title = "开业前";
+                                    break;
+                            }
+                            view.setTag(tag);
+                            view.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    LogUtil.i("要删除的位置为:"+((ViewTag)view.getTag()).position);
+                                    llContent.removeView(view);
+                                }
+                            });
+                            view.findViewById(R.id.time).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(final View v) {
+                                    DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                                        @Override
+                                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                            mYear = year;
+                                            mMonth = month;
+                                            mDay = dayOfMonth;
+                                            ((TextView)v).setText(
+                                                    new StringBuilder()
+                                                            .append(mYear).append("-")
+                                                            .append(pad(mMonth + 1)).append("-")
+                                                            .append(pad(mDay))
+                                            );
+                                        }
+                                    }, mYear, mMonth, mDay);
+                                    pickerDialog.show();
+                                }
+                            });
+                            llContent.addView(view);
+                            dialog.dismiss();
+                        }
+                    })
+                    .setTitle("请选择添加型")
+                    .create().show();
+        }
+    };
+
+    private static String pad(int c) {
+        if (c >= 10)
+            return String.valueOf(c);
+        else
+            return "0" + String.valueOf(c);
+    }
     private void initData() {
+        SparseArray<String> array0 = new SparseArray<>();
+        array0.put(0, "建设单位");
+        array0.put(1, "");
+        array0.put(2, "jianshedanwei");
+        datas.add(array0);
+
         SparseArray<String> array = new SparseArray<>();
-        array.put(0, "建筑名称");
+        array.put(0, "名称");
         array.put(1, "");
         array.put(2, "name");
         datas.add(array);
@@ -108,28 +210,10 @@ public class Type5_fragment extends RxFragment {
 
 
         SparseArray<String> array3 = new SparseArray<>();
-        array3.put(0, "联系电话");
+        array3.put(0, "电话");
         array3.put(1, "");
         array3.put(2, "phone");
         datas.add(array3);
-
-        SparseArray<String> array4 = new SparseArray<>();
-        array4.put(0, "文号");
-        array4.put(1, "");
-        array4.put(2, "number");
-        datas.add(array4);
-
-        SparseArray<String> array5 = new SparseArray<>();
-        array5.put(0, "时间");
-        array5.put(1, "");
-        array5.put(2, "time");
-        datas.add(array5);
-
-        SparseArray<String> array6 = new SparseArray<>();
-        array6.put(0, "是否合格");
-        array6.put(1, "");
-        array6.put(2, "isqualified");
-        datas.add(array6);
 
     }
 
@@ -178,14 +262,14 @@ public class Type5_fragment extends RxFragment {
 
         @Override
         public int getItemViewType(int position) {
-            if (position == 0 || position == 5)
+            if (position == 0)
                 return 1;
             return 0;
         }
 
         @Override
         public int getItemCount() {
-            return datas.size() + 2;
+            return datas.size() + 1;
         }
 
         class ViewHolder1 extends RecyclerView.ViewHolder {
@@ -244,10 +328,11 @@ public class Type5_fragment extends RxFragment {
                 item = (TextView) itemView.findViewById(R.id.item);
             }
 
-
             public void setData(int position) {
                 if (position == 0)
-                    item.setText("添加建筑信息");
+
+
+                    item.setText("搜索");
                 else
                     item.setText("建审信息");
             }
@@ -255,9 +340,9 @@ public class Type5_fragment extends RxFragment {
 
     }
 
-    private void addCommit() {
-        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+    public void addCommit() {
 
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
         for (int i = 0; i < manager.getChildCount(); i++) {
             if (i == 0 || i == 5)
                 continue;
@@ -330,7 +415,7 @@ public class Type5_fragment extends RxFragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        UiUtils.showToast(UiUtils.getContext(),"添加失败");
+                        UiUtils.showToast(UiUtils.getContext(), "添加失败");
                         e.printStackTrace();
                     }
 
@@ -349,12 +434,12 @@ public class Type5_fragment extends RxFragment {
                                         })
                                         .create();
                                 dialog.show();
-                            }else {
+                            } else {
                                 UiUtils.showToast(result.msg);
                             }
                         } else {
 
-                            UiUtils.showToast(UiUtils.getContext(),"添加失败");
+                            UiUtils.showToast(UiUtils.getContext(), "添加失败");
                         }
                     }
                 });

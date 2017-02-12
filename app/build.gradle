@@ -10,6 +10,7 @@ android {
         targetSdkVersion 22
         versionCode 10
         versionName "1.0.10"
+        multiDexEnabled true//这行
         ndk {
             //设置支持的SO库架构
             abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
@@ -56,10 +57,11 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.google.guava:guava-collections:r03'
 
-    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.2.0
+    compile 'com.tencent.bugly:crashreport_upgrade:1.2.0'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.2.0
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     compile 'com.github.bumptech.glide:glide:3.7.0'
 //    compile files('libs/pgyer_sdk_2.4.5.jar')
     compile 'com.trello:rxlifecycle-components:1.0'
+    compile 'com.android.support:multidex:1.0.0'//这行
 }

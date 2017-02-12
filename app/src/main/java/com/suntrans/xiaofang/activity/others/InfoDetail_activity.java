@@ -1,12 +1,8 @@
 package com.suntrans.xiaofang.activity.others;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
@@ -15,8 +11,10 @@ import com.suntrans.xiaofang.fragment.infodetail.Type2__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type3__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type4__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type5__info_fragment;
+import com.suntrans.xiaofang.fragment.infodetail.Type6__info_fragment;
+import com.suntrans.xiaofang.fragment.infodetail.Type7__info_fragment;
 import com.suntrans.xiaofang.model.company.UnitInfo;
-import com.suntrans.xiaofang.utils.StatusBarCompat;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -26,10 +24,8 @@ import java.util.Map;
  */
 
 public class InfoDetail_activity extends BasedActivity {
-    public Toolbar toolbar;
 
 
-    public String title;
 
 
     protected LinearLayoutManager manager;
@@ -45,7 +41,6 @@ public class InfoDetail_activity extends BasedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_companyinfo);
         initData();
-        setupToolbar();
         initView();
     }
 
@@ -53,22 +48,11 @@ public class InfoDetail_activity extends BasedActivity {
 
     }
 
-    private void setupToolbar() {
-        StatusBarCompat.compat(this, Color.rgb(0x2f,0x9d,0xce));
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(Color.WHITE);
-        title = getIntent().getStringExtra("name").split("#")[0];
-        toolbar.setTitle(title);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(true);
-    }
 
     private void initView() {
         companyId = getIntent().getStringExtra("companyID").split("#")[0];
         companyType = getIntent().getStringExtra("companyID").split("#")[1];
-        System.out.println("InfodetailActivity:"+"公司id="+companyId);
+        System.out.println("InfodetailActivity:"+"id="+companyId);
         switch (Integer.valueOf(companyType)){
             case 0:
                 Type1__info_fragment type1__info_fragment = new Type1__info_fragment();
@@ -78,8 +62,8 @@ public class InfoDetail_activity extends BasedActivity {
                 Type2__info_fragment type2__info_fragment = new Type2__info_fragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type2__info_fragment).commit();
                 break;
-            case 2:
-                Type3__info_fragment type3__info_fragment = new Type3__info_fragment();
+            case MarkerHelper.FIRESTATION:
+                Type3__info_fragment type3__info_fragment = Type3__info_fragment.newInstance(MarkerHelper.FIRESTATION);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type3__info_fragment).commit();
                 break;
             case 3:
@@ -89,6 +73,15 @@ public class InfoDetail_activity extends BasedActivity {
             case 4:
                 Type5__info_fragment type5__info_fragment = new Type5__info_fragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type5__info_fragment).commit();
+                break;
+            case MarkerHelper.FIREBRIGADE:
+                Type6__info_fragment type6__info_fragment = new Type6__info_fragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type6__info_fragment).commit();
+                break;
+            case MarkerHelper.FIREADMINSTATION:
+                Type3__info_fragment type3__info_fragment_admin =Type3__info_fragment.newInstance(MarkerHelper.FIREADMINSTATION);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type3__info_fragment_admin).commit();
+
                 break;
         }
 
@@ -101,15 +94,7 @@ public class InfoDetail_activity extends BasedActivity {
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 
 
 

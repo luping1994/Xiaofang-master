@@ -6,11 +6,13 @@ import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.model.company.CompanyPassResult;
 import com.suntrans.xiaofang.model.event.EventDetailResult;
 import com.suntrans.xiaofang.model.event.EventListResult;
+import com.suntrans.xiaofang.model.firebrigade.FireBrigadeDetailResult;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.model.firegroup.FireGroupDetailResult;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.model.fireroom.FireComponentGeneralInfoList;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailResult;
+import com.suntrans.xiaofang.model.company.InchargeInfo;
 import com.suntrans.xiaofang.model.firestation.AddFireStationResult;
 import com.suntrans.xiaofang.model.firestation.FireStationDetailResult;
 import com.suntrans.xiaofang.model.license.AddLicenseResult;
@@ -21,6 +23,7 @@ import com.suntrans.xiaofang.model.personal.UserInfoResult;
 import com.suntrans.xiaofang.model.supervise.SuperviseDetailResult;
 import com.suntrans.xiaofang.model.supervise.SuperviseListResult;
 
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -67,16 +70,15 @@ public interface Api {
      *
      * @param lng     中心点的经度
      * @param Lat     中心点的纬度
-     * @param lngbias
-     * @param latbias
+     * @param distance
+     *
      * @return
      */
     @FormUrlEncoded
     @POST("/api/v1/company/range")
     Observable<CompanyListResult> getCompanyList(@Field("lng") String lng,
                                            @Field("lat") String Lat,
-                                           @Field("lngbias") String lngbias,
-                                           @Field("latbias") String latbias);
+                                           @Field("distance") String distance);
 
     /**
      * 获取等待审核的单位
@@ -164,7 +166,7 @@ public interface Api {
 
 
     /**
-     * 根据关键词查询firestation信息
+     * 根据关键词查询乡村firestation信息
      *
      * @param name
      * @return
@@ -175,7 +177,17 @@ public interface Api {
 
 
     /**
-     * 根据关键词查询firegroup信息
+     * 根据关键词查询政府firestation信息
+     *
+     * @param name
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/fireadminstation/search")
+    Observable<CompanyListResult> queryFireadminstation(@Field("name") String name);
+
+    /**
+     * 根据关键词查询消防中队信息
      *
      * @param name
      * @return
@@ -212,10 +224,11 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/fireroom/range")
     Observable<FireComponentGeneralInfoList> getFireroomList(@Field("lng") String lng,
-                                                             @Field("lat") String lat);
+                                                             @Field("lat") String lat,
+                                                             @Field("distance") String distance);
 
     /**
-     * 获取小型站一定范围内的记录
+     * 获取乡村小型站一定范围内的记录
      *
      * @param
      * @return
@@ -223,7 +236,8 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/firestation/range")
     Observable<FireComponentGeneralInfoList> getFirestationList(@Field("lng") String lng,
-                                                                @Field("lat") String lat);
+                                                                @Field("lat") String lat,
+                                                                @Field("distance") String distance);
 
     /**
      * 获取消防大队一定范围内的记录
@@ -234,7 +248,8 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/firegroup/range")
     Observable<FireComponentGeneralInfoList> getFireGroupList(@Field("lng") String lng,
-                                                              @Field("lat") String lat);
+                                                              @Field("lat") String lat,
+                                                              @Field("distance") String distance);
 
     /**
      * 新增社区消防室
@@ -266,7 +281,7 @@ public interface Api {
     Observable<AddFireRoomResult> updateFireRoom(@FieldMap Map<String, String> map);
 
     /**
-     * 创建小型站
+     * 创建乡村小型站
      * @param map
      * @return
      */
@@ -275,7 +290,7 @@ public interface Api {
     Observable<AddFireStationResult> createStation(@FieldMap Map<String, String> map);
 
     /**
-     * 删除小型站
+     * 删除乡村小型站
      *
      * @param id
      * @return
@@ -285,10 +300,20 @@ public interface Api {
     Observable<AddFireStationResult> deleteStation(@Field("id") String id);
 
 
+    /**
+     * 乡村小型站详情
+     * @param id
+     * @return
+     */
     @FormUrlEncoded
     @POST("/api/v1/firestation/detail")
     Observable<FireStationDetailResult> getFireStationDetailInfo(@Field("id") String id);
 
+    /**
+     * 更新乡村小型站
+     * @param map
+     * @return
+     */
     @FormUrlEncoded
     @POST("/api/v1/firestation/update")
     Observable<AddFireStationResult> updateFireStation(@FieldMap Map<String, String> map);
@@ -321,7 +346,10 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/firegroup/update")
     Observable<AddFireGroupResult> updateFireGroup(@FieldMap Map<String, String> map);
+    @FormUrlEncoded
 
+    @POST("/api/v1/firebrigade/update")
+    Observable<AddFireGroupResult> updateFireBrigade(@FieldMap Map<String, String> map);
 
     /**
      * 行政许可建审查
@@ -353,7 +381,8 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/license/range")
     Observable<FireComponentGeneralInfoList> getLicenseList(@Field("lng") String lng,
-                                                            @Field("lat") String lat);
+                                                            @Field("lat") String lat,
+                                                            @Field("distance") String distance);
 
 
     /**
@@ -453,7 +482,119 @@ public interface Api {
     Observable<CPasswordResult> changedPassword(@Field("password") String contents);
 
     @FormUrlEncoded
-    @POST("/api/v1/admindivi/area")
+    @POST("/api/v1/admindivi/subarea")
     Observable<Map<String,String>> getArea(@Field("pid") String pid);
+
+
+    @FormUrlEncoded
+    @POST("/api/v1/firedept/subdept")
+    Observable<List<InchargeInfo>> getFireChargeArea(@Field("pid") String pid,@Field("vtype") String vtype);
+
+//    11.2返回所有消防大队/消防中队/派出所
+
+
+    @FormUrlEncoded
+    @POST("/api/v1/firedept/specificdept")
+    Observable<Map<String,String>> getSpecificdept(@Field("pid") String pid);
+
+
+
+
+    /**
+     * 一定范围内的消防大队
+     *
+     * @param lng
+     * @param lat
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/firebrigade/range")
+    Observable<FireComponentGeneralInfoList> getFirebrigade(@Field("lng") String lng,
+                                                            @Field("lat") String lat,
+                                                            @Field("distance") String distance);
+
+    /**
+     * 消防大队详情
+     *
+     * @param id
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/firebrigade/detail")
+    Observable<FireBrigadeDetailResult> getFirebrigadeDetail(@Field("id") String id);
+
+
+
+    /**
+     * 一定范围内的政府专职小型站
+     *
+     * @param lng
+     * @param lat
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/fireadminstation/range")
+    Observable<FireComponentGeneralInfoList> getFireadminstation(@Field("lng") String lng,
+                                                            @Field("lat") String lat,
+                                                            @Field("distance") String distance);
+
+    /**
+     * 创建政府小型站
+     * @param map
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/fireadminstation/create")
+    Observable<AddFireStationResult> createFireAdminStation(@FieldMap Map<String, String> map);
+
+    /**
+     * 删除政府小型站
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/fireadminstation/delete")
+    Observable<AddFireStationResult> deleteFireAdminStation(@Field("id") String id);
+
+
+    @FormUrlEncoded
+    @POST("/api/v1/fireadminstation/detail")
+    Observable<FireStationDetailResult> getFireAdminStationDetailInfo(@Field("id") String id);
+
+    @FormUrlEncoded
+    @POST("/api/v1/fireadminstation/update")
+    Observable<AddFireStationResult> updateFireAdminStation(@FieldMap Map<String, String> map);
+
+    /**
+     * 创建da队
+     * @param map
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/firebrigade/create")
+    Observable<AddFireGroupResult> createFirebrigade(@FieldMap Map<String, String> map);
+
+    /**
+     * 删除大队
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/firebrigade/delete")
+    Observable<AddFireGroupResult> deleteFirebrigade(@Field("id") String id);
+
+
+    /**
+     * 根据关键词查询消防da队信息
+     *
+     * @param name
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/firebrigade/search")
+    Observable<CompanyListResult> queryFireBrigade(@Field("name") String name);
 }
 

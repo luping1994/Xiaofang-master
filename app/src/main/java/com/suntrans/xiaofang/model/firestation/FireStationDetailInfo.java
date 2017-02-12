@@ -26,6 +26,12 @@ public class FireStationDetailInfo implements Serializable{
     public String community;
     public String group;
     public String cmystate;
+    public String membernum;
+    public String admindivi_path;
+    public String group_path;
+    public String brigade_path;
+    public String brigade_name;
+    public String group_name;
 
     @Override
     public String toString() {

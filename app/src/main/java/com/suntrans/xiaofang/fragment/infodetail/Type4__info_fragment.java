@@ -2,14 +2,20 @@ package com.suntrans.xiaofang.fragment.infodetail;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -17,6 +23,8 @@ import android.widget.TextView;
 import com.amap.api.maps.model.LatLng;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.gson.JsonObject;
+import com.journeyapps.barcodescanner.Util;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.edit.EditFiregoupinfo_activity;
@@ -30,7 +38,11 @@ import com.suntrans.xiaofang.model.firegroup.FireGroupDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -38,6 +50,12 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+
+import static com.suntrans.xiaofang.R.id.gonganganbu;
+import static com.suntrans.xiaofang.R.id.wenyuan;
+import static com.suntrans.xiaofang.R.id.xianyiganbu;
+import static com.suntrans.xiaofang.R.id.zhuanzhi;
+import static com.suntrans.xiaofang.utils.Utils.parseJson;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -51,10 +69,10 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
     private MyAdapter myAdapter;
 
 
-    private FloatingActionMenu menuRed;
-    private FloatingActionButton fab1;
-    private FloatingActionButton fab2;
-    private FloatingActionButton fab3;
+//    private FloatingActionMenu menuRed;
+//    private FloatingActionButton fab1;
+//    private FloatingActionButton fab2;
+//    private FloatingActionButton fab3;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,6 +83,8 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view,savedInstanceState);
+
+        setupToolbar(view);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
         manager = new LinearLayoutManager(getActivity());
         myAdapter = new MyAdapter();
@@ -73,17 +93,17 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
         recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(),LinearLayoutManager.VERTICAL));
 
         recyclerView.setVisibility(View.INVISIBLE);
-
-        menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
-        menuRed.setClosedOnTouchOutside(true);
-        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
-        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
-        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
-
-
-        fab1.setOnClickListener(this);
-        fab2.setOnClickListener(this);
-        fab3.setOnClickListener(this);
+//
+//        menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
+//        menuRed.setClosedOnTouchOutside(true);
+//        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
+//        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
+//        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
+//
+//
+//        fab1.setOnClickListener(this);
+//        fab2.setOnClickListener(this);
+//        fab3.setOnClickListener(this);
     }
 
     @Override
@@ -143,16 +163,16 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
         array10.put(1, "--");
         datas.add(array10);
 
-        SparseArray<String> array11 = new SparseArray<>();
-        array11.put(0, "所属区");
-        array11.put(1, "--");
-        datas.add(array11);
+//        SparseArray<String> array11 = new SparseArray<>();
+//        array11.put(0, "所属区");
+//        array11.put(1, "--");
+//        datas.add(array11);
 
 
-        SparseArray<String> array14 = new SparseArray<>();
-        array14.put(0, "所属大队");
-        array14.put(1, "--");
-        datas.add(array14);
+        SparseArray<String> array13 = new SparseArray<>();
+        array13.put(0, "所属大队");
+        array13.put(1, "--");
+        datas.add(array13);
 
     }
 
@@ -250,10 +270,10 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        throwable.printStackTrace();
                         progressBar.setVisibility(View.INVISIBLE);
                         error.setVisibility(View.VISIBLE);
-                        LogUtil.i(throwable.toString());
-                        UiUtils.showToast(App.getApplication(),"未知错误");
+                        UiUtils.showToast(App.getApplication(),"服务器错误");
                     }
                 });
     }
@@ -263,13 +283,25 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
         datas.get(1).put(1,info.addr);//地址
         datas.get(2).put(1,info.area==null?"--":info.area+"平方公里");
         datas.get(3).put(1,info.phone==null?"--":info.phone);
-        datas.get(4).put(1,info.membernum==null?"--":info.membernum);
+
+        String a = info.membernum;
+        String renyuan="";
+        if (a!=null){
+            renyuan=Utils.parseJson(a);
+            datas.get(4).put(1,renyuan==null?a:renyuan);
+        }
         datas.get(5).put(1,info.carnum==null?"--":info.carnum);
-        datas.get(6).put(1,info.cardisp==null?"--":info.cardisp);
+
+        String b= info.cardisp;
+        String cardis="";
+        if (b!=null){
+            cardis = Utils.parseJson(b);
+            datas.get(6).put(1,cardis==null?"--":cardis);
+        }
+
         datas.get(7).put(1,info.waterweight==null?"--":info.waterweight);
         datas.get(8).put(1,info.soapweight==null?"--":info.soapweight);
-        datas.get(9).put(1,info.district==null?"--":info.district);
-        datas.get(10).put(1,info.group+info.group);
+        datas.get(9).put(1,info.brigade_path==null?"--":info.brigade_path);
         myAdapter.notifyDataSetChanged();
     }
 
@@ -304,7 +336,7 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
             case R.id.fab2:
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), EditFiregoupinfo_activity.class);
-                intent.putExtra("title",((InfoDetail_activity)getActivity()).title);
+                intent.putExtra("title",title);
 //                intent.putExtra("id",((InfoDetail_activity)getActivity()).companyId);
 //                intent.putExtra("from",getActivity().getIntent().getParcelableExtra("from"));
                 intent.putExtra("info",myInfo);
@@ -349,7 +381,7 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
 
                     @Override
                     public void onError(Throwable e) {
-                        UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                        UiUtils.showToast(UiUtils.getContext(),"删除失败");
                         e.printStackTrace();
                     }
 
@@ -375,7 +407,7 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
                                 builder.create().show();
                             }
                         }else {
-                            UiUtils.showToast(UiUtils.getContext(),"删除失败错误");
+                            UiUtils.showToast("删除失败");
                         }
                     }
                 });
@@ -386,5 +418,96 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacksAndMessages(null);
+    }
+
+    public Toolbar toolbar;
+    public String title;
+    private void setupToolbar(View view) {
+        setHasOptionsMenu(true);
+
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
+        title = getActivity().getIntent().getStringExtra("name").split("#")[0];
+        toolbar.setTitle(title);
+        ((InfoDetail_activity)getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionBar =((InfoDetail_activity)getActivity()). getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().finish();
+                return true;
+            case R.id.delete:
+                if (myInfo==null){
+                    UiUtils.showToast(UiUtils.getContext(),"无法获取单位信息");
+                    break;
+                }
+                final AlertDialog.Builder builder =new AlertDialog.Builder(getActivity());
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        delete();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog =builder.create();
+                dialog.setTitle("确定删除该单位?");
+                dialog.show();
+                break;
+            case R.id.gohere:
+                if (myInfo==null){
+                    UiUtils.showToast(UiUtils.getContext(),"无法获取单位信息");
+                    break;
+                }
+                Intent intent1 = new Intent();
+                intent1.setClass(getActivity(),CalculateRoute_Activity.class);
+                if (getActivity().getIntent().getParcelableExtra("from")==null||to==null){
+                    final AlertDialog.Builder builder1 =new AlertDialog.Builder(getActivity());
+                    builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog dialog1 =builder1.create();
+                    dialog1.setTitle("单位未添加地理坐标,无法导航!");
+                    dialog1.show();
+                    break;
+                }
+                intent1.putExtra("from",getActivity().getIntent().getParcelableExtra("from"));
+                intent1.putExtra("to",to);
+                startActivity(intent1);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+            case R.id.xiugai:
+                if (myInfo==null){
+                    UiUtils.showToast(UiUtils.getContext(),"无法获取单位信息");
+                    break;
+                }
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), EditFiregoupinfo_activity.class);
+                intent.putExtra("title",title);
+//                intent.putExtra("id",((InfoDetail_activity)getActivity()).companyId);
+//                intent.putExtra("from",getActivity().getIntent().getParcelableExtra("from"));
+                intent.putExtra("info",myInfo);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_detailinfo,menu);
     }
 }

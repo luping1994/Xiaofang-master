@@ -29,40 +29,54 @@
                 android:orientation="vertical">
 
                 <android.support.v7.widget.AppCompatRadioButton
-                    android:checked="true"
                     android:id="@+id/type1"
-                    android:text="社会单位"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="社会单位" />
 
                 <android.support.v7.widget.AppCompatRadioButton
-                    android:id="@+id/type2"
-                    android:text="社区消防室"
+                    android:id="@+id/type6"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <android.support.v7.widget.AppCompatRadioButton
-                    android:id="@+id/type3"
-                    android:text="政府专职小型站"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="消防大队" />
 
                 <android.support.v7.widget.AppCompatRadioButton
                     android:id="@+id/type4"
-                    android:text="消防中队"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="消防中队" />
+
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/type7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="政府专职小型站" />
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/type3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="乡村专职消防队" />
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/type2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="社区消防室" />
 
                 <android.support.v7.widget.AppCompatRadioButton
                     android:id="@+id/type5"
-                    android:text="行政许可"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="行政许可项目" />
+
+
             </RadioGroup>
         </LinearLayout>
 
         <Button
-            android:onClick="next"
             android:id="@+id/next1"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
@@ -70,6 +84,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:onClick="next"
             android:text="下一步" />
     </RelativeLayout>
 </LinearLayout>

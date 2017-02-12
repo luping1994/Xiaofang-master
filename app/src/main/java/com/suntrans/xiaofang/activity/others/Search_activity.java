@@ -241,21 +241,27 @@ public class Search_activity extends BasedActivity {
     private void search(String text) {
         dialog.show();
         switch (type) {
+            case 0:
+                searchCompany(text);
+                break;
             case 1:
                 searchRoom(text);
                 break;
             case 2:
-                searchStation(text);
+                searchStation(text);//
                 break;
             case 3:
                 searchGroup(text);
                 break;
-            case 0:
-                searchCompany(text);
-                break;
             case 4:
                 dialog.dismiss();
                 searchLicense(text);
+                break;
+            case 5:
+                searchBrigade(text);
+                break;
+            case 6:
+                searchAdminStation(text);
                 break;
         }
 
@@ -428,6 +434,61 @@ public class Search_activity extends BasedActivity {
 
     }
 
+
+    private void searchAdminStation(String text) {
+        RetrofitHelper.getApi().queryFireadminstation(text)
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 800);
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                datas.clear();
+                                List<CompanyList> lists = result.results;
+                                for (CompanyList info : lists) {
+                                    SparseArray<String> map = new SparseArray<String>();
+                                    map.put(0, info.id);
+                                    map.put(1, info.name);
+                                    datas.add(map);
+                                }
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                UiUtils.showToast(App.getApplication(), result.msg);
+                            }
+                        }
+
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 800);
+                    }
+                });
+
+
+    }
+
     private void searchGroup(String text) {
         RetrofitHelper.getApi().queryFiregroup(text)
                 .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
@@ -498,6 +559,63 @@ public class Search_activity extends BasedActivity {
         builder.create().show();
     }
 
+
+    private void searchBrigade(String text) {
+        RetrofitHelper.getApi().queryFireBrigade(text)
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 800);
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                datas.clear();
+                                List<CompanyList> lists = result.results;
+                                for (CompanyList info : lists) {
+                                    SparseArray<String> map = new SparseArray<String>();
+//                            System.out.println("我的id是:====>"+info.id);
+                                    map.put(0, info.id);
+                                    map.put(1, info.name);
+//                            map.put(2,info.lat);
+//                            map.put(3,info.lng);
+                                    datas.add(map);
+                                }
+                            } else {
+                                UiUtils.showToast(App.getApplication(), result.msg);
+                            }
+                        }
+
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        }, 800);
+                    }
+                });
+
+
+    }
 
     @Override
     protected void onDestroy() {

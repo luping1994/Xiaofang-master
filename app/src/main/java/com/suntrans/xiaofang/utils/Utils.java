@@ -12,12 +12,18 @@ import android.view.WindowManager;
 
 import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.AMapNaviStep;
+import com.google.gson.JsonObject;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.model.StrategyBean;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Utils {
     private static DecimalFormat fnum = new DecimalFormat("##0.0");
@@ -248,4 +254,28 @@ public class Utils {
         }
         return false;
     }
+
+    public static String parseJson(String s){
+        StringBuilder sb =  new StringBuilder();
+        try {
+            JSONObject jsonObject = new JSONObject(s);
+            JSONArray names = jsonObject.names();
+            if (names.length()!=0){
+                for (int i=0;i<names.length();i++){
+                    sb.append(names.getString(i))
+                            .append(":")
+                            .append(jsonObject.getString(names.getString(i)))
+                            .append("\n");
+                }
+                return sb.toString();
+            }else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 }

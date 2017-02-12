@@ -22,6 +22,8 @@ public class FireRoomDetailInfo implements Serializable{
     public String created_at;
     public String updated_at;
     public String deleted_at;
+    public String brigade_path;
+    public String group_path;
 
     @Override
     public String toString() {

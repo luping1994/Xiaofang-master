@@ -40,7 +40,7 @@ import rx.schedulers.Schedulers;
 
 /**
  * Created by Looney on 2016/12/3.
- * 修改消防室信息
+ * 修改行政许可
  */
 
 public class EditLicense_activity extends BasedActivity {

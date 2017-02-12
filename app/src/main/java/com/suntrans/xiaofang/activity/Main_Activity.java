@@ -1,9 +1,7 @@
 package com.suntrans.xiaofang.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -14,6 +12,7 @@ import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Process;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
@@ -21,7 +20,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -33,6 +31,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -64,39 +63,52 @@ import com.google.zxing.integration.android.IntentResult;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.add.Add_activity;
-import com.suntrans.xiaofang.activity.add.Add_detail_activity;
 import com.suntrans.xiaofang.activity.check.Check_Activity;
 import com.suntrans.xiaofang.activity.others.CameraScan_Activity;
 import com.suntrans.xiaofang.activity.others.Help_activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.activity.others.Personal_activity;
 import com.suntrans.xiaofang.activity.others.Search_activity;
-import com.suntrans.xiaofang.model.company.CompanyList;
-import com.suntrans.xiaofang.model.company.CompanyListResult;
-import com.suntrans.xiaofang.model.fireroom.FireComponentGeneralInfo;
-import com.suntrans.xiaofang.model.fireroom.FireComponentGeneralInfoList;
-import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.SensorEventHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
-import com.tencent.bugly.Bugly;
-import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-//import com.pgyersdk.update.PgyUpdateManager;
+import static com.suntrans.xiaofang.R.id.marker;
+
+public class Main_Activity extends BasedActivity implements LocationSource, View.OnClickListener, AMap.OnMarkerClickListener, AMapLocationListener, MarkerHelper.onGetInfoFinishListener {
+    @BindView(R.id.zhongdiandanwei)
+    AppCompatCheckBox zhongdiandanwei;
+    @BindView(R.id.yibandanwei)
+    AppCompatCheckBox yibandanwei;
+    @BindView(R.id.dadui)
+    AppCompatCheckBox dadui;
+    @BindView(R.id.zhongdui)
+    AppCompatCheckBox zhongdui;
+    @BindView(R.id.xiaoxingzhan)
+    AppCompatCheckBox xiaoxingzhan;
+    @BindView(R.id.xiangcun)
+    AppCompatCheckBox xiangcun;
+    @BindView(R.id.xiaofangshi)
+    AppCompatCheckBox xiaofangshi;
+
+    @BindView(R.id.xingzhenshenpi)
+    AppCompatCheckBox xingzhenshenpi;
 
 
-public class Main_Activity extends BasedActivity implements LocationSource, View.OnClickListener, AMap.OnMarkerClickListener, AMapLocationListener {
+    @BindView(R.id.ll_more_danwei)
+    LinearLayout llMoreDanwei;
+    @BindView(R.id.bottom_menu)
+    RelativeLayout bottomMenu;
+
     private Toolbar toolbar;
     private MapView mapView = null;
     private LinearLayout rootview;
@@ -118,125 +130,116 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     //底部菜单栏
     private TextView name;//单位名字
     private TextView addrDes;//单位地址描述
-    private LinearLayout bottom1;//默认底部菜单
+    //    private LinearLayout bottom1;//默认底部菜单
     private LinearLayout bottom2;//单位信息底部菜单栏
     private LinearLayout detail;//单位详情
 
 
     //    private Spinner spinner;
-    LinearLayout llNearby;//底部菜单附近单位按钮
-    LinearLayout llAdd;//底部菜单附近添加单位按钮
-    LinearLayout llResume;//底部菜单个人中心按钮
+//    LinearLayout llNearby;//底部菜单附近单位按钮
+//    LinearLayout llAdd;//底部菜单附近添加单位按钮
+//    LinearLayout llResume;//底部菜单个人中心按钮
     private Point mScreenPoint;//我的屏幕点的x和y最大值
 
-    ArrayList<Marker> CompanyMarkers;
-    ArrayList<MarkerOptions> CompanyMarkerOptions;
+//    private TextView textView;
 
-    ArrayList<Marker> fireRoomMarkers;
-    ArrayList<MarkerOptions> fireRoomOptions;
+    SparseArray<ArrayList<Marker>> markersArray = new SparseArray<>();//所有marker集合的数组
 
-    ArrayList<Marker> fireStationMarkers;
-    ArrayList<MarkerOptions> fireStationOptions;
+    private ArrayList<MarkerOptions> companyOptions = null;
+    private ArrayList<MarkerOptions> fireRoomOptions = null;
+    private ArrayList<MarkerOptions> fireStationoptions = null;//乡村小型站
+    private ArrayList<MarkerOptions> fireGroupOptions = null;
+    private ArrayList<MarkerOptions> fireLicenseoptions = null;//政府小型站
+    private ArrayList<MarkerOptions> fireAdminStationoptions = null;//政府小型站
+    private ArrayList<MarkerOptions> fireBrigadeoptions = null;//政府小型站
 
-    ArrayList<Marker> fireGroupMarkers;
-    ArrayList<MarkerOptions> fireGroupOptions;
-
-    ArrayList<Marker> licenseMarkers;
-    ArrayList<MarkerOptions> licenseOptions;
-
-
-    Bitmap fireroomBitmap;
-    Bitmap firegroupBitmap;
-    Bitmap firestationBitmap;
-    Bitmap companyBitmap;
-    Bitmap zddwBitmap;
-    private TextView textView;
-
-
-    private AppCompatCheckBox company;
-    private AppCompatCheckBox fireroom;
-    private AppCompatCheckBox firestation;
-    private AppCompatCheckBox firegroup;
-    private AppCompatCheckBox firelicense;
-
+    ArrayList<Marker> CompanyMarkers = null;
+    ArrayList<Marker> fireRoomMarkers = null;
+    ArrayList<Marker> fireStationMarkers = null;
+    ArrayList<Marker> fireGroupMarkers = null;
+    ArrayList<Marker> fireLicenseMarkers = null;
+    ArrayList<Marker> fireAdminStationMarkers = null;
+    ArrayList<Marker> fireBrigadeMarkers = null;
 
     private GeocodeSearch geocodeSearch;//地点搜索
     private RegeocodeQuery query;
     private LocationManager manager;
 
+    private MarkerHelper helper;
+
+
+    private TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Bugly.init(getApplicationContext(), "7d01f61d8c", false);
+        ButterKnife.bind(this);
+//        Bugly.init(getApplicationContext(), "7d01f61d8c", false);
         initView();
         initMap(savedInstanceState);
     }
 
     private void initView() {
 
-        /**
-         *模拟武汉大学地址，release时删除
-         */
+        companyOptions = new ArrayList<>();
+        fireRoomOptions = new ArrayList<>();
+        fireStationoptions = new ArrayList<>();
+        fireGroupOptions = new ArrayList<>();
+        fireLicenseoptions = new ArrayList<>();
+        fireAdminStationoptions = new ArrayList<>();
+        fireBrigadeoptions = new ArrayList<>();
+
+
+        CompanyMarkers = new ArrayList<>();
+        fireRoomMarkers = new ArrayList<>();
+        fireStationMarkers = new ArrayList<>();
+        fireGroupMarkers = new ArrayList<>();
+        fireLicenseMarkers = new ArrayList<>();
+        fireAdminStationMarkers = new ArrayList<>();
+        fireBrigadeMarkers = new ArrayList<>();
+
+//        markersArray.put(0, CompanyMarkers);
+//        markersArray.put(1, fireRoomMarkers);
+//        markersArray.put(2, fireStationMarkers);
+//        markersArray.put(3, fireGroupMarkers);
+
+//        /**
+//         *模拟武汉大学地址，release时删除
+//         */
 //        manager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 //        a();
 //        new Thread(new RunnableMockLocation()).start();
 
 
-//            PgyUpdateManager.register(this);
-        fireRoomMarkers = new ArrayList<>();
-        fireRoomOptions = new ArrayList<>();
-
-        CompanyMarkerOptions = new ArrayList<>();
-        CompanyMarkers = new ArrayList<>();
-
-        fireStationMarkers = new ArrayList<>();
-        fireStationOptions = new ArrayList<>();
-
-        fireGroupMarkers = new ArrayList<>();
-        fireGroupOptions = new ArrayList<>();
-
-        licenseMarkers = new ArrayList<>();
-        licenseOptions = new ArrayList<>();
-
-        markersArray.put(0, CompanyMarkers);
-        markersArray.put(1, fireRoomMarkers);
-        markersArray.put(2, fireStationMarkers);
-        markersArray.put(3, fireGroupMarkers);
-        markersArray.put(4, licenseMarkers);
-
-        fireroomBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_fireroom);
-        firegroupBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_firegroup);
-        firestationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.firestation_marker);
-        companyBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.company);
-        zddwBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.zddw);
+        helper = new MarkerHelper(this);
+        helper.setOnGetInfoFinishListener(this);
 
 
-        company = (AppCompatCheckBox) findViewById(R.id.type1);
-        fireroom = (AppCompatCheckBox) findViewById(R.id.type2);
-        firestation = (AppCompatCheckBox) findViewById(R.id.type3);
-        firegroup = (AppCompatCheckBox) findViewById(R.id.type4);
-//        firelicense = (AppCompatCheckBox) findViewById(R.id.type5);
+        zhongdiandanwei.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        yibandanwei.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        dadui.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        zhongdui.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        xiaoxingzhan.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        xiangcun.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        xiaofangshi.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        xingzhenshenpi.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
 
-        company.setSupportButtonTintList(ColorStateList.valueOf(Color.parseColor("#03a9f4")));
-        fireroom.setSupportButtonTintList(ColorStateList.valueOf(Color.parseColor("#03a9f4")));
-        firestation.setSupportButtonTintList(ColorStateList.valueOf(Color.parseColor("#03a9f4")));
-        firegroup.setSupportButtonTintList(ColorStateList.valueOf(Color.parseColor("#03a9f4")));
-//        firelicense.setButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        zhongdiandanwei.setOnCheckedChangeListener(listener);
+        yibandanwei.setOnCheckedChangeListener(listener);
+        dadui.setOnCheckedChangeListener(listener);
+        zhongdui.setOnCheckedChangeListener(listener);
+        xiaoxingzhan.setOnCheckedChangeListener(listener);
+        xiangcun.setOnCheckedChangeListener(listener);
+        xiaofangshi.setOnCheckedChangeListener(listener);
+        xingzhenshenpi.setOnCheckedChangeListener(listener);
 
+        textView = (TextView) findViewById(R.id.tx_count);
 
-        company.setOnCheckedChangeListener(listener);
-        fireroom.setOnCheckedChangeListener(listener);
-        firestation.setOnCheckedChangeListener(listener);
-        firegroup.setOnCheckedChangeListener(listener);
-//        firelicense.setOnCheckedChangeListener(listener);
-
-//        rootview = (LinearLayout) findViewById(R.id.rootview);
-//        spinner = (Spinner) findViewById(R.id.spinner);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle("单位总览");
-//        toolbar.setLogo(R.drawable.ic_logo);
+        toolbar.setTitle("武汉消防基础信息采集平台");
+        toolbar.setTitleTextAppearance(this, R.style.toolbar);
         cardView = (CardView) findViewById(R.id.search_cardview);
         cardView.setOnClickListener(this);
         setSupportActionBar(toolbar);
@@ -245,9 +248,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             actionBar.setDisplayHomeAsUpEnabled(false);
             actionBar.setDisplayShowTitleEnabled(true);
         }
-        llNearby = (LinearLayout) findViewById(R.id.ll_nearby);
-        llAdd = (LinearLayout) findViewById(R.id.ll_add);
-        llResume = (LinearLayout) findViewById(R.id.ll_gerenzhongxin);
+//        llNearby = (LinearLayout) findViewById(R.id.ll_nearby);
+//        llAdd = (LinearLayout) findViewById(R.id.ll_add);
+//        llResume = (LinearLayout) findViewById(R.id.ll_gerenzhongxin);
 
 //        bottom1 = (LinearLayout) findViewById(R.id.ll_bottom1);
         bottom2 = (LinearLayout) findViewById(R.id.ll_bottom2);
@@ -255,9 +258,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         addrDes = (TextView) findViewById(R.id.text_company_addr);
         detail = (LinearLayout) findViewById(R.id.ll_detail);
 
-        llNearby.setOnClickListener(this);
-        llAdd.setOnClickListener(this);
-        llResume.setOnClickListener(this);
+//        llNearby.setOnClickListener(this);
+//        llAdd.setOnClickListener(this);
+//        llResume.setOnClickListener(this);
         detail.setOnClickListener(this);
 
         mScreenPoint = new Point();
@@ -266,6 +269,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
     }
 
+    LatLng currentCenterLocation;
+    float currentZoom = 16;
+    float currentDistance;
 
     //初始化map
     private void initMap(Bundle savedInstanceState) {
@@ -285,7 +291,6 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             mUiSettings.setZoomPosition(AMapOptions.ZOOM_POSITION_RIGHT_CENTER);
             mUiSettings.setRotateGesturesEnabled(false);//设置地图是否可以旋转
 //            mUiSettings.setLogoBottomMargin(UiUtils.dip2px(0));
-
             aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
             aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
             aMap.moveCamera(CameraUpdateFactory.zoomTo(16));
@@ -297,21 +302,57 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
                 @Override
                 public void onCameraChangeFinish(CameraPosition cameraPosition) {
-                    LogUtil.i("onCameraChangeFinish:" + cameraPosition.zoom);
-                    if (mMyLocation != null) {
-                        showCompanyMarker();
-                        showFireRoomMarker();
-                        showFireStationMarker();
-                        showFireGroupMarker();
-                        showLicenseMarker();
+//                    if (cameraPosition.zoom < 15) {
+                    for (Marker marker :
+                            aMap.getMapScreenMarkers()) {
+                        if (!marker.equals(mLocMarker)) {
+                            marker.remove();
+                        }
+
                     }
+//                    }
+                    LogUtil.i("onCameraChangeFinish:" + cameraPosition.zoom + cameraPosition.target.toString());
+
+                    if (mMyLocation != null) {
+                        if (currentCenterLocation != null) {
+//                            if (currentCenterLocation.equals(cameraPosition.target)){
+//                                if (cameraPosition.zoom<=currentZoom){
+//                                    float dis = aMap.getScalePerPixel() * mScreenPoint.x / 1000/2;
+//                                    helper.getCompanyInfo(cameraPosition.target, String.valueOf(dis));
+//                                    helper.getFireRoomList(cameraPosition.target, String.valueOf(dis));
+//                                    currentCenterLocation = cameraPosition.target;
+//                                }
+//                            }else {
+//
+//                            }
+                            float dis = aMap.getScalePerPixel() * mScreenPoint.x / 1000;
+                            helper.getCompanyInfo(cameraPosition.target, String.valueOf(dis));
+                            helper.getFireRoomList(cameraPosition.target, String.valueOf(dis));
+                            helper.getFirStationList(cameraPosition.target, String.valueOf(dis));
+                            helper.getFireGroupList(cameraPosition.target, String.valueOf(dis));
+                            helper.getLicenseList(cameraPosition.target, String.valueOf(dis));
+                            helper.getFireAdminStationList(cameraPosition.target, String.valueOf(dis));
+                            helper.getFireBrigadeList(cameraPosition.target, String.valueOf(dis));
+                            currentCenterLocation = cameraPosition.target;
+                        }
+                    }
+
+                    currentZoom = cameraPosition.zoom;
+
                 }
             });
             aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng) {
 //                    LogUtil.i("点击的坐标为:" + latLng.latitude + "," + latLng.longitude);
+                    LogUtil.i("map被点击了");
+                    if (bottom2.getVisibility()==View.VISIBLE)
                     bottom2.setVisibility(View.GONE);
+                    if (llMoreDanwei.getVisibility()==View.VISIBLE){
+
+                    llMoreDanwei.setVisibility(View.GONE);
+                        isShowDanweiMenu = false;
+                    }
                     mUiSettings.setLogoBottomMargin(UiUtils.dip2px(5));
 
                 }
@@ -328,9 +369,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             mSensorHelper.registerSensorListener();
         }
         aMap.setOnMarkerClickListener(this);//设置marker点击监听
-        textView = (TextView) findViewById(R.id.search1);
 
         geocodeSearch = new GeocodeSearch(getApplicationContext());
+
 
     }
 
@@ -350,12 +391,6 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     }
 
 
-    public static final int S0CIETY = 0;//标识社会单位
-    public static final int FIREROOM = 1;//标识社区消防室标识
-    public static final int FIRESTATION = 2;//标识社区消防室标识
-    public static final int FIREGROUP = 3;//标识社区消防室标识
-    public static final int LICENSE = 4;//标识社区消防室标识
-
     private boolean mFirstFix = false;//是否第一次修展示我的位置图标
 
     @Override
@@ -363,23 +398,25 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         if (mListener != null && amapLocation != null) {
             if (amapLocation != null
                     && amapLocation.getErrorCode() == 0) {
-//                LogUtil.i("我当前的坐标为:(" + amapLocation.getLatitude() + "," + amapLocation.getLongitude() + ")");
+                LogUtil.i("我当前的坐标为:(" + amapLocation.getLatitude() + "," + amapLocation.getLongitude() + ")");
                 LatLng location = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
 //                Intent intent = new Intent();
 //                intent.setAction("com.suntrans.addr.RECEIVE");
 //                intent.putExtra("myLocation",location);
 //                intent.putExtra("addrdes",amapLocation.getAddress());
 //                sendBroadcast(intent);
-                SharedPreferences.Editor editor = App.getSharedPreferences().edit();
-                editor.putString("lng", location.longitude + "");
-                editor.putString("lat", location.latitude + "");
-                editor.putString("addr", amapLocation.getAddress() + "");
-                editor.commit();
+//                SharedPreferences.Editor editor = App.getSharedPreferences().edit();
+//                editor.putString("lng", location.longitude + "");
+//                editor.putString("lat", location.latitude + "");
+//                editor.putString("addr", amapLocation.getAddress() + "");
+//                editor.commit();
 
                 if (!mFirstFix) {
 //                    mMyLocation_pre = mMyLocation;
                     mMyLocation = null;
                     mMyLocation = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
+                    currentCenterLocation = mMyLocation;
+
                     mFirstFix = true;
                     addCircle(location, amapLocation.getAccuracy());//添加定位精度圆
                     addMarker(location, amapLocation.getAddress());//添加定位图标
@@ -387,16 +424,25 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         mSensorHelper.setCurrentMarker(mLocMarker);//定位图标旋转
                     aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16));
                     if (mMyLocation != null) {
-                        getCompanyInfo(mMyLocation, "0.01", "0.001");
-                        getFireRoomList(mMyLocation);
-                        getFirStationList(mMyLocation);
-                        getFireGroupList(mMyLocation);
+//                        LogUtil.e(aMap.getScalePerPixel()+"");
+//                        LogUtil.e(mScreenPoint.x+"");
+//                        float dis = aMap.getScalePerPixel() * mScreenPoint.x / 1000;
+//                        String distance = String.valueOf(dis);
+//                        LogUtil.i("屏幕范围" + distance);
+//
+//                        helper.getCompanyInfo(mMyLocation, distance);
+//                        helper.getFireRoomList(mMyLocation, distance);
+//                        getCompanyInfo(mMyLocation,distance);
+//                        getFireRoomList(mMyLocation);
+//                        getFirStationList(mMyLocation);
+//                        getFireGroupList(mMyLocation);
 //                        getLicenseList(mMyLocation);
                     }
                 } else {
                     mCircle.setCenter(location);
                     mCircle.setRadius(amapLocation.getAccuracy());
                     mLocMarker.setPosition(location);
+                    currentCenterLocation = mMyLocation;
 //                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(location));
                 }
 
@@ -432,10 +478,10 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 //                startActivity(intent);
 //                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 //                break;
-            case R.id.ll_add:
-                startActivity(new Intent(this, Add_detail_activity.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                break;
+//            case R.id.ll_add:
+//                startActivity(new Intent(this, Add_detail_activity.class));
+//                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//                break;
 //            case R.id.ll_nearby:
 //                break;
             case R.id.ll_detail:
@@ -454,10 +500,10 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
                 break;
-            case R.id.ll_gerenzhongxin:
-                startActivity(new Intent(this, Personal_activity.class));
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                break;
+//            case R.id.ll_gerenzhongxin:
+//                startActivity(new Intent(this, Personal_activity.class));
+//                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+//                break;
         }
     }
 
@@ -481,7 +527,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             //设置是否返回地址信息（默认返回地址信息）
             mLocationOption.setNeedAddress(true);
             //单位是毫秒，默认30000毫秒，建议超时时间不要低于8000毫秒。
-            mLocationOption.setHttpTimeOut(10000);
+            mLocationOption.setHttpTimeOut(30000);
             //给定位客户端对象设置定位参数
             mLocationClient.setLocationOption(mLocationOption);
             //启动定位
@@ -511,6 +557,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     public boolean onMarkerClick(Marker marker) {
         mUiSettings.setLogoBottomMargin(UiUtils.dip2px(100));
         currentMarker = null;
+        System.out.println("marker被点击了哦");
         currentMarker = marker;
         bottom2.setVisibility(View.VISIBLE);
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.menushow);
@@ -577,12 +624,12 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         if (resultCode == 300) {
             result = data.getStringExtra("result");
             if (result != null && !result.equals("")) {
-                if (result.contains("http://xf.egird.com/weixin/company/show/")) {
+                if (result.contains("http://xf.91yunpan.com/weixin/company/show/")) {
                     String id = result.split("company/show/")[1];
                     Intent intent = new Intent();
                     intent.putExtra("name", "");
                     intent.putExtra("from", mMyLocation);
-                    intent.putExtra("companyID", id + "#" + S0CIETY);
+                    intent.putExtra("companyID", id + "#" + MarkerHelper.S0CIETY);
                     intent.setClass(Main_Activity.this, InfoDetail_activity.class);
                     startActivity(intent);
                 } else {
@@ -603,24 +650,19 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                 } else {
 //                    LogUtil.i("扫描结果为:" + result1.getContents());
 //                    UiUtils.showToast(App.getApplication(), result1.getContents());
-                    if (result1.getContents().contains("http://xf.egird.com/weixin/company/show/")) {
+                    if (result1.getContents().contains("http://xf.91yunpan.com/weixin/company/show/")) {
                         String id = result1.getContents().split("company/show/")[1];
                         Intent intent1 = new Intent();
                         intent1.putExtra("name", "");
                         intent1.putExtra("from", mMyLocation);
 //                        intent1.putExtra("to", currentMarker.getPosition());
-                        intent1.putExtra("companyID", id + "#" + S0CIETY);
+                        intent1.putExtra("companyID", id + "#" + MarkerHelper.S0CIETY);
 //                        .snippet(info.id + "#" + S0CIETY + "#" + "1")
                         intent1.setClass(Main_Activity.this, InfoDetail_activity.class);
                         startActivity(intent1);
                     } else {
                         UiUtils.showToast("无效的二维码");
                     }
-//                    Intent intent = new Intent();
-//                    intent.putExtra("url", result);
-//                    intent.setClass(this, InfoDetail_activity.class);
-//                    startActivity(intent);
-//                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
             } else {
                 super.onActivityResult(requestCode, resultCode, data);
@@ -652,7 +694,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         options.anchor(0.5f, 0.5f);
         options.position(latlng);
         mLocMarker = aMap.addMarker(options);
-        String title = addr==null?"null":addr;
+        String title = addr == null ? "null" : addr;
         mLocMarker.setTitle(LOCATION_MARKER_FLAG + "#" + title);
         mLocMarker.setSnippet(addr);
     }
@@ -667,15 +709,15 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (bottom2.getVisibility() == View.VISIBLE) {
                 Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.menuhide);
-                bottom2.startAnimation(animation);
                 bottom2.setVisibility(View.GONE);
+                bottom2.startAnimation(animation);
                 return true;
             }
             System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
             mHits[mHits.length - 1] = SystemClock.uptimeMillis();
             if (mHits[0] >= (SystemClock.uptimeMillis() - 2000)) {
 //                finish();
-                android.os.Process.killProcess(android.os.Process.myPid());
+                Process.killProcess(Process.myPid());
             } else {
                 Snackbar.make(mapView, "再按一次退出", Snackbar.LENGTH_SHORT).show();
             }
@@ -705,6 +747,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             e.printStackTrace();
         }
     }
+
+
+    boolean isShowDanweiMenu = false;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -750,6 +795,16 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                 }
                 startActivity(intent1);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+            case R.id.danwei:
+                if (isShowDanweiMenu) {
+                    llMoreDanwei.setVisibility(View.GONE);
+                    isShowDanweiMenu = false;
+                } else {
+                    llMoreDanwei.setVisibility(View.VISIBLE);
+                    isShowDanweiMenu = true;
+
+                }
                 break;
             default:
                 break;
@@ -842,457 +897,14 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         }
     }
 
+
     //根据marker是否在屏幕上展示marker
-    public boolean isShow(MarkerOptions marker, Point screen) {
+    public boolean isVisible(MarkerOptions marker, Point screen) {
         Point target = aMap.getProjection().toScreenLocation(marker.getPosition());
         if (target.x < 0 || target.y < 0 || target.x > screen.x || target.y > screen.y) {
             return false;
         }
         return true;
-    }
-
-    SparseArray<ArrayList<Marker>> markersArray = new SparseArray<>();//所有marker集合的数组
-    private int showingType = 0;//当前展示的单位类型
-
-    //获取附近的社会单位位置
-    private void getCompanyInfo(LatLng center, String lngFangwei, String latFangwei) {
-
-        LatLng location = new LatLng(30.547186, 114.342014);
-//        if (CompanyMarkers.size() < 5)
-//            aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16));
-        RetrofitHelper.getApi().getCompanyList(String.valueOf(center.longitude), String.valueOf(center.latitude), "0.01", "0.001")
-                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<CompanyListResult>() {
-                    @Override
-                    public void call(CompanyListResult result) {
-
-                        if (result == null) {
-                            UiUtils.showToast(App.getApplication(), "获取服务器单位信息数据失败!");
-                            return;
-                        }
-                        if (!result.status.equals("0") && result != null) {
-                            List<CompanyList> lists = result.results;
-                            for (CompanyList info : lists) {
-                                if (info.lat == null || info.lng == null) {
-                                    continue;
-                                }
-                                double lat = Double.valueOf(info.lat);
-                                double lng = Double.valueOf(info.lng);
-                                LatLng src = new LatLng(lat, lng);
-                                if (info.special != null) {
-                                    if (info.special.equals("1")) {
-                                        MarkerOptions marker = new MarkerOptions()
-                                                .position(src).title(info.name + "#" + info.address)
-                                                .snippet(info.id + "#" + S0CIETY + "#" + "1")
-                                                .icon(BitmapDescriptorFactory.fromBitmap(zddwBitmap));
-                                        CompanyMarkerOptions.add(marker);
-                                    } else {
-                                        MarkerOptions marker = new MarkerOptions()
-                                                .position(src).title(info.name + "#" + info.address)
-                                                .snippet(info.id + "#" + S0CIETY + "#" + "1")
-                                                .icon(BitmapDescriptorFactory.fromBitmap(companyBitmap));
-                                        CompanyMarkerOptions.add(marker);
-                                    }
-                                }
-                            }
-                            showCompanyMarker();
-                        } else {
-//                    UiUtils.showToast(App.getApplication(), result.msg);
-                            LogUtil.i(result.msg);
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throwable.printStackTrace();
-                        UiUtils.showToast("请求失败");
-                    }
-                });
-    }
-
-    /**
-     * 展示社会单位
-     */
-    private void showCompanyMarker() {
-        if ((flag & 0x01) != 0x01) {
-            return;
-        }
-        if (CompanyMarkerOptions == null && CompanyMarkerOptions.size() == 0) {
-            UiUtils.showToast(App.getApplication(), "附近无政府社会单位信息");
-            return;
-        }
-        for (int i = 0; i < CompanyMarkerOptions.size(); i++) {
-            if (isShow(CompanyMarkerOptions.get(i), mScreenPoint)) {//假如markeroption的位置在屏幕上则把它添加到map并且放入CompanyMarkers集合
-                boolean a = false;
-                for (Marker ma : CompanyMarkers) {//遍历companymarkers是否添加了该markeroption
-                    ma.setVisible(true);
-                    if (ma.getOptions().equals(CompanyMarkerOptions.get(i))) {
-                        a = true;
-                        break;
-                    }
-
-                }
-                if (!a) {//假如CompanyMarker里面还没有添加过,则添加上amap,并显示
-                    Marker mar = aMap.addMarker(CompanyMarkerOptions.get(i));
-                    CompanyMarkers.add(mar);
-                    mar.setVisible(true);
-                }
-
-            } else {
-
-            }
-        }
-    }
-
-    /**
-     * 获取消防室数据
-     */
-    public void getFireRoomList(LatLng center) {
-
-        RetrofitHelper.getApi().getFireroomList(String.valueOf(center.longitude), String.valueOf(center.latitude))
-                .compose(this.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
-//        RetrofitHelper.getApi().getFireroomList("114.342014", "30.547186")
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<FireComponentGeneralInfoList>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(FireComponentGeneralInfoList list) {
-                        if (list == null) {
-                            UiUtils.showToast(App.getApplication(), "获取数据失败");
-                            return;
-                        }
-                        if (list.status.equals("1")) {
-                            List<FireComponentGeneralInfo> lists = list.result;
-                            for (FireComponentGeneralInfo info : lists) {
-                                if (info.lat == null || info.lng == null) {
-                                    continue;
-                                }
-//                                LogUtil.i(info.toString());
-                                double lat = Double.valueOf(info.lat);
-                                double lng = Double.valueOf(info.lng);
-                                LatLng src = new LatLng(lat, lng);
-                                //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                MarkerOptions markerOptions = new MarkerOptions()
-                                        .position(src).title(info.name + "#" + info.addr)
-                                        .snippet(info.id + "#" + FIREROOM)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(fireroomBitmap));
-                                fireRoomOptions.add(markerOptions);
-                            }
-//
-                        } else {
-                            LogUtil.i("fireroom", list.msg);
-                        }
-                    }
-                });
-    }
-
-    /**
-     * ，展示消防室单位
-     */
-    private void showFireRoomMarker() {
-        if ((flag & 0x02) != 0x02) {
-            return;
-        }
-        if (fireRoomOptions == null && fireRoomOptions.size() == 0) {
-            UiUtils.showToast(App.getApplication(), "附近社区菜消防室信息");
-            return;
-        }
-        for (int i = 0; i < fireRoomOptions.size(); i++) {
-            if (isShow(fireRoomOptions.get(i), mScreenPoint)) {
-                boolean a = false;
-                for (Marker ma : fireRoomMarkers) {
-                    ma.setVisible(true);
-                    if (ma.getOptions().equals(fireRoomOptions.get(i))) {
-                        a = true;
-                        break;
-                    }
-
-                }
-                if (!a) {
-                    Marker mar = aMap.addMarker(fireRoomOptions.get(i));
-                    fireRoomMarkers.add(mar);
-                    mar.setVisible(true);
-                }
-
-            } else {
-//
-            }
-        }
-    }
-
-
-    /**
-     * 获取station数据
-     */
-    public void getFirStationList(LatLng center) {
-
-        RetrofitHelper.getApi().getFirestationList(String.valueOf(center.longitude), String.valueOf(center.latitude))
-                .compose(this.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<FireComponentGeneralInfoList>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(FireComponentGeneralInfoList list) {
-                        if (list == null) {
-                            UiUtils.showToast(App.getApplication(), "获取数据失败");
-                            return;
-                        }
-                        if (list.status.equals("1")) {
-
-                            List<FireComponentGeneralInfo> lists = list.result;
-                            for (FireComponentGeneralInfo info : lists) {
-                                if (info.lat != null || info.lng != null || !TextUtils.equals("", String.valueOf(info.lat)) || !TextUtils.equals("", String.valueOf(info.lng))) {
-//                                    LogUtil.i("小型站" + info.toString());
-                                    double lat = Double.valueOf(info.lat);
-                                    double lng = Double.valueOf(info.lng);
-                                    LatLng src = new LatLng(lat, lng);
-
-                                    //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                    MarkerOptions markerOptions = new MarkerOptions()
-                                            .position(src)
-                                            .title(info.name + "#" + info.addr)
-                                            .snippet(info.id + "#" + FIRESTATION)
-                                            .icon(BitmapDescriptorFactory.fromBitmap(firestationBitmap));
-                                    fireStationOptions.add(markerOptions);
-                                }
-                            }
-
-                        } else {
-                            LogUtil.i("firestation", list.msg);
-                        }
-                    }
-                });
-    }
-
-    /**
-     * 展示小型工作站makers
-     */
-    private void showFireStationMarker() {
-        if ((flag & 0x04) != 0x04) {
-            return;
-        }
-        if (fireStationOptions == null && fireStationOptions.size() == 0) {
-            UiUtils.showToast(App.getApplication(), "附近无政府专职小型站信息");
-            return;
-        }
-        for (int i = 0; i < fireStationOptions.size(); i++) {
-            if (isShow(fireRoomOptions.get(i), mScreenPoint)) {
-                boolean a = false;
-                for (Marker ma : fireStationMarkers) {
-                    ma.setVisible(true);
-                    if (ma.getOptions().equals(fireStationOptions.get(i))) {
-                        a = true;
-                        break;
-                    }
-
-                }
-                if (!a) {
-                    Marker mar = aMap.addMarker(fireStationOptions.get(i));
-                    fireStationMarkers.add(mar);
-//                LogUtil.i("小型站添加成功");
-                    mar.setVisible(true);
-                }
-
-            } else {
-
-            }
-        }
-    }
-
-
-    /**
-     * 获取消防中队数据
-     */
-    public void getFireGroupList(LatLng center) {
-
-        RetrofitHelper.getApi().getFireGroupList(String.valueOf(center.longitude), String.valueOf(center.latitude))
-                .compose(this.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
-//        RetrofitHelper.getApi().getFireGroupList("114.342014", "30.547186")
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<FireComponentGeneralInfoList>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(FireComponentGeneralInfoList list) {
-                        if (list == null) {
-                            UiUtils.showToast(App.getApplication(), "获取数据失败");
-                            return;
-                        }
-                        if (list.status.equals("1")) {
-                            List<FireComponentGeneralInfo> lists = list.result;
-                            for (FireComponentGeneralInfo info : lists) {
-                                if (info.lat == null || info.lng == null) {
-                                    continue;
-                                }
-//                                LogUtil.i(info.toString());
-                                double lat = Double.valueOf(info.lat);
-                                double lng = Double.valueOf(info.lng);
-                                LatLng src = new LatLng(lat, lng);
-                                //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                MarkerOptions markerOptions = new MarkerOptions()
-                                        .position(src).title(info.name + "#" + info.addr)
-                                        .snippet(info.id + "#" + FIREGROUP)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(firegroupBitmap));
-                                fireGroupOptions.add(markerOptions);
-                            }
-//                            showFireRoomMarker();
-                        } else {
-                            LogUtil.i("firegroup", list.msg);
-                        }
-                    }
-                });
-    }
-
-    /**
-     * ，展示消防中队单位
-     */
-    private void showFireGroupMarker() {
-        if ((flag & 0x08) != 0x08) {
-            return;
-        }
-        if (fireGroupOptions == null && fireGroupOptions.size() == 0) {
-            UiUtils.showToast(App.getApplication(), "附近无消防中队信息");
-            return;
-        }
-        for (int i = 0; i < fireGroupOptions.size(); i++) {
-            if (isShow(fireGroupOptions.get(i), mScreenPoint)) {
-                boolean a = false;
-                for (Marker ma : fireGroupMarkers) {
-                    ma.setVisible(true);
-                    if (ma.getOptions().equals(fireGroupOptions.get(i))) {
-                        a = true;
-                        break;
-                    }
-
-                }
-                if (!a) {
-                    Marker mar = aMap.addMarker(fireGroupOptions.get(i));
-                    fireGroupMarkers.add(mar);
-                    mar.setVisible(true);
-                }
-
-            } else {
-//
-            }
-        }
-    }
-
-
-    /**
-     * 获取行政许可建筑数据
-     */
-    public void getLicenseList(LatLng center) {
-
-        RetrofitHelper.getApi().getLicenseList(String.valueOf(center.longitude), String.valueOf(center.latitude))
-                .compose(this.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
-//        RetrofitHelper.getApi().getLicenseList("114.342014", "30.547186")
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<FireComponentGeneralInfoList>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(FireComponentGeneralInfoList list) {
-                        if (list == null) {
-                            UiUtils.showToast(App.getApplication(), "获取数据失败");
-                            return;
-                        }
-                        if (list.status.equals("1")) {
-                            List<FireComponentGeneralInfo> lists = list.result;
-                            for (FireComponentGeneralInfo info : lists) {
-                                if (info.lat == null || info.lng == null) {
-                                    continue;
-                                }
-//                                LogUtil.i(info.toString());
-                                double lat = Double.valueOf(info.lat);
-                                double lng = Double.valueOf(info.lng);
-                                LatLng src = new LatLng(lat, lng);
-                                //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                MarkerOptions markerOptions = new MarkerOptions()
-                                        .position(src).title(info.name + "#" + info.addr)
-                                        .snippet(info.id + "#" + LICENSE)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(fireroomBitmap));
-                                licenseOptions.add(markerOptions);
-                            }
-                        } else {
-                            LogUtil.i("LICENSE", list.msg);
-                        }
-                    }
-                });
-    }
-
-
-    /**
-     * ，展示行政许可单位
-     */
-    private void showLicenseMarker() {
-        if ((flag & 0x10) != 0x10) {
-            return;
-        }
-        if (licenseOptions == null && licenseOptions.size() == 0) {
-            UiUtils.showToast(App.getApplication(), "附近无行政许可单位");
-            return;
-        }
-        for (int i = 0; i < licenseOptions.size(); i++) {
-            if (isShow(licenseOptions.get(i), mScreenPoint)) {
-                boolean a = false;
-                for (Marker ma : licenseMarkers) {
-                    ma.setVisible(true);
-                    if (ma.getOptions().equals(licenseOptions.get(i))) {
-                        a = true;
-                        break;
-                    }
-
-                }
-                if (!a) {
-                    Marker mar = aMap.addMarker(licenseOptions.get(i));
-                    licenseMarkers.add(mar);
-                    mar.setVisible(true);
-                }
-
-            } else {
-//
-            }
-        }
     }
 
 
@@ -1301,61 +913,341 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             switch (buttonView.getId()) {
-                case R.id.type1:
+                case R.id.zhongdiandanwei:
                     if (isChecked) {
                         flag = flag | 0x01;
-                        showCompanyMarker();
+                        if (CompanyMarkers.size() == 0) {
+                            for (MarkerOptions marker :
+                                    companyOptions) {
+                                CompanyMarkers.add(aMap.addMarker(marker));
+                            }
+                        } else {
+                            for (Marker marker :
+                                    CompanyMarkers) {
+                                marker.setVisible(true);
+                            }
+                        }
+//                        showCompanyMarker();
                     } else {
-                        hideMarkers(0, 0);
+                        for (Marker marker :
+                                CompanyMarkers) {
+                            marker.setVisible(false);
+                        }
+//                        hideMarkers(0, 0);
                         flag = flag & 0xfe;
                     }
                     break;
-                case R.id.type2:
+
+                case R.id.xiaofangshi:
                     if (isChecked) {
                         flag = flag | 0x02;
-                        showFireRoomMarker();
+                        if (fireRoomMarkers.size() == 0) {
+                            for (MarkerOptions marker :
+                                    fireRoomOptions) {
+                                fireRoomMarkers.add(aMap.addMarker(marker));
+                            }
+                        } else {
+                            for (Marker marker :
+                                    fireRoomMarkers) {
+                                marker.setVisible(true);
+                            }
+                        }
+
                     } else {
                         flag = flag & 0xfd;
-                        hideMarkers(1, 0);
+                        for (Marker marker :
+                                fireRoomMarkers) {
+                            marker.setVisible(false);
+                        }
                     }
                     break;
-                case R.id.type3:
+
+//                case R.id.yibandanwei:
+//
+//                    break;
+                case R.id.dadui:
                     if (isChecked) {
                         flag = flag | 0x04;
-                        showFireStationMarker();
+                        if (fireBrigadeMarkers.size() == 0) {
+                            for (MarkerOptions marker :
+                                    fireBrigadeoptions) {
+                                fireBrigadeMarkers.add(aMap.addMarker(marker));
+                            }
+                        } else {
+                            for (Marker marker :
+                                    fireBrigadeMarkers) {
+                                marker.setVisible(true);
+                            }
+                        }
                     } else {
                         flag = flag & 0xfb;
-                        hideMarkers(2, 0);
+                        for (Marker marker :
+                                fireBrigadeMarkers) {
+                            marker.setVisible(false);
+                        }
                     }
                     break;
-                case R.id.type4:
+                case R.id.zhongdui:
                     if (isChecked) {
                         flag = flag | 0x08;
-                        showFireGroupMarker();
+                        if (fireGroupMarkers.size() == 0) {
+                            for (MarkerOptions marker :
+                                    fireGroupOptions) {
+                                fireGroupMarkers.add(aMap.addMarker(marker));
+                            }
+                        } else {
+                            for (Marker marker :
+                                    fireGroupMarkers) {
+                                marker.setVisible(true);
+                            }
+                        }
 
                     } else {
                         flag = flag & 0xf7;
-
-                        hideMarkers(3, 0);
+                        for (Marker marker :
+                                fireGroupMarkers) {
+                            marker.setVisible(false);
+                        }
                     }
 
                     break;
-                case R.id.type5:
+                case R.id.xiaoxingzhan:
+                    if (isChecked) {
+                        flag = flag | 0x40;
+                        if (fireAdminStationMarkers.size() == 0) {
+                            for (MarkerOptions marker :
+                                    fireAdminStationoptions) {
+                                fireAdminStationMarkers.add(aMap.addMarker(marker));
+                            }
+                        } else {
+                            for (Marker marker :
+                                    fireAdminStationMarkers) {
+                                marker.setVisible(true);
+                            }
+                        }
+                    } else {
+                        flag = flag & 0xbf;
+                        for (Marker marker :
+                                fireAdminStationMarkers) {
+                            marker.setVisible(false);
+                        }
+
+                    }
+                    break;
+                case R.id.xiangcun:
                     if (isChecked) {
                         flag = flag | 0x10;
-                        showLicenseMarker();
+                        if (fireStationMarkers.size() == 0) {
+                            for (MarkerOptions marker :
+                                    fireStationoptions) {
+                                fireStationMarkers.add(aMap.addMarker(marker));
+                            }
+                        } else {
+                            for (Marker marker :
+                                    fireStationMarkers) {
+                                marker.setVisible(true);
+                            }
+                        }
                     } else {
                         flag = flag & 0xef;
-                        hideMarkers(4, 0);
+                        for (Marker marker :
+                                fireStationMarkers) {
+                            marker.setVisible(false);
+                        }
 
                     }
                     break;
+
+                case R.id.xingzhenshenpi:
+                    if (isChecked) {
+                        flag = flag | 0x20;
+                        if (fireLicenseMarkers.size() == 0) {
+                            for (MarkerOptions marker :
+                                    fireLicenseoptions) {
+                                fireLicenseMarkers.add(aMap.addMarker(marker));
+                            }
+                        } else {
+                            for (Marker marker :
+                                    fireLicenseMarkers) {
+                                marker.setVisible(true);
+                            }
+                        }
+                    } else {
+                        flag = flag & 0xdf;
+                        for (Marker marker :
+                                fireLicenseMarkers) {
+                            marker.setVisible(false);
+                        }
+
+                    }
+                    break;
+
             }
         }
     };
 
 
     boolean isrun = true;
+
+
+    @Override
+    public void onCompanyInfoGetFinish(ArrayList<MarkerOptions> optionses) {
+        if (currentZoom >= 15) {
+            if ((flag & 0x01) != 0x01) {
+                companyOptions.clear();
+                CompanyMarkers.clear();
+
+                companyOptions.addAll(optionses);
+            } else {
+//                ArrayList<MarkerOptions> copy = new ArrayList<>(companyOptions);
+                companyOptions.clear();
+                CompanyMarkers.clear();
+
+                companyOptions.addAll(optionses);
+                CompanyMarkers.addAll(aMap.addMarkers(optionses, false));
+//                LogUtil.e("当前marker的数量为:" + aMap.getMapScreenMarkers().size());
+            }
+
+        } else {
+//            LogUtil.i("重点单位:" + optionses.size() + "个");
+//            textView.setText("重点单位:" + optionses.size() + "个");
+        }
+    }
+
+    @Override
+    public void onFireRoomInfoGetFinish(ArrayList<MarkerOptions> optionses) {
+        if (currentZoom >= 15) {
+            if ((flag & 0x02) != 0x02) {
+                fireRoomOptions.clear();
+                fireRoomMarkers.clear();
+                fireRoomOptions.addAll(optionses);
+            } else {
+                fireRoomOptions.clear();
+                fireRoomOptions.addAll(optionses);
+
+                fireRoomMarkers.clear();
+                fireRoomMarkers.addAll(aMap.addMarkers(optionses, false));
+            }
+
+        } else {
+//            textView.setVisibility(View.VISIBLE);
+            LogUtil.i("消防室:" + optionses.size() + "个");
+
+//            textView.setText("消防室:" + optionses.size() + "个");
+        }
+
+    }
+
+    @Override
+    public void onFireStationInfoGetFinish(ArrayList<MarkerOptions> optionses) {
+        if (currentZoom >= 15) {
+            if ((flag & 0x10) != 0x10) {
+                fireStationoptions.clear();
+                fireStationMarkers.clear();
+
+                fireStationoptions.addAll(optionses);
+            } else {
+                fireStationoptions.clear();
+                fireStationoptions.addAll(optionses);
+
+                fireStationMarkers.clear();
+                fireStationMarkers.addAll(aMap.addMarkers(optionses, false));
+            }
+
+        } else {
+//            textView.setVisibility(View.VISIBLE);
+            LogUtil.i("小型站:" + optionses.size() + "个");
+//            textView.setText("消防室:" + optionses.size() + "个");
+        }
+    }
+
+    @Override
+    public void onFireGroupInfoGetFinish(ArrayList<MarkerOptions> optionses) {
+        LogUtil.i("消防中队个数"+optionses.size());
+        if (currentZoom >= 15) {
+            if ((flag & 0x08) != 0x08) {
+                fireGroupOptions.clear();
+                fireGroupMarkers.clear();
+
+                fireGroupOptions.addAll(optionses);
+            } else {
+                fireGroupOptions.clear();
+                fireGroupOptions.addAll(optionses);
+
+                fireGroupMarkers.clear();
+                fireGroupMarkers.addAll(aMap.addMarkers(optionses, false));
+            }
+
+        } else {
+            LogUtil.i("中队:" + optionses.size() + "个");
+        }
+    }
+
+    @Override
+    public void onLicenseInfoGetFinish(ArrayList<MarkerOptions> optionses) {
+        LogUtil.i("行政审批个数"+optionses.size());
+        if (currentZoom >= 15) {
+            if ((flag & 0x20) != 0x20) {
+                fireLicenseoptions.clear();
+                fireLicenseMarkers.clear();
+
+                fireLicenseoptions.addAll(optionses);
+            } else {
+                fireLicenseoptions.clear();
+                fireLicenseoptions.addAll(optionses);
+
+                fireLicenseMarkers.clear();
+                fireLicenseMarkers.addAll(aMap.addMarkers(optionses, false));
+            }
+
+        } else {
+            LogUtil.i("行政审批:" + optionses.size() + "个");
+        }
+    }
+
+    @Override
+    public void onFireAdminStationInfoGetFinish(ArrayList<MarkerOptions> optionses) {
+        LogUtil.i("政府小型站个数"+optionses.size());
+        if (currentZoom >= 15) {
+            if ((flag & 0x40) != 0x40) {
+                fireAdminStationoptions.clear();
+                fireAdminStationMarkers.clear();
+
+                fireAdminStationoptions.addAll(optionses);
+            } else {
+                fireAdminStationoptions.clear();
+                fireAdminStationoptions.addAll(optionses);
+
+                fireAdminStationMarkers.clear();
+                fireAdminStationMarkers.addAll(aMap.addMarkers(optionses, false));
+            }
+
+        } else {
+            LogUtil.i("政府小型站个数:" + optionses.size() + "个");
+        }
+    }
+
+    @Override
+    public void onFireBrigadeInfoGetFinish(ArrayList<MarkerOptions> optionses) {
+        LogUtil.i("消防大队个数:"+optionses.size());
+        if (currentZoom >= 15) {
+            if ((flag & 0x04) != 0x04) {
+                fireBrigadeoptions.clear();
+                fireBrigadeMarkers.clear();
+
+                fireBrigadeoptions.addAll(optionses);
+            } else {
+                fireBrigadeoptions.clear();
+                fireBrigadeoptions.addAll(optionses);
+
+                fireBrigadeMarkers.clear();
+                fireBrigadeMarkers.addAll(aMap.addMarkers(optionses, false));
+            }
+
+        } else {
+            LogUtil.i("消防大队个数:" + optionses.size() + "个");
+        }
+    }
 
     private class RunnableMockLocation implements Runnable {
 
@@ -1364,7 +1256,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             while (isrun) {
                 try {
                     Thread.sleep(1000);
-                    System.out.println("正在模拟位置");
+//                    System.out.println("正在模拟位置");
                     if (hasAddTestProvider == false) {
                         continue;
                     }
@@ -1453,4 +1345,6 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             hasAddTestProvider = false;
         }
     }
+
+
 }

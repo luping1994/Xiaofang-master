@@ -28,7 +28,7 @@ public class UiUtils {
 	private static Toast mToast;
 	public static void showToast(Context context, String str) {
 		if (mToast == null) {
-			mToast = Toast.makeText(context, str, Toast.LENGTH_SHORT);
+			mToast = Toast.makeText(App.getApplication(), str, Toast.LENGTH_SHORT);
 		}
 		mToast.setText(str);
 		mToast.show();

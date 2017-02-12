@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 
 /**
@@ -40,7 +41,7 @@ public class Add_activity  extends BasedActivity {
         StatusBarCompat.compat(this, Color.rgb(0x2f,0x9d,0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle("选择你要添加的单位类型");
+        toolbar.setTitle("选择你要添加的消防信息类型");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -53,19 +54,25 @@ public class Add_activity  extends BasedActivity {
         Intent intent = new Intent();
         switch (selectId){
             case R.id.type1:
-                intent.putExtra("type",0);
+                intent.putExtra("type", MarkerHelper.S0CIETY);
                 break;
             case R.id.type2:
-                intent.putExtra("type",1);
+                intent.putExtra("type",MarkerHelper.FIREROOM);
                 break;
             case R.id.type3:
-                intent.putExtra("type",2);
+                intent.putExtra("type",MarkerHelper.FIRESTATION);
                 break;
             case R.id.type4:
-                intent.putExtra("type",3);
+                intent.putExtra("type",MarkerHelper.FIREGROUP);
                 break;
             case R.id.type5:
-                intent.putExtra("type",4);
+                intent.putExtra("type",MarkerHelper.LICENSE);
+                break;
+            case R.id.type6:
+                intent.putExtra("type",MarkerHelper.FIREBRIGADE);
+                break;
+            case R.id.type7:
+                intent.putExtra("type", MarkerHelper.FIREADMINSTATION);
                 break;
         }
         intent.setClass(this,Add_detail_activity.class);

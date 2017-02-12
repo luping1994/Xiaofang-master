@@ -85,7 +85,7 @@
                     android:id="@+id/getposition"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="获取当前位置" />
+                    android:text="@string/chooseAddr" />
             </LinearLayout>
 
             <LinearLayout
@@ -125,37 +125,7 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="1px"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/infoitem_pading"
-                android:paddingRight="@dimen/infoitem_pading">
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="消防管辖"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
-
-                <EditText
-                    android:id="@+id/incharge"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:gravity="left|center"
-                    android:hint="请输入"
-                    android:inputType="number"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1" />
-            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -208,6 +178,124 @@
                 </RadioGroup>
             </RelativeLayout>
 
+
+
+            <RelativeLayout
+
+                android:id="@+id/ll_incharge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_centerVertical="true"
+                    android:id="@+id/incharge_tv"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="*消防管辖"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_toRightOf="@+id/incharge_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <Spinner
+                        android:entries="@array/dadui"
+                        android:id="@+id/incharge_dadui"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="left|center"
+                        android:hint="请选择管辖大队"
+                        android:inputType="number"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size1" />
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/incharge_qvyu"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="16dp"
+                        android:background="@null"
+                        android:gravity="left|center"
+                        android:hint="请选择区域"
+                        android:inputType="number"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size1" />
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/incharge_jiedao"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="16dp"
+                        android:background="@null"
+                        android:gravity="left|center"
+                        android:hint="请选择街道"
+                        android:inputType="number"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size1" />
+                    <Spinner
+                        android:entries="@array/paichusuo"
+                        android:visibility="gone"
+                        android:id="@+id/incharge_paichusuo"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="left|center"
+                        android:hint="请选择派出所"
+                        android:inputType="number"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size1" />
+                </LinearLayout>
+
+            </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/attribute_ll"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*单位属性"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <TextView
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:id="@+id/attribute"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:hint="请选择单位属性"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_right_arrow" />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -221,7 +309,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="建筑面积"
+                    android:text="*建筑面积"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -260,7 +348,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="安全出口数"
+                    android:text="*安全出口数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -298,7 +386,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="疏散楼梯数"
+                    android:text="*疏散楼梯数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -336,9 +424,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center|left"
-                    android:text="自动消防设施"
+                    android:text="*自动消防设施"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
+                    android:textSize="@dimen/text_size"
+                    android:id="@+id/textView8" />
 
                 <LinearLayout
                     android:id="@+id/facility"
@@ -407,46 +496,7 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/attribute_ll"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="1px"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/infoitem_pading"
-                android:paddingRight="@dimen/infoitem_pading"
-                android:visibility="visible">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="单位属性"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:id="@+id/attribute"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:gravity="center"
-                    android:hint="请选择单位属性"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size1" />
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_right_arrow" />
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -461,9 +511,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="法定代表人"
+                    android:text="*法定人姓名"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
+                    android:textSize="@dimen/text_size"
+                    android:id="@+id/textView10" />
 
                 <EditText
                     android:id="@+id/artiname"
@@ -481,6 +532,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="1px"
@@ -493,7 +545,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="法定代表人身份证"
+                    android:text="代表人身份证"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -524,7 +576,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="法定代表人电话"
+                    android:text="*电话"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -574,6 +626,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="1px"
@@ -667,6 +720,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="1px"
@@ -681,7 +735,8 @@
                     android:gravity="center"
                     android:text="责任人身份证"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
+                    android:textSize="@dimen/text_size"
+                    android:id="@+id/textView11" />
 
                 <EditText
                     android:id="@+id/responid"
@@ -726,6 +781,36 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="单位编码"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:id="@+id/companyid"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+            </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -756,7 +841,36 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="单位其它情况"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+
+                    android:id="@+id/otherdisp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -928,6 +1042,44 @@
                     android:textSize="@dimen/text_size" />
             </LinearLayout>
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="消防队员人数"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:id="@+id/firemannum"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="left|center"
+                    android:hint="请输入"
+                    android:inputType="number"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="人"
+                    android:textSize="@dimen/text_size" />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -1140,8 +1292,17 @@
                     android:text="单位毗邻情况"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
-
+                <EditText
+                    android:id="@+id/nearby"
+                    android:background="@drawable/layout_border2"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center|start"
+                    android:hint="请输入单位毗邻情况"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginLeft="30dp"
@@ -1153,7 +1314,8 @@
                         android:gravity="center"
                         android:text="毗邻单位东"
                         android:textColor="@color/balck"
-                        android:textSize="@dimen/text_size" />
+                        android:textSize="@dimen/text_size"
+                        android:id="@+id/textView9" />
 
                     <EditText
                         android:id="@+id/east"
@@ -1170,6 +1332,8 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
+
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginLeft="30dp"
@@ -1199,6 +1363,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginLeft="30dp"
@@ -1227,6 +1392,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginLeft="30dp"
@@ -1273,10 +1439,11 @@
                     android:textSize="@dimen/text_size" />
 
                 <EditText
+
                     android:id="@+id/marker"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:background="@null"
+                    android:background="@drawable/layout_border2"
                     android:gravity="left|start"
                     android:hint="请输入"
                     android:inputType="text"
@@ -1288,6 +1455,7 @@
     </ScrollView>
 
     <Button
+        android:visibility="gone"
         android:id="@+id/commit"
         android:layout_width="match_parent"
         android:layout_height="45dp"

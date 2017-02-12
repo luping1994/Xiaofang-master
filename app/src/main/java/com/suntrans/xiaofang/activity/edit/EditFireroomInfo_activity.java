@@ -2,6 +2,7 @@ package com.suntrans.xiaofang.activity.edit;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,18 +10,25 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.amap.api.services.core.PoiItem;
 import com.google.common.collect.ImmutableMap;
-import com.suntrans.xiaofang.App;
+import com.google.gson.JsonObject;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
+import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
+import com.suntrans.xiaofang.model.company.InchargeInfo;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
@@ -28,7 +36,16 @@ import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.ActivityEvent;
+import com.trello.rxlifecycle.android.FragmentEvent;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -36,6 +53,11 @@ import butterknife.ButterKnife;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static com.suntrans.xiaofang.R.id.district;
+import static com.suntrans.xiaofang.R.id.group;
+import static com.tencent.bugly.beta.ui.h.u;
+
 
 /**
  * Created by Looney on 2016/12/3.
@@ -50,17 +72,16 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
     EditText contact;
     @BindView(R.id.phone)
     EditText phone;
-    @BindView(R.id.membernum)
-    EditText membernum;
-//    @BindView(R.id.cardisp)
+
+    //    @BindView(R.id.cardisp)
 //    EditText cardisp;
 //    @BindView(R.id.equipdisp)
 //    EditText equipdisp;
-    @BindView(R.id.district)
-    EditText district;
-    @BindView(R.id.group)
-    EditText group;
-    @BindView(R.id.name1)
+//    @BindView(R.id.district)
+//    EditText district;
+//    @BindView(R.id.group)
+//    EditText group;
+    @BindView(R.id.name)
     EditText name;
     @BindView(R.id.scroll)
     ScrollView scroll;
@@ -68,8 +89,6 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
     EditText lng;
     @BindView(R.id.lat)
     EditText lat;
-    @BindView(R.id.textView2)
-    TextView textView2;
 
 
     @BindView(R.id.ll_condition)
@@ -83,12 +102,39 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
 
     @BindView(R.id.ll_condition_eq)
     LinearLayout llConditionEq;
+    //    @BindView(R.id.ganbu)
+//    EditText ganbu;
+//    @BindView(R.id.shibing)
+//    EditText shibing;
+    @BindView(R.id.membernum)
+    EditText membernum;
 
+    @BindView(R.id.getposition)
+    Button getPosition;
+
+    @BindView(R.id.dadui)
+    Spinner dadui;
+    @BindView(R.id.liandongzhongdui)
+    Spinner liandongzhongdui;
 
     private Toolbar toolbar;
     private EditText txName;
     private FireRoomDetailInfo info;
     private String id;
+
+
+    private ArrayAdapter<String> adduiAdapter;
+    private ArrayAdapter<String> zhongduiAdapter;
+
+
+    List<String> daduiName;
+    List<String> daduiId;
+    List<String> daduiIdPath;
+
+    List<String> zhongduiName;
+    List<String> zhongduiId;
+    List<String> zhongduiPath;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,6 +146,11 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
         initData();
     }
 
+    public String dadui_id_path;
+    private String zhongdui_id_path;
+
+    int flag = 0;
+
     private void initView() {
 
 
@@ -107,50 +158,83 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
 
         Button add = (Button) findViewById(R.id.add);
         Button sub = (Button) findViewById(R.id.sub);
+
+        daduiName = new ArrayList<>();
+        daduiId = new ArrayList<>();
+        daduiIdPath = new ArrayList<>();
+
+        zhongduiName = new ArrayList<>();
+        zhongduiId = new ArrayList<>();
+        zhongduiPath = new ArrayList<>();
+
+        daduiName.add(info.brigade_path == null ? "请选择" : info.brigade_path+")当前)");
+        zhongduiName.add(info.group_path == null ? "请选择" : info.group_path+"(当前)");
+
+        adduiAdapter = new ArrayAdapter(this, R.layout.item_spinner, R.id.tv_spinner, daduiName);
+        zhongduiAdapter = new ArrayAdapter(this, R.layout.item_spinner, R.id.tv_spinner, zhongduiName);
+
+
         add.setOnClickListener(this);
         sub.setOnClickListener(this);
         addEq.setOnClickListener(this);
         subEq.setOnClickListener(this);
+        getPosition.setOnClickListener(this);
 
+
+        dadui.setAdapter(adduiAdapter);
+        liandongzhongdui.setAdapter(zhongduiAdapter);
+
+        dadui.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (flag == 1) {
+                    if (position == 0) {
+                        dadui_id_path = null;
+                        return;
+                    }
+                    dadui_id_path = daduiIdPath.get(position - 1);
+                    zhongduiName.clear();
+                    zhongduiName.add("请选择");
+                    System.out.println("大队" + daduiName.get(position - 1) + "==>" + dadui_id_path);
+                    String nextId = daduiId.get(position-1);
+                    getIncharge(nextId, 1, "2");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        liandongzhongdui.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (flag == 1) {
+                    if (position == 0) {
+                        zhongdui_id_path = null;
+                        return;
+                    }
+                    zhongdui_id_path = zhongduiPath.get(position - 1);
+                    System.out.println("中队" + zhongduiName.get(position - 1) + "==>" + zhongdui_id_path);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
-
-    public void getLocation(View view) {
-//        if (myLocation == null) {
-//            Snackbar.make(scroll, "获取当前地址失败", Snackbar.LENGTH_SHORT).show();
-//            return;
-//        }
-//        lat.setText(myLocation.latitude + "");
-//        lng.setText(myLocation.longitude + "");
-//        addr.setText(myaddr);
-        String lat2 = App.getSharedPreferences().getString("lat", "-1");
-        String lng2 = App.getSharedPreferences().getString("lng", "-1");
-        String addr2 = App.getSharedPreferences().getString("addr", "-1");
-        if (lat2.equals("-1") || lng2.equals("-1") || addr2.equals("-1")) {
-            UiUtils.showToast(App.getApplication(), "获取地址失败");
-            return;
-        }
-        lng.setText(lng2);
-        lat.setText(lat2);
-        addr.setText(addr2);
-
-    }
-
-//    public LatLng myLocation;//我当前的位置
-//    public String myaddr;//我的位置描述
-//    protected BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            myLocation = intent.getParcelableExtra("myLocation");
-//            myaddr = intent.getStringExtra("addrdes");
-//        }
-//    };
 
     @Override
     protected void onDestroy() {
-//        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
+
+
     private void initData() {
         name.setText(info.name);
         addr.setText(info.addr);
@@ -159,18 +243,84 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
         contact.setText(info.contact);
         phone.setText(info.phone);
         membernum.setText(info.membernum);
-//        cardisp.setText(info.cardisp);
-//        equipdisp.setText(info.equipdisp);
-        district.setText(info.district);
-        group.setText(info.group);
 
+        Map<String, String> cardisMap = new HashMap<>();
+        try {
+            if (info.cardisp != null) {
+                JSONObject jsonObject = new JSONObject(info.cardisp);
+                JSONArray jsonArray = jsonObject.names();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    String name = jsonArray.getString(i);
+                    String value = jsonObject.getString(name);
+                    cardisMap.put(name, value);
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Iterator iter = cardisMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<String, String> entry = (Map.Entry) iter.next();
+            String key = entry.getKey();
+            String value = entry.getValue();
+            final View item = LayoutInflater.from(this).inflate(R.layout.item_adddis, null, false);
+            ((EditText) item.findViewById(R.id.con_type)).setText(key);
+            ((EditText) item.findViewById(R.id.con_detail)).setText(value);
+            item.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    llCondition.removeView(item);
+                }
+            });
+            llCondition.addView(item);
+        }
+
+
+        Map<String, String> cardisMap1 = new HashMap<>();
+        try {
+            if (info.equipdisp != null) {
+                JSONObject jsonObject = new JSONObject(info.equipdisp);
+                JSONArray jsonArray = jsonObject.names();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    String name = jsonArray.getString(i);
+                    String value = jsonObject.getString(name);
+                    cardisMap1.put(name, value);
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Iterator iter1 = cardisMap1.entrySet().iterator();
+        while (iter1.hasNext()) {
+            Map.Entry<String, String> entry = (Map.Entry) iter1.next();
+            String key = entry.getKey();
+            String value = entry.getValue();
+            final View item = LayoutInflater.from(this).inflate(R.layout.item_adddis, null, false);
+            ((EditText) item.findViewById(R.id.con_type)).setText(key);
+            ((EditText) item.findViewById(R.id.con_detail)).setText(value);
+            item.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    llConditionEq.removeView(item);
+                }
+            });
+            llConditionEq.addView(item);
+        }
+
+
+        getIncharge("0", 0, "0");
     }
 
     private void setupToolBar() {
         StatusBarCompat.compat(this, Color.rgb(0x2f, 0x9d, 0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle("修改单位信息");
+        toolbar.setTitle("修改社区消防室信息");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -185,15 +335,25 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
             case android.R.id.home:
                 finish();
                 break;
+            case R.id.tijiao:
+                commit();
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_add, menu);
+        return true;
     }
 
 
     Map<String, String> map1;
     ProgressDialog dialog;
 
-    public void commit(View view) {
+    public void commit() {
         AlertDialog dialog = new AlertDialog.Builder(EditFireroomInfo_activity.this)
                 .setMessage("确认提交修改?")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -212,60 +372,71 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
     }
 
     private void commitData() {
-        dialog.show();
         map1 = null;
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
-        if (name.getText().equals("") || addr.getText().equals("")) {
-            UiUtils.showToast(UiUtils.getContext(), "带*号的项目不不能为空!");
-            return;
-        }
+
         String name1 = name.getText().toString().replace(" ", "");
         String addr1 = addr.getText().toString();
         String contact1 = contact.getText().toString();
         String phone1 = phone.getText().toString();
         String membernum1 = membernum.getText().toString();
 
-        String cardisp1 ="";
-        for (int i =0;i<llCondition.getChildCount();i++){
-            if (i==0)
+
+        if (!Utils.isVaild(name1)) {
+            UiUtils.showToast("名称不能为空");
+            return;
+        }
+
+        if (!Utils.isVaild(addr1)) {
+            UiUtils.showToast("地址不能为空");
+            return;
+        }
+        dialog.show();
+        String cardisp1 = "";
+        JSONObject jsonObject1 = new JSONObject();
+
+        for (int i = 0; i < llCondition.getChildCount(); i++) {
+            if (i == 0)
                 continue;
             View view = llCondition.getChildAt(i);
             EditText conType = (EditText) view.findViewById(R.id.con_type);
             EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
-            String type=conType.getText().toString();
-            String detail=conDetail.getText().toString();
-            cardisp1=new StringBuilder().append(cardisp1)
-                    .append("类型:")
-                    .append(type)
-                    .append(",")
-                    .append("详情:")
-                    .append(detail)
-                    .append(";")
-                    .toString();
+            String type = conType.getText().toString();
+            String detail = conDetail.getText().toString();
+            try {
+                jsonObject1.put(type, detail);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
+        cardisp1 = jsonObject1.toString();
 
 
-        String equipdisp1 ="";
-        for (int i =0;i<llConditionEq.getChildCount();i++){
-            if (i==0)
+        String equipdisp1 = "";
+        JSONObject jsonObject2 = new JSONObject();
+        for (int i = 0; i < llConditionEq.getChildCount(); i++) {
+            if (i == 0)
                 continue;
             View view = llConditionEq.getChildAt(i);
             EditText conType = (EditText) view.findViewById(R.id.con_type);
             EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
-            String type=conType.getText().toString();
-            String detail=conDetail.getText().toString();
-            equipdisp1=new StringBuilder().append(cardisp1)
-                    .append("类型:")
-                    .append(type)
-                    .append(",")
-                    .append("详情:")
-                    .append(detail)
-                    .append(";")
-                    .toString();
+            String type = conType.getText().toString();
+            String detail = conDetail.getText().toString();
+
+            try {
+                if (Utils.isVaild(type) && Utils.isVaild(detail))
+                    jsonObject2.put(type, detail);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
-        String district1 = district.getText().toString();
-        String group1 = group.getText().toString();
+        equipdisp1 = jsonObject2.toString();
+
+
+//
+//        String district1 = district.getText().toString();
+//        String group1 = group.getText().toString();
         builder.put("name", name1.replace(" ", ""));
         builder.put("addr", addr1.replace(" ", ""));
         builder.put("id", info.id);
@@ -291,14 +462,23 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
             builder.put("equipdisp", equipdisp1.replace(" ", ""));
         }
 
-        if (Utils.isVaild(district1)) {
-            builder.put("district", district1.replace(" ", ""));
-        }
+//        if (Utils.isVaild(district1)) {
+//            builder.put("district", district1.replace(" ", ""));
+//        }
+//
+//        if (Utils.isVaild(group1)) {
+//            builder.put("group", group1.replace(" ", ""));
+//        }
 
-        if (Utils.isVaild(group1)) {
-            builder.put("group", group1.replace(" ", ""));
-        }
+        if (Utils.isVaild(zhongdui_id_path)) {
+            if (Utils.isVaild(dadui_id_path)){
+                builder.put("group_path", zhongdui_id_path);
+                builder.put("brigade_path", dadui_id_path);
+            }else {
+                UiUtils.showToast("请选择联动中队");
+            }
 
+        }
 
         map1 = builder.build();
         for (Map.Entry<String, String> entry : map1.entrySet()) {
@@ -319,7 +499,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
                     @Override
                     public void onError(Throwable e) {
                         if (dialog.isShowing())
-                        dialog.dismiss();
+                            dialog.dismiss();
                         UiUtils.showToast(UiUtils.getContext(), "服务器错误!");
                         e.printStackTrace();
                     }
@@ -329,12 +509,12 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
                         dialog.dismiss();
                         try {
                             if (result == null) {
-                                UiUtils.showToast(UiUtils.getContext(), "修改单位信息失败!");
+                                UiUtils.showToast("修改单位信息失败!");
                             } else {
-                                UiUtils.showToast(UiUtils.getContext(), "提示:" + result.result);
+                                UiUtils.showToast("提示:" + result.result);
                             }
                         } catch (Exception e) {
-
+                            e.printStackTrace();
                         }
                     }
                 });
@@ -344,23 +524,109 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add:
-                View item = LayoutInflater.from(this).inflate(R.layout.item_adddis, null, false);
+                final View item = LayoutInflater.from(this).inflate(R.layout.item_adddis, null, false);
+                item.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        llCondition.removeView(item);
+                    }
+                });
                 llCondition.addView(item);
                 break;
-            case R.id.sub:
-                if (llCondition.getChildCount()==1)
-                    break;
-                llCondition.removeViewAt(llCondition.getChildCount() - 1);
-                break;
+//            case R.id.sub:
+//                if (llCondition.getChildCount() == 1)
+//                    break;
+//                llCondition.removeViewAt(llCondition.getChildCount() - 1);
+//                break;
             case R.id.add_eq:
-                View item2 = LayoutInflater.from(this).inflate(R.layout.item_adddis, null, false);
-                llConditionEq.addView(item2);
+                final View item1 = LayoutInflater.from(this).inflate(R.layout.item_adddis, null, false);
+                item1.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        llCondition.removeView(item1);
+                    }
+                });
+                llConditionEq.addView(item1);
                 break;
-            case R.id.sub_eq:
-                if (llConditionEq.getChildCount()==1)
-                    break;
-                llConditionEq.removeViewAt(llConditionEq.getChildCount() - 1);
+//            case R.id.sub_eq:
+//                if (llConditionEq.getChildCount() == 1)
+//                    break;
+//                llConditionEq.removeViewAt(llConditionEq.getChildCount() - 1);
+//                break;
+            case R.id.getposition:
+                Intent intent = new Intent(this, MapChoose_Activity.class);
+                startActivityForResult(intent, 601);
+                overridePendingTransition(android.support.design.R.anim.abc_slide_in_bottom, android.support.design.R.anim.abc_slide_out_bottom);
                 break;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 601) {
+            if (resultCode == -1) {
+                PoiItem poiItem = data.getParcelableExtra("addrinfo");
+//                name.setText(poiItem.getTitle());
+                lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
+                lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
+                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+            }
+        }
+
+    }
+
+
+    private void getIncharge(String pid, final int type, String vtype) {
+        RetrofitHelper.getApi().getFireChargeArea(pid, vtype)
+                .compose(this.<List<InchargeInfo>>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<InchargeInfo>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(List<InchargeInfo> inchargeInfos) {
+
+                        if (inchargeInfos != null) {
+                            if (type == 0) {
+                                daduiName.clear();
+                                daduiId.clear();
+                                daduiIdPath.clear();
+                                daduiName.add(info.brigade_path == null ? "请选择" : info.brigade_path + "当前");
+                                for (InchargeInfo info :
+                                        inchargeInfos) {
+                                    daduiName.add(info.name);
+                                    daduiId.add(info.id);
+                                    daduiIdPath.add(info.parent_id_path);
+                                }
+                                adduiAdapter.notifyDataSetChanged();
+                                flag = 1;
+                            } else if (type == 1) {
+                                zhongduiName.clear();
+                                zhongduiId.clear();
+                                zhongduiPath.clear();
+                                zhongduiName.add("请选择");
+                                for (InchargeInfo info :
+                                        inchargeInfos) {
+                                    zhongduiName.add(info.name);
+                                    zhongduiPath.add(info.parent_id_path);
+                                    zhongduiId.add(info.id);
+                                }
+                                zhongduiAdapter.notifyDataSetChanged();
+                            }
+
+                        }
+                    }
+                });
+
     }
 }

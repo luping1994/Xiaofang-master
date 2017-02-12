@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/rootview"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
+
     <include layout="@layout/toolbar"></include>
 
     <RelativeLayout
@@ -26,40 +27,81 @@
         </com.amap.api.maps.MapView>
 
 
+        <TextView
+            android:id="@+id/tx_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:gravity="center"
+            android:visibility="gone" />
 
         <LinearLayout
-            android:layout_alignParentTop="true"
-            android:orientation="vertical"
-            android:gravity="center|left"
+            android:id="@+id/ll_more_danwei"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@color/colorPrimary"
+            android:gravity="center|left"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
             <android.support.v7.widget.AppCompatCheckBox
-                android:textColor="@color/secondtextcolor"
+                android:id="@+id/zhongdiandanwei"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:checked="true"
-                android:id="@+id/type1"
+                android:text="重点单位"
+                android:textColor="@color/white" />
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/yibandanwei"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="一般单位"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:textColor="@color/white" />
 
             <android.support.v7.widget.AppCompatCheckBox
-                android:textColor="@color/secondtextcolor"
-                android:id="@+id/type2"
-                android:text="社区消防室"
+                android:id="@+id/dadui"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <android.support.v7.widget.AppCompatCheckBox
-                android:textColor="@color/secondtextcolor"
+                android:layout_height="wrap_content"
+                android:text="消防大队"
+                android:textColor="@color/white" />
 
-                android:id="@+id/type3"
-                android:text="政府专职小型站"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
             <android.support.v7.widget.AppCompatCheckBox
-                android:textColor="@color/secondtextcolor"
-                android:id="@+id/type4"
+                android:id="@+id/zhongdui"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="消防中队"
+                android:textColor="@color/white" />
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/xiaoxingzhan"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="政府专职小型站"
+                android:textColor="@color/white" />
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/xiangcun"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="乡村专职小型站"
+                android:textColor="@color/white" />
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/xiaofangshi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="社区消防室"
+                android:textColor="@color/white" />
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/xingzhenshenpi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="行政审批建筑"
+                android:textColor="@color/white" />
+
             <!--<android.support.v7.widget.AppCompatCheckBox-->
             <!--android:id="@+id/type5"-->
             <!--android:text="行政许可"-->
@@ -68,26 +110,26 @@
             <!--android:layout_height="wrap_content" />-->
         </LinearLayout>
         <!--<Spinner-->
-            <!--android:visibility="gone"-->
-            <!--android:layout_marginRight="10dp"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:background="@color/white"-->
-            <!--android:id="@+id/spinner"-->
-            <!--android:layout_marginTop="5dp"-->
-            <!--android:entries="@array/type"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="30dp">-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:background="@color/white"-->
+        <!--android:id="@+id/spinner"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:entries="@array/type"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="30dp">-->
         <!--</Spinner>-->
         <android.support.v7.widget.CardView
-            android:foreground="?android:attr/selectableItemBackground"
             android:id="@+id/search_cardview"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="55dp"
-            android:elevation="3dp">
+            android:elevation="3dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -120,103 +162,23 @@
                     android:src="@drawable/ic_keyboard_voice_grey_500_24dp" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
+
         <ImageButton
-            android:scaleType="centerCrop"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:src="@drawable/ic_mylocation"
-            android:layout_marginBottom="50dp"
-            android:layout_above="@+id/bottom_menu"
-            android:onClick="changedViewType"
             android:layout_width="45dp"
-            android:layout_height="45dp"/>
+            android:layout_height="45dp"
+            android:layout_above="@+id/bottom_menu"
+            android:layout_marginBottom="50dp"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:onClick="changedViewType"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_mylocation" />
+
         <RelativeLayout
             android:id="@+id/bottom_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="@color/white">
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="1px"
-                    android:background="@color/border" />
-                <LinearLayout
-                    android:id="@+id/ll_bottom1"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:background="@drawable/layout_border"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <LinearLayout
-                        android:id="@+id/ll_nearby"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_select"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_location" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="附近单位"
-                            android:textColor="@color/balck" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ll_add"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_select"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_add" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="添加单位"
-                            android:textColor="@color/balck" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ll_gerenzhongxin"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_select"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_mine" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="个人中心"
-                            android:textColor="@color/balck" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-
-
             <LinearLayout
                 android:id="@+id/ll_bottom2"
                 android:layout_width="match_parent"
@@ -233,46 +195,45 @@
                     android:id="@+id/ll_detail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:orientation="horizontal"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
-                    >
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingRight="@dimen/activity_horizontal_margin">
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                        android:layout_marginRight="@dimen/activity_horizontal_margin">
+                        android:layout_marginRight="@dimen/activity_horizontal_margin"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
                         <TextView
-                            android:ellipsize="end"
-                            android:maxLines="1"
                             android:id="@+id/text_company_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:text="社会单位1"
                             android:textColor="@color/balck" />
 
                         <TextView
-                            android:ellipsize="end"
-                            android:maxLines="2"
                             android:id="@+id/text_company_addr"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
                             android:text="获取中"
                             android:textColor="@color/secondtextcolor"
                             android:textSize="12sp" />
                     </LinearLayout>
 
                     <RelativeLayout
-                        android:layout_gravity="center_vertical"
                         android:id="@+id/rl_companyinfo"
                         android:layout_width="wrap_content"
-                        android:layout_height="50dp">
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -296,5 +257,9 @@
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
+
+
+
+
     </RelativeLayout>
 </LinearLayout>
