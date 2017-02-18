@@ -3,23 +3,15 @@ package com.suntrans.xiaofang.activity.others;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.suntrans.xiaofang.App;
@@ -32,6 +24,9 @@ import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -42,17 +37,26 @@ import rx.schedulers.Schedulers;
  */
 
 public class Personal_activity extends BasedActivity {
-    private CollapsingToolbarLayout collapsingToolbarLayout;
+    @BindView(R.id.name)
+    TextView name;
+    @BindView(R.id.shiyongshuoming)
+    TextView shiyongshuoming;
+    @BindView(R.id.xiugaimima)
+    TextView xiugaimima;
+    @BindView(R.id.about)
+    TextView about;
+    @BindView(R.id.fankui)
+    TextView fankui;
+    @BindView(R.id.signout)
+    TextView signout;
     private Toolbar toolbar;
-    private TextView tvTitle;
-    RecyclerView recyclerView;
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
-    private MyAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal);
+        ButterKnife.bind(this);
         setUpToolbar();
         initView();
     }
@@ -69,44 +73,9 @@ public class Personal_activity extends BasedActivity {
             case android.R.id.home:
                 finish();
                 break;
-            case R.id.zhuxiao:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("确定要注销吗?")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                SharedPreferences.Editor editor = App.getSharedPreferences().edit();
-                                editor.putString("expires_in", "-1");
-                                editor.putString("access_token", "-1");
-                                editor.putString("refresh_token", "-1");
-                                editor.putLong("firsttime", 1l);
-                                editor.commit();
-                                killAll();
-                                Intent intent = new Intent();
-                                intent.setClass(Personal_activity.this, Login_Activity.class);
-                                startActivity(intent);
-                                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-                            }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-                builder.create().show();
-                break;
-
-            case R.id.changedpassword:
-                Intent intent = new Intent();
-                intent.setClass(Personal_activity.this, ModifyPassword_Activity.class);
-                startActivity(intent);
-                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private UserInfo info;
 
     private void getData() {
         RetrofitHelper.getUserInfoApi()
@@ -130,21 +99,11 @@ public class Personal_activity extends BasedActivity {
                 .subscribe(new Action1<UserInfo>() {
                     @Override
                     public void call(UserInfo userInfo) {
-                        info.truename = userInfo.truename;
-                        info.mobile = userInfo.mobile;
-                        info.area1 = userInfo.area1;
-                        info.area2 = userInfo.area2;
-                        info.area3 = userInfo.area3;
-                        info.area4 = userInfo.area4;
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                collapsingToolbarLayout.setTitle(info.truename);
-                                adapter.notifyDataSetChanged();
-                            }
-                        }, 500);
+                        if (userInfo != null) {
+                            if (userInfo.getTruename() != null)
+                                name.setText(userInfo.getTruename());
+                        }
 
-//                        System.out.println(userInfo.toString());
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -160,10 +119,7 @@ public class Personal_activity extends BasedActivity {
 
     private void setUpToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle("张警官");
-        collapsingToolbarLayout.setExpandedTitleColor(Color.WHITE);
-        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
+        toolbar.setTitle("个人中心");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -172,100 +128,64 @@ public class Personal_activity extends BasedActivity {
         }
     }
 
+
     private void initView() {
-        info = new UserInfo();
-        recyclerView = (RecyclerView) findViewById(R.id.recycleview);
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-        adapter = new MyAdapter();
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
+
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_personal, menu);
-        return true;
-    }
-
-    class MyAdapter extends RecyclerView.Adapter {
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v;
-            if (viewType == 1) {
-                v = LayoutInflater.from(Personal_activity.this).inflate(R.layout.item_contacts, parent, false);
-                return new ViewHolder1(v);
-            } else {
-                v = LayoutInflater.from(Personal_activity.this).inflate(R.layout.item_email, parent, false);
-                return new ViewHolder2(v);
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof ViewHolder2) {
-                ((ViewHolder2) holder).setData(position);
-            } else {
-                ((ViewHolder1) holder).setData(position);
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return 3;
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return 1;
-            }
-            return 0;
-        }
-
-        class ViewHolder1 extends RecyclerView.ViewHolder {
-            TextView mobile;
-
-            public ViewHolder1(View itemView) {
-                super(itemView);
-                mobile = (TextView) itemView.findViewById(R.id.mobile);
-            }
-
-            public void setData(int position) {
-                mobile.setText(info.mobile);
-            }
-        }
-
-        class ViewHolder2 extends RecyclerView.ViewHolder {
-            ImageView imageView;
-            TextView name;
-            TextView value;
-
-            public ViewHolder2(View itemView) {
-                super(itemView);
-                value = (TextView) itemView.findViewById(R.id.value);
-                name = (TextView) itemView.findViewById(R.id.name);
-                imageView = (ImageView) itemView.findViewById(R.id.image);
-            }
-
-            public void setData(int position) {
-                if (position == 1) {
-                    imageView.setImageResource(R.drawable.ic_email);
-                    name.setText("电子邮件");
-                    value.setText("dany@qq.com");
-                } else {
-                    imageView.setImageResource(R.drawable.ic_addr);
-                    name.setText("地址");
-                    value.setText(info.area1 + info.area2 + info.area3 + info.area4);
-                }
-            }
-        }
-    }
-
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
+    }
+
+    @OnClick({R.id.name, R.id.shiyongshuoming, R.id.xiugaimima, R.id.about, R.id.fankui, R.id.signout})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.name:
+                break;
+            case R.id.shiyongshuoming:
+                break;
+            case R.id.xiugaimima:
+                Intent intent = new Intent();
+                intent.setClass(Personal_activity.this, ModifyPassword_Activity.class);
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                break;
+            case R.id.about:
+                startActivity(new Intent(this, About_activity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+            case R.id.fankui:
+                startActivity(new Intent(this, Help_activity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+            case R.id.signout:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("退出登录?")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                SharedPreferences.Editor editor = App.getSharedPreferences().edit();
+                                editor.putString("expires_in", "-1");
+                                editor.putString("access_token", "-1");
+                                editor.putString("refresh_token", "-1");
+                                editor.putLong("firsttime", 1l);
+                                editor.commit();
+                                killAll();
+                                Intent intent = new Intent();
+                                intent.setClass(Personal_activity.this, Login_Activity.class);
+                                startActivity(intent);
+                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                            }
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.create().show();
+                break;
+        }
     }
 }

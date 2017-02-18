@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/content1"
+    android:background="@color/bg_color"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <ScrollView
+        android:layout_weight="1"
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="match_parent">
+        android:layout_height="0dp">
 
         <LinearLayout
             android:id="@+id/ll_content"
@@ -17,12 +18,177 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycleview"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
 
-            </android.support.v7.widget.RecyclerView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*建设单位"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <RelativeLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/buildcompany"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="16dp"
+                        android:background="@null"
+                        android:gravity="left|center"
+                        android:hint="请输入"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size1" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*名称"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <RelativeLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="16dp"
+                        android:background="@null"
+                        android:gravity="left|center"
+                        android:hint="请输入"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size1" />
+                </RelativeLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*地址"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <RelativeLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/addr"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="16dp"
+                        android:background="@null"
+                        android:gravity="left|center"
+                        android:hint="请输入"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size1" />
+                </RelativeLayout>
+                <Button
+                    android:id="@+id/getposition"
+                    android:text="@string/chooseAddr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*联系人"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <RelativeLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/contact"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="16dp"
+                        android:background="@null"
+                        android:gravity="left|center"
+                        android:hint="请输入"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size1" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="*电话"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <RelativeLayout
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:inputType="phone"
+                        android:id="@+id/phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="16dp"
+                        android:background="@null"
+                        android:gravity="left|center"
+                        android:hint="请输入"
+                        android:textColor="@color/balck"
+                        android:textSize="@dimen/text_size1" />
+                </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
@@ -30,8 +196,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp">
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp">
 
         <Button
             android:gravity="center"
@@ -42,195 +208,10 @@
             android:background="@drawable/bg_bt"
             android:paddingLeft="100dp"
             android:paddingRight="100dp"
-            android:text="添加"
+            android:text="添加行政审批信息"
             android:textColor="@color/white" />
 
     </RelativeLayout>
-    <!--<ScrollView-->
-    <!--android:id="@+id/scroll"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:layout_weight="1"-->
-    <!--android:layout_alignParentLeft="true"-->
-    <!--android:layout_alignParentStart="true"-->
-    <!--android:layout_alignParentTop="true"-->
-    <!--android:clipToPadding="false">-->
-
-    <!--<LinearLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:background="@color/bg_color"-->
-    <!--android:orientation="vertical">-->
-
-    <!--<LinearLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:background="@color/white"-->
-    <!--android:orientation="horizontal"-->
-    <!--android:paddingLeft="@dimen/infoitem_pading"-->
-    <!--android:paddingRight="@dimen/infoitem_pading">-->
-
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:gravity="center"-->
-    <!--android:text="*建筑名称"-->
-    <!--android:textColor="@color/balck"-->
-    <!--android:textSize="@dimen/text_size" />-->
-
-    <!--<EditText-->
-    <!--android:id="@+id/name"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_marginLeft="16dp"-->
-    <!--android:layout_weight="1"-->
-    <!--android:background="@null"-->
-    <!--android:gravity="left|center"-->
-    <!--android:hint="请输入"-->
-    <!--android:textColor="@color/balck"-->
-    <!--android:textSize="@dimen/text_size1" />-->
-    <!--</LinearLayout>-->
-
-    <!--<LinearLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_marginTop="1px"-->
-    <!--android:background="@color/white"-->
-    <!--android:orientation="horizontal"-->
-    <!--android:paddingLeft="@dimen/infoitem_pading"-->
-    <!--android:paddingRight="@dimen/infoitem_pading">-->
-
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:gravity="center"-->
-    <!--android:text="*单位地址"-->
-    <!--android:textColor="@color/balck"-->
-    <!--android:textSize="@dimen/text_size" />-->
-
-    <!--<EditText-->
-    <!--android:id="@+id/addr"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_marginLeft="16dp"-->
-    <!--android:layout_weight="1"-->
-    <!--android:background="@null"-->
-    <!--android:gravity="left|center"-->
-    <!--android:hint="请输入"-->
-    <!--android:textColor="@color/balck"-->
-    <!--android:textSize="@dimen/text_size1" />-->
-
-    <!--&lt;!&ndash;<Button&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:text="获取当前位置" />&ndash;&gt;-->
-    <!--</LinearLayout>-->
-
-    <!--&lt;!&ndash;<LinearLayout&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_marginLeft="40dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="40dp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:background="@color/white"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:orientation="horizontal"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:paddingLeft="@dimen/infoitem_pading"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:paddingRight="@dimen/infoitem_pading">&ndash;&gt;-->
-    <!--&lt;!&ndash;<EditText&ndash;&gt;-->
-    <!--&lt;!&ndash;android:inputType="numberDecimal"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:textSize="14sp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:id="@+id/lng"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:text="114.341014"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:textColor="@color/border"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_weight="1"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="match_parent" />&ndash;&gt;-->
-    <!--&lt;!&ndash;<EditText&ndash;&gt;-->
-    <!--&lt;!&ndash;android:inputType="numberDecimal"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:textSize="14sp"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:id="@+id/lat"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:text="30.547186"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:textColor="@color/border"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_weight="1"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="match_parent" />&ndash;&gt;-->
-    <!--&lt;!&ndash;</LinearLayout>&ndash;&gt;-->
-
-    <!--<LinearLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_marginTop="1px"-->
-    <!--android:background="@color/white"-->
-    <!--android:orientation="horizontal"-->
-    <!--android:paddingLeft="@dimen/infoitem_pading"-->
-    <!--android:paddingRight="@dimen/infoitem_pading">-->
-
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:gravity="center"-->
-    <!--android:text="*联系人"-->
-    <!--android:textColor="@color/balck"-->
-    <!--android:textSize="@dimen/text_size" />-->
-
-    <!--<EditText-->
-    <!--android:id="@+id/leader"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_marginLeft="16dp"-->
-    <!--android:layout_weight="1"-->
-    <!--android:background="@null"-->
-    <!--android:gravity="left|center"-->
-    <!--android:hint="请输入"-->
-    <!--android:textColor="@color/balck"-->
-    <!--android:textSize="@dimen/text_size1" />-->
-    <!--&lt;!&ndash;<TextView&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:gravity="center"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:text="平方公里"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:textSize="@dimen/text_size" />&ndash;&gt;-->
-    <!--</LinearLayout>-->
-
-    <!--<LinearLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_marginTop="1px"-->
-    <!--android:background="@color/white"-->
-    <!--android:orientation="horizontal"-->
-    <!--android:paddingLeft="@dimen/infoitem_pading"-->
-    <!--android:paddingRight="@dimen/infoitem_pading">-->
-
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:gravity="center"-->
-    <!--android:text="*联系电话"-->
-    <!--android:textColor="@color/balck"-->
-    <!--android:textSize="@dimen/text_size" />-->
-
-    <!--<EditText-->
-    <!--android:id="@+id/phone"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_marginLeft="16dp"-->
-    <!--android:layout_weight="1"-->
-    <!--android:background="@null"-->
-    <!--android:gravity="left|center"-->
-    <!--android:hint="请输入"-->
-    <!--android:textColor="@color/balck"-->
-    <!--android:textSize="@dimen/text_size1" />-->
-    <!--</LinearLayout>-->
 
 
-    <!--</LinearLayout>-->
-    <!--</ScrollView>-->
-
-    <Button
-        android:id="@+id/commit_license"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:background="@drawable/commit_selector"
-        android:text="提交"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:visibility="gone" />
 </LinearLayout>

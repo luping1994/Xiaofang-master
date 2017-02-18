@@ -33,6 +33,7 @@ public class EditFirestationnfo_activity extends BasedActivity {
     private Type3_fragment fragment;
 
     private int type;
+    private boolean isInitData = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,8 +60,13 @@ public class EditFirestationnfo_activity extends BasedActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (info != null)
-            fragment.setData(info);
+        if (info != null) {
+            if (!isInitData) {
+
+                fragment.setData(info);
+                isInitData = true;
+            }
+        }
     }
 
     private void setupToolBar() {

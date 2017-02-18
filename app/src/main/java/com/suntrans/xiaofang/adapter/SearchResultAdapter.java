@@ -30,15 +30,14 @@ public class SearchResultAdapter extends BaseAdapter {
     private List<PoiItem> data;
     private Context context;
 
-    private int selectedPosition = 0;
+    private int selectedPosition =0;
 
-    public SearchResultAdapter(Context context) {
+    public SearchResultAdapter(Context context){
         this.context = context;
-        data = new ArrayList<>();
     }
 
-    public void setData(List<PoiItem> data) {
-        this.data = data;
+    public void setData(List<PoiItem> data){
+        this.data  = data;
     }
 
     public void setSelectedPosition(int selectedPosition) {
@@ -51,7 +50,7 @@ public class SearchResultAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return data.size();
+        return data==null?0:data.size();
     }
 
     @Override
@@ -105,7 +104,7 @@ public class SearchResultAdapter extends BaseAdapter {
             textTitle.setText(poiItem.getTitle());
             textSubTitle.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
 
-            imageCheck.setVisibility(position == selectedPosition ? View.VISIBLE : View.INVISIBLE);
+//            imageCheck.setVisibility(position == selectedPosition ? View.VISIBLE : View.INVISIBLE);
             textSubTitle.setVisibility((position == 0 && poiItem.getPoiId().equals("regeo")) ? View.GONE : View.VISIBLE);
         }
     }

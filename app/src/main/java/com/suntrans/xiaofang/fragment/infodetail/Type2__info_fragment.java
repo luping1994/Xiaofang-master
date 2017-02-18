@@ -21,9 +21,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.amap.api.maps.model.LatLng;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
-import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.edit.EditFireroomInfo_activity;
 import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
@@ -35,11 +32,9 @@ import com.suntrans.xiaofang.model.fireroom.FireRoomDetailInfo;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
-import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -61,11 +56,11 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
     private LinearLayoutManager manager;
     private MyAdapter myAdapter;
 
-
-    private FloatingActionMenu menuRed;
-    private FloatingActionButton fab1;
-    private FloatingActionButton fab2;
-    private FloatingActionButton fab3;
+//
+//    private FloatingActionMenu menuRed;
+//    private FloatingActionButton fab1;
+//    private FloatingActionButton fab2;
+//    private FloatingActionButton fab3;
 
 
     LatLng to;
@@ -74,7 +69,7 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initData();
-        return inflater.inflate(R.layout.fragment_info_type1_backup, container, false);
+        return inflater.inflate(R.layout.fragment_info_others, container, false);
     }
 
     @Override
@@ -116,48 +111,48 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
     private void initData() {
         SparseArray<String> array = new SparseArray<>();
         array.put(0, "社区消防室名称");
-        array.put(1, "--");
+        array.put(1, "");
         datas.add(array);
 
         SparseArray<String> array1 = new SparseArray<>();
         array1.put(0, "地址");
-        array1.put(1, "--");
+        array1.put(1, "");
         datas.add(array1);
 
         SparseArray<String> array2 = new SparseArray<>();
         array2.put(0, "志愿消防队联系人");
-        array2.put(1, "--");
+        array2.put(1, "");
         datas.add(array2);
 
 
         SparseArray<String> array3 = new SparseArray<>();
         array3.put(0, "联系电话");
-        array3.put(1, "--");
+        array3.put(1, "");
         datas.add(array3);
 
         SparseArray<String> array4 = new SparseArray<>();
         array4.put(0, "消防队人数");
-        array4.put(1, "--");
+        array4.put(1, "");
         datas.add(array4);
 
         SparseArray<String> array5 = new SparseArray<>();
         array5.put(0, "车辆配置情况");
-        array5.put(1, "--");
+        array5.put(1, "");
         datas.add(array5);
 
         SparseArray<String> array6 = new SparseArray<>();
         array6.put(0, "装备配置情况");
-        array6.put(1, "--");
+        array6.put(1, "");
         datas.add(array6);
 
         SparseArray<String> array7 = new SparseArray<>();
         array7.put(0, "所属大队");
-        array7.put(1, "--");
+        array7.put(1, "");
         datas.add(array7);
 
         SparseArray<String> array8 = new SparseArray<>();
         array8.put(0, "联动中队");
-        array8.put(1, "--");
+        array8.put(1, "");
         datas.add(array8);
 
     }
@@ -269,11 +264,11 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
     private void refreshView(FireRoomDetailInfo info) {
         datas.get(0).put(1, info.name);//名字
         datas.get(1).put(1, info.addr);//地址
-        datas.get(2).put(1, info.contact == null ? "--" : info.contact);
-        datas.get(3).put(1, info.phone == null ? "--" : info.phone);
+        datas.get(2).put(1, info.contact == null ? "" : info.contact);
+        datas.get(3).put(1, info.phone == null ? "" : info.phone);
 
 
-        datas.get(4).put(1, info.membernum == null ? "--" : info.membernum+"人" );
+        datas.get(4).put(1, info.membernum == null ? "" : info.membernum+"人" );
         StringBuilder sb =  new StringBuilder();
         if (info.cardisp!=null){
             try {
@@ -323,8 +318,8 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
         }
 
 
-        datas.get(7).put(1, info.brigade_path == null ? "--" : info.brigade_path);
-        datas.get(8).put(1, info.group_path == null ? "--" : info.group_path);
+        datas.get(7).put(1, info.brigade_name == null ? "" : info.brigade_name);
+        datas.get(8).put(1, info.group_name == null ? "" : info.group_name);
         myAdapter.notifyDataSetChanged();
     }
 
@@ -450,7 +445,7 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
                         }
                     });
                     AlertDialog dialog1 = builder1.create();
-                    dialog1.setTitle("单位未添加地理坐标,无法导航!");
+                    dialog1.setTitle("无法获取当前位置或单位未添加地理坐标,无法导航!");
                     dialog1.show();
                     break;
                 }

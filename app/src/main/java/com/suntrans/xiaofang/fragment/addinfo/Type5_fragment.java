@@ -2,11 +2,10 @@ package com.suntrans.xiaofang.fragment.addinfo;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,19 +14,24 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.amap.api.services.core.PoiItem;
 import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
 import com.suntrans.xiaofang.model.license.AddLicenseResult;
+import com.suntrans.xiaofang.model.license.LicenseDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
-import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,50 +44,44 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.amap.api.mapcore.util.af.a.n;
-import static com.suntrans.xiaofang.R.id.foundtime;
+import static com.suntrans.xiaofang.R.id.addItem;
+import static com.suntrans.xiaofang.R.id.buildcompany;
+import static com.suntrans.xiaofang.R.id.lat;
+import static com.suntrans.xiaofang.R.id.lng;
+import static com.suntrans.xiaofang.R.id.map;
 
 /**
  * Created by Looney on 2016/12/13.
  */
 
-public class Type5_fragment extends RxFragment {
+public class Type5_fragment extends RxFragment implements View.OnClickListener {
 
-    //    @BindView(R.id.name)
-//    EditText name;
-//    @BindView(R.id.addr)
-//    EditText addr;
-//    @BindView(R.id.lng)
-//    EditText lng;
-//    @BindView(R.id.lat)
-//    EditText lat;
-//    @BindView(R.id.leader)
-//    EditText leader;
-//    @BindView(R.id.phone)
-//    EditText phone;
-//    @BindView(R.id.content1)
-//    LinearLayout content1;
-    @BindView(R.id.commit_license)
-    Button commitLicense;
+
     @BindView(R.id.ll_content)
     LinearLayout llContent;
+    @BindView(R.id.buildcompany)
+    EditText buildcompany;
+    @BindView(R.id.name)
+    EditText name;
+    @BindView(R.id.addr)
+    EditText addr;
+    @BindView(R.id.getposition)
+    Button getposition;
+    @BindView(R.id.contact)
+    TextView contact;
+    @BindView(R.id.phone)
+    EditText phone;
 
 
-    private ArrayList<SparseArray<String>> datas = new ArrayList<>();
-
-    Map<String, String> map;
-    Map<String, String> map2;
     private AlertDialog dialog;
-    private RecyclerView recyclerView;
-    private LinearLayoutManager manager;
-    private MyAdapter adapter;
-    private String isqualified = "1";
     private Button additem;
 
 
     private int mYear;
     private int mMonth;
     private int mDay;
+    private LicenseDetailInfo info;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -95,25 +93,33 @@ public class Type5_fragment extends RxFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         initData();
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
-        manager = new LinearLayoutManager(getActivity());
-        adapter = new MyAdapter();
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
-        additem = (Button) view.findViewById(R.id.addItem);
+        additem = (Button) view.findViewById(addItem);
         additem.setOnClickListener(listener);
 
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
+        getposition.setOnClickListener(this);
     }
 
-    static class ViewTag{
-        int position;
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.getposition:
+                Intent intent = new Intent(getActivity(), MapChoose_Activity.class);
+                startActivityForResult(intent, 601);
+                getActivity().overridePendingTransition(android.support.design.R.anim.abc_slide_in_bottom, android.support.design.R.anim.abc_slide_out_bottom);
+                break;
+        }
+    }
+
+    static class ViewTag {
+        String type;
         String title;
     }
-    final String[] items = new String[]{"建审","验收","开业前"};
+
+    final String[] items = new String[]{"建审", "验收", "开业前"};
     View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
@@ -122,29 +128,29 @@ public class Type5_fragment extends RxFragment {
                     .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            System.out.println("选择的条目为:"+which);
-                            final View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhenxuke3,null);
+                            final View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhenxuke3, null);
                             ViewTag tag = new ViewTag();
-                            tag.position = llContent.getChildCount();
-                            switch (which){
+                            switch (which) {
                                 case 0:
-                                    ((TextView)(view.findViewById(R.id.title))).setText("建审");
+                                    ((TextView) (view.findViewById(R.id.title))).setText("建审");
                                     tag.title = "建审";
+                                    tag.type = "1";
                                     break;
                                 case 1:
-                                    ((TextView)(view.findViewById(R.id.title))).setText("验收");
+                                    ((TextView) (view.findViewById(R.id.title))).setText("验收");
                                     tag.title = "验收";
+                                    tag.type = "2";
                                     break;
                                 case 2:
-                                    ((TextView)(view.findViewById(R.id.title))).setText("开业前");
+                                    ((TextView) (view.findViewById(R.id.title))).setText("开业前");
                                     tag.title = "开业前";
+                                    tag.type = "3";
                                     break;
                             }
                             view.setTag(tag);
                             view.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    LogUtil.i("要删除的位置为:"+((ViewTag)view.getTag()).position);
                                     llContent.removeView(view);
                                 }
                             });
@@ -157,7 +163,7 @@ public class Type5_fragment extends RxFragment {
                                             mYear = year;
                                             mMonth = month;
                                             mDay = dayOfMonth;
-                                            ((TextView)v).setText(
+                                            ((TextView) v).setText(
                                                     new StringBuilder()
                                                             .append(mYear).append("-")
                                                             .append(pad(mMonth + 1)).append("-")
@@ -172,7 +178,7 @@ public class Type5_fragment extends RxFragment {
                             dialog.dismiss();
                         }
                     })
-                    .setTitle("请选择添加型")
+                    .setTitle("请选择添加类型")
                     .create().show();
         }
     };
@@ -183,217 +189,89 @@ public class Type5_fragment extends RxFragment {
         else
             return "0" + String.valueOf(c);
     }
+
     private void initData() {
-        SparseArray<String> array0 = new SparseArray<>();
-        array0.put(0, "建设单位");
-        array0.put(1, "");
-        array0.put(2, "jianshedanwei");
-        datas.add(array0);
-
-        SparseArray<String> array = new SparseArray<>();
-        array.put(0, "名称");
-        array.put(1, "");
-        array.put(2, "name");
-        datas.add(array);
-
-        SparseArray<String> array1 = new SparseArray<>();
-        array1.put(0, "地址");
-        array1.put(1, "");
-        array1.put(2, "addr");
-        datas.add(array1);
-
-        SparseArray<String> array2 = new SparseArray<>();
-        array2.put(0, "联系人");
-        array2.put(1, "");
-        array2.put(2, "leader");
-        datas.add(array2);
-
-
-        SparseArray<String> array3 = new SparseArray<>();
-        array3.put(0, "电话");
-        array3.put(1, "");
-        array3.put(2, "phone");
-        datas.add(array3);
 
     }
 
 
-    @OnClick(R.id.commit_license)
-    public void onClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加行政许可信息吗")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        addCommit();
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-        builder.create().show();
-    }
-
-    class MyAdapter extends RecyclerView.Adapter {
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == 0) {
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhengxuke, parent, false);
-                return new ViewHolder1(view);
-            } else {
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhengxuke2, parent, false);
-                return new ViewHolder2(view);
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof ViewHolder1) {
-                ((ViewHolder1) holder).setData(position);
-            } else {
-                ((ViewHolder2) holder).setData(position);
-            }
-        }
-
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0)
-                return 1;
-            return 0;
-        }
-
-        @Override
-        public int getItemCount() {
-            return datas.size() + 1;
-        }
-
-        class ViewHolder1 extends RecyclerView.ViewHolder {
-            TextView key;
-            TextView value;
-            RadioGroup group;
-            RadioButton yes;
-            RadioButton no;
-
-            public ViewHolder1(View itemView) {
-                super(itemView);
-                key = (TextView) itemView.findViewById(R.id.key);
-                value = (TextView) itemView.findViewById(R.id.value);
-                group = (RadioGroup) itemView.findViewById(R.id.group);
-                yes = (RadioButton) itemView.findViewById(R.id.yes);
-                no = (RadioButton) itemView.findViewById(R.id.no);
-            }
-
-            public void setData(int position) {
-                if (position < 5) {
-                    value.setVisibility(View.VISIBLE);
-                    group.setVisibility(View.GONE);
-                    key.setText(datas.get(position - 1).get(0));
-                } else if (position < 8) {
-                    value.setVisibility(View.VISIBLE);
-                    group.setVisibility(View.GONE);
-                    key.setText(datas.get(position - 2).get(0));
-                } else {
-                    key.setText(datas.get(position - 2).get(0));
-                    value.setText("1");
-                    value.setVisibility(View.GONE);
-                    group.setVisibility(View.VISIBLE);
-                    group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(RadioGroup group, int checkedId) {
-                            switch (checkedId) {
-                                case R.id.yes:
-                                    isqualified = "1";
-                                    break;
-                                case R.id.no:
-                                    isqualified = "0";
-                                    break;
-                            }
-                        }
-                    });
-                }
-
-            }
-        }
-
-        class ViewHolder2 extends RecyclerView.ViewHolder {
-            TextView item;
-
-            public ViewHolder2(View itemView) {
-                super(itemView);
-                item = (TextView) itemView.findViewById(R.id.item);
-            }
-
-            public void setData(int position) {
-                if (position == 0)
-
-
-                    item.setText("搜索");
-                else
-                    item.setText("建审信息");
-            }
-        }
-
-    }
+    String lng;
+    String lat;
 
     public void addCommit() {
-
+        Map<String, String> map=null;
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
-        for (int i = 0; i < manager.getChildCount(); i++) {
-            if (i == 0 || i == 5)
-                continue;
-            EditText textView = (EditText) manager.findViewByPosition(i).findViewById(R.id.value);
-            String a = textView.getText().toString();
-            if (Utils.isVaild(a)) {
-                if (i < 5)
-                    builder.put(datas.get(i - 1).get(2), a);
-                else if (i > 5) {
-                    if (i == 8)
-                        builder.put("isqualified", isqualified);
-                    else
-                        builder.put(datas.get(i - 2).get(2), a);
+        String name1 = name.getText().toString();
+        String addr1 = addr.getText().toString();
+        String buildcompany1 = buildcompany.getText().toString();
+        String contact1 = contact.getText().toString().trim();
+        String phone1 = phone.getText().toString();
+        String info = "";
+        if (llContent.getChildCount() > 5) {
+            JSONArray array = new JSONArray();
+            for (int i = 5; i < llContent.getChildCount(); i++) {
+                View view = llContent.getChildAt(i);
+                RadioGroup group = (RadioGroup) view.findViewById(R.id.radioGroup);
+                String number1 = ((EditText) view.findViewById(R.id.number)).getText().toString();
+                String time1 = ((TextView) view.findViewById(R.id.time)).getText().toString();
+                String type1 = ((ViewTag) view.getTag()).type;
+                String isqualified1 = "";
+                int id = group.getCheckedRadioButtonId();
+                if (id == R.id.radio_hege)
+                    isqualified1 = "1";
+                else if (id == R.id.radio_buhege)
+                    isqualified1 = "0";
+
+                if (!Utils.isVaild(number1) || !Utils.isVaild(time1)) {
+                    UiUtils.showToast("请输入完整的信息");
+                    return;
                 }
-            } else {
-                UiUtils.showToast(UiUtils.getContext(), "所有字段必填");
-                return;
+                JSONObject object = new JSONObject();
+                try {
+                    object.put("number", number1);
+                    object.put("time", time1);
+                    object.put("isqualified", isqualified1);
+                    object.put("type", type1);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                array.put(object);
             }
-
+            info = array.toString();
         }
-        map = null;
-//        String name1 = name.getText().toString();
-//        String addr1 = addr.getText().toString();
-//        String lng1 = lng.getText().toString();
-//        String lat1 = lat.getText().toString();
-//
-//
-//        String leader1 = leader.getText().toString();
-//        String phone1 = phone.getText().toString();
+        if (!Utils.isVaild(buildcompany1)) {
+            UiUtils.showToast("建设单位不能为空");
+            return;
+        }
+        if (!Utils.isVaild(name1)) {
+            UiUtils.showToast("名称不能为空");
+            return;
+        }
+        if (!Utils.isVaild(addr1)) {
+            UiUtils.showToast("地址不能为空");
+            return;
+        }
+        if (!Utils.isVaild(contact1)) {
+            UiUtils.showToast("联系人不能为空");
+            return;
+        }
+        if (!Utils.isVaild(phone1)) {
+            UiUtils.showToast("电话不能为空");
+            return;
+        }
 
+        builder.put("name", name1);
+        builder.put("addr", addr1);
+        builder.put("cmpname", buildcompany1);
+        builder.put("contact", contact1);
+        builder.put("phone", phone1);
+        if (Utils.isVaild(info))
+            builder.put("info", info);
 
-//        if (Utils.isVaild(name1)) {
-//            builder.put("name", name1.replace(" ", ""));
-//        }
-//
-//        if (Utils.isVaild(addr1)) {
-//            builder.put("addr", addr1.replace(" ", ""));
-//        }
-//        if (Utils.isVaild(lng1)) {
-//            builder.put("lng", lng1.replace(" ", ""));
-//        }
-//        if (Utils.isVaild(lat1)) {
-//            builder.put("lat", lat1.replace(" ", ""));
-//        }
-//        if (Utils.isVaild(leader1)) {
-//            builder.put("leader", leader1.replace(" ", ""));
-//        }
-//
-//        if (Utils.isVaild(phone1)) {
-//            builder.put("phone", phone1.replace(" ", ""));
-//        }
+        if (Utils.isVaild(lat) && Utils.isVaild(lng)) {
+            builder.put("lat", lat);
+            builder.put("lng", lng);
+        }
 
         map = builder.build();
 
@@ -443,6 +321,125 @@ public class Type5_fragment extends RxFragment {
                         }
                     }
                 });
+    }
+
+
+
+    public void upDateLicense(){
+        Map<String, String> map=null;
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        String name1 = name.getText().toString();
+        String addr1 = addr.getText().toString();
+        String buildcompany1 = buildcompany.getText().toString();
+        String contact1 = contact.getText().toString().trim();
+        String phone1 = phone.getText().toString();
+
+        if (!Utils.isVaild(buildcompany1)) {
+            UiUtils.showToast("建设单位不能为空");
+            return;
+        }
+        if (!Utils.isVaild(name1)) {
+            UiUtils.showToast("名称不能为空");
+            return;
+        }
+        if (!Utils.isVaild(addr1)) {
+            UiUtils.showToast("地址不能为空");
+            return;
+        }
+        if (!Utils.isVaild(contact1)) {
+            UiUtils.showToast("联系人不能为空");
+            return;
+        }
+        if (!Utils.isVaild(phone1)) {
+            UiUtils.showToast("电话不能为空");
+            return;
+        }
+
+        builder.put("name", name1);
+        builder.put("id", info.id);
+        builder.put("addr", addr1);
+        builder.put("cmpname", buildcompany1);
+        builder.put("contact", contact1);
+        builder.put("phone", phone1);
+
+        if (Utils.isVaild(lat) && Utils.isVaild(lng)) {
+            builder.put("lat", lat);
+            builder.put("lng", lng);
+        }
+
+        map = builder.build();
+
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey().toString();
+            String value = entry.getValue().toString();
+            System.out.println(key + "," + value);
+        }
+
+
+        RetrofitHelper.getApi().updateLicense(map)
+                .compose(this.<AddLicenseResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<AddLicenseResult>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        UiUtils.showToast("修改失败");
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(AddLicenseResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                String result1 = result.result;
+                                dialog = new AlertDialog.Builder(getActivity())
+                                        .setMessage(result1)
+                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                getActivity().finish();
+                                            }
+                                        })
+                                        .create();
+                                dialog.show();
+                            } else {
+                                UiUtils.showToast(result.msg);
+                            }
+                        } else {
+
+                            UiUtils.showToast( "修改失败");
+                        }
+                    }
+                });
+    }
+
+
+    public void setData(LicenseDetailInfo info) {
+        this.info=info;
+        additem.setVisibility(View.GONE);
+        name.setText(info.name==null?"":info.name);
+        buildcompany.setText(info.cmyname==null?"":info.cmyname);
+        contact.setText(info.contact==null?"":info.contact);
+        phone.setText(info.phone==null?"":info.phone);
+        addr.setText(info.addr==null?"":info.addr);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 601) {
+            if (resultCode == -1) {
+                PoiItem poiItem = data.getParcelableExtra("addrinfo");
+//                name.setText(poiItem.getTitle());
+                lat=poiItem.getLatLonPoint().getLatitude() +"";
+                lng=poiItem.getLatLonPoint().getLongitude() +"";
+                addr.setText(poiItem.getSnippet());
+            }
+        }
 
     }
 }

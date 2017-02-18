@@ -140,10 +140,9 @@ public class Type6_fragment extends RxFragment {
         if (requestCode == 601) {
             if (resultCode == -1) {
                 PoiItem poiItem = data.getParcelableExtra("addrinfo");
-                name.setText(poiItem.getTitle());
                 lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
                 lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
-                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+                addr.setText(poiItem.getSnippet());
             }
         }
 

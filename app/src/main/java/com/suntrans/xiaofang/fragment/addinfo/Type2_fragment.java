@@ -26,6 +26,7 @@ import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
 import com.suntrans.xiaofang.model.company.InchargeInfo;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -172,11 +173,14 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (flag == 1) {
-                    if (position == 0)
+                    if (position == 0){
+                        dadui_id_path=null;
+                        liandongzhongdui.setSelection(0);
                         return;
+                    }
                     dadui_id_path = daduiIdPath.get(position - 1);
                     System.out.println("大队" + daduiName.get(position - 1) + "==>" + dadui_id_path);
-                    String nextId = daduiId.get(position);
+                    String nextId = daduiId.get(position-1);
                     getIncharge(nextId, 1, "2");
                 }
             }
@@ -191,8 +195,10 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (flag == 1) {
-                    if (position == 0)
+                    if (position == 0){
+                        zhongdui_id_path=null;
                         return;
+                    }
                     zhongdui_id_path = zhongduiPath.get(position - 1);
                     System.out.println("中队" + zhongduiName.get(position - 1) + "==>" + zhongdui_id_path);
                 }
@@ -271,10 +277,12 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
         if (requestCode == 601) {
             if (resultCode == -1) {
                 PoiItem poiItem = data.getParcelableExtra("addrinfo");
-                name.setText(poiItem.getTitle());
+//                name.setText(poiItem.getTitle());
+                LogUtil.i("lat="+poiItem.getLatLonPoint().getLatitude()+"lng="+poiItem.getLatLonPoint().getLongitude());
                 lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
                 lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
-                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+//                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+                addr.setText( poiItem.getSnippet());
             }
         }
 

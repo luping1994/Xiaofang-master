@@ -21,12 +21,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.amap.api.maps.model.LatLng;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.edit.EditFireBrigadeinfo_activity;
-import com.suntrans.xiaofang.activity.edit.EditFiregoupinfo_activity;
 import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
@@ -34,8 +31,6 @@ import com.suntrans.xiaofang.fragment.BasedFragment;
 import com.suntrans.xiaofang.model.firebrigade.FireBrigadeDetailInfo;
 import com.suntrans.xiaofang.model.firebrigade.FireBrigadeDetailResult;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
-import com.suntrans.xiaofang.model.firegroup.FireGroupDetailInfo;
-import com.suntrans.xiaofang.model.firegroup.FireGroupDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
@@ -44,7 +39,6 @@ import com.trello.rxlifecycle.android.FragmentEvent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -52,11 +46,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
-import static com.suntrans.xiaofang.R.id.gonganganbu;
-import static com.suntrans.xiaofang.R.id.wenyuan;
-import static com.suntrans.xiaofang.R.id.xianyiganbu;
-import static com.suntrans.xiaofang.R.id.zhuanzhi;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -75,7 +64,7 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initData();
-        return inflater.inflate(R.layout.fragment_info_type1_backup, container, false);
+        return inflater.inflate(R.layout.fragment_info_others, container, false);
     }
 
     @Override
@@ -114,62 +103,62 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
     private void initData() {
         SparseArray<String> array = new SparseArray<>();
         array.put(0, "名称");
-        array.put(1, "--");
+        array.put(1, "");
         datas.add(array);
 
         SparseArray<String> array1 = new SparseArray<>();
         array1.put(0, "地址");
-        array1.put(1, "--");
+        array1.put(1, "");
         datas.add(array1);
 
         SparseArray<String> array2 = new SparseArray<>();
         array2.put(0, "辖区面积");
-        array2.put(1, "--");
+        array2.put(1, "");
         datas.add(array2);
 
 
         SparseArray<String> array3 = new SparseArray<>();
         array3.put(0, "消防队站联系电话");
-        array3.put(1, "--");
+        array3.put(1, "");
         datas.add(array3);
 
         SparseArray<String> array4 = new SparseArray<>();
         array4.put(0, "消防队员人数");
-        array4.put(1, "--");
+        array4.put(1, "");
         datas.add(array4);
 
 
 //        SparseArray<String> array6 = new SparseArray<>();
 //        array6.put(0, "消防车总数");
-//        array6.put(1, "--");
+//        array6.put(1, "");
 //        datas.add(array6);
 //
 //        SparseArray<String> array7 = new SparseArray<>();
 //        array7.put(0, "消防车辆配置情况");
-//        array7.put(1, "--");
+//        array7.put(1, "");
 //        datas.add(array7);
 //
 //        SparseArray<String> array8 = new SparseArray<>();
 //        array8.put(0, "车载水总量（吨）");
-//        array8.put(1, "--");
+//        array8.put(1, "");
 //        datas.add(array8);
 //
 //
 //
 //        SparseArray<String> array10 = new SparseArray<>();
 //        array10.put(0, "车载泡沫总量（吨）");
-//        array10.put(1, "--");
+//        array10.put(1, "");
 //        datas.add(array10);
 //
 //        SparseArray<String> array11 = new SparseArray<>();
 //        array11.put(0, "所属区");
-//        array11.put(1, "--");
+//        array11.put(1, "");
 //        datas.add(array11);
 
 //
 //        SparseArray<String> array14 = new SparseArray<>();
 //        array14.put(0, "所属大队");
-//        array14.put(1, "--");
+//        array14.put(1, "");
 //        datas.add(array14);
 
     }
@@ -279,7 +268,7 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
     private void refreshView(FireBrigadeDetailInfo info) {
         datas.get(0).put(1,info.name);//名字
         datas.get(1).put(1,info.addr);//地址
-        datas.get(2).put(1,info.area==null?"--":info.area+"平方公里");
+        datas.get(2).put(1,info.area==null?"":info.area+"平方公里");
         String phones = info.phone;
         String ph="";
         if (phones!=null){
@@ -289,9 +278,9 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
                 for (int i = 0;i<jsonArray.length();i++){
                     ph +=jsonArray.getString(i)+"\n";
                 }
-                datas.get(3).put(1,info.phone==null?"--":ph);
+                datas.get(3).put(1,info.phone==null?"":ph);
             } catch (JSONException e) {
-                datas.get(3).put(1,info.phone==null?"--":info.phone);
+                datas.get(3).put(1,info.phone==null?"":info.phone);
                 e.printStackTrace();
             }
         }
@@ -305,12 +294,12 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
                 e.printStackTrace();
             }
         }
-        datas.get(4).put(1,a==null?"--":a);
-//        datas.get(5).put(1,info.carnum==null?"--":info.carnum);
-//        datas.get(6).put(1,info.cardisp==null?"--":info.cardisp);
-//        datas.get(7).put(1,info.waterweight==null?"--":info.waterweight);
-//        datas.get(8).put(1,info.soapweight==null?"--":info.soapweight);
-//        datas.get(9).put(1,info.district==null?"--":info.district);
+        datas.get(4).put(1,a==null?"":a);
+//        datas.get(5).put(1,info.carnum==null?"":info.carnum);
+//        datas.get(6).put(1,info.cardisp==null?"":info.cardisp);
+//        datas.get(7).put(1,info.waterweight==null?"":info.waterweight);
+//        datas.get(8).put(1,info.soapweight==null?"":info.soapweight);
+//        datas.get(9).put(1,info.district==null?"":info.district);
 //        datas.get(10).put(1,info.group+info.group);
         myAdapter.notifyDataSetChanged();
     }
@@ -321,17 +310,6 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()){
-            case R.id.fab1:
-
-                break;
-            case R.id.fab2:
-
-                break;
-            case R.id.fab3:
-
-                break;
-        }
     }
 
 

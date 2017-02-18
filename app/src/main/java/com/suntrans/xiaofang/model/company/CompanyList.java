@@ -39,6 +39,7 @@ public class CompanyList {
     public String special;
     public String address;
     public String leader;
+    public String source_id;
 
     @Override
     public String toString() {

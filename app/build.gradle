@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'bugly'
+bugly {
+    appId = '7d01f61d8c' // 注册时分配的App ID
+    appKey = 'a7a5e0be-d532-4c4d-b310-665d393269d5' // 注册时分配的App Key
+}
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
@@ -8,8 +12,8 @@ android {
         applicationId "com.suntrans.xiaofang"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 10
-        versionName "1.0.10"
+        versionCode 6
+        versionName "1.0.0"
         multiDexEnabled true//这行
         ndk {
             //设置支持的SO库架构
@@ -46,7 +50,7 @@ dependencies {
     compile files('libs/Msc.jar')
     compile files('libs/AMapNavi_1.9.4_AMapLocation_3.1.0_20161201.jar')
     compile files('libs/AMap_Search_V3.6.1_20161122.jar')
-    compile 'com.github.clans:fab:1.6.4'
+//    compile 'com.github.clans:fab:1.6.4'
     compile project(':zxing-android-embedded')
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
@@ -64,4 +68,6 @@ dependencies {
 //    compile files('libs/pgyer_sdk_2.4.5.jar')
     compile 'com.trello:rxlifecycle-components:1.0'
     compile 'com.android.support:multidex:1.0.0'//这行
+
+    compile 'com.lapism:searchview:4.0'
 }

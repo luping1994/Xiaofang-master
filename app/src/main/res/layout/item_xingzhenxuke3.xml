@@ -50,7 +50,7 @@
         <EditText
             android:background="@null"
             android:textSize="@dimen/text_size"
-            android:id="@+id/wenhao"
+            android:id="@+id/number"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="请输入" />
@@ -95,9 +95,23 @@
             android:text="是否合格："
             android:textSize="@dimen/text_size" />
 
-        <Spinner
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:entries="@array/hege"></Spinner>
+            android:layout_height="match_parent">
+            <android.support.v7.widget.AppCompatRadioButton
+                android:checked="true"
+               android:id="@+id/radio_hege"
+                android:text="合格"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/radio_buhege"
+                android:text="不合格"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </RadioGroup>
+
     </LinearLayout>
 </LinearLayout>

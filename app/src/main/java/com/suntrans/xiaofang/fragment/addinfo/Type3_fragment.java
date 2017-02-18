@@ -180,6 +180,7 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
                 if (flag == 1) {
                     if (position == 0)
                     {
+                        liandongzhongdui.setSelection(0);
                         dadui_id_path=null;
                         return;
                     }
@@ -260,7 +261,7 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
 //                name.setText(poiItem.getTitle());
                 lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
                 lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
-                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+                addr.setText(poiItem.getSnippet());
             }
         }
 
@@ -552,7 +553,7 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
                                 daduiIdPath.clear();
                                 if (info != null) {
                                     if (Utils.isVaild(info.brigade_name))
-                                        daduiName.add(info.brigade_name+"(当前)");
+                                        daduiName.add("已选择("+info.brigade_name+")");
                                     else
                                         daduiName.add("请选择");
                                 } else {
@@ -671,6 +672,14 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             UiUtils.showToast("请输入完整的人员组成!");
             return;
         }
+
+        if (Utils.isVaild(zhongdui_id_path)&&Utils.isVaild(dadui_id_path)) {
+
+            builder.put("group_path", zhongdui_id_path);
+            builder.put("brigade_path", dadui_id_path);
+
+        }else {
+        }
         builder.put("name", name1.replace(" ", ""));
 
         builder.put("addr", addr1.replace(" ", ""));
@@ -707,15 +716,9 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             builder.put("soapweight", soapweight1.replace(" ", ""));
         }
 
-        if (Utils.isVaild(zhongdui_id_path)) {
 
-            builder.put("group_path", zhongdui_id_path);
-        }
 
-        if (Utils.isVaild(dadui_id_path)) {
 
-            builder.put("brigade_path", dadui_id_path);
-        }
 
         builder.put("id",info.id);
 
@@ -830,7 +833,7 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             return;
 
 //        daduiName.add(info.brigade_path == null ? "请选择" : info.brigade_path+"(当前)");
-        zhongduiName.add(info.group_name == null ? "请选择" : info.group_name+"(当前)");
+        zhongduiName.add(info.group_name == null ? "请选择" : "已选择("+info.group_name+")");
         zhongduiAdapter.notifyDataSetChanged();
         this.info = info;
 

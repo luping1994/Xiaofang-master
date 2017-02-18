@@ -27,7 +27,7 @@
             android:layout_marginTop="20dp"
             android:textSize="16sp"
             android:textColor="@color/balck"
-            android:text="请输入你的宝贵意见:"
+            android:text="请输入你的反馈内容:"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <EditText

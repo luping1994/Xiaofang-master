@@ -48,6 +48,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.suntrans.xiaofang.R.id.incharge_dadui;
 import static com.suntrans.xiaofang.R.id.map;
 
 /**
@@ -134,7 +135,7 @@ public class Type4_fragment extends RxFragment {
 //                name.setText(poiItem.getTitle());
                 lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
                 lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
-                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+                addr.setText( poiItem.getSnippet());
             }
         }
 
@@ -161,7 +162,6 @@ public class Type4_fragment extends RxFragment {
                 Intent intent = new Intent(getActivity(), MapChoose_Activity.class);
                 startActivityForResult(intent, 601);
                 getActivity().overridePendingTransition(android.support.design.R.anim.abc_slide_in_bottom, android.support.design.R.anim.abc_slide_out_bottom);
-
             }
         });
 
@@ -178,8 +178,10 @@ public class Type4_fragment extends RxFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (flag == 1) {
-                    if (position == 0)
+                    if (position == 0){
+                        pid=null;
                         return;
+                    }
                     pid = daduiId.get(position - 1);
                 }
             }
@@ -472,7 +474,6 @@ public class Type4_fragment extends RxFragment {
             builder.put("soapweight", soapweight1.replace(" ", ""));
         }
         if (Utils.isVaild(pid)) {
-
             builder.put("pid", pid.replace(" ", ""));
         }
         builder.put("id", info.id);
@@ -548,8 +549,8 @@ public class Type4_fragment extends RxFragment {
                                 daduiId.clear();
                                 daduiIdPath.clear();
                                 if (info != null) {
-                                    if (Utils.isVaild(info.brigade_path))
-                                        daduiName.add(info.brigade_path);
+                                    if (Utils.isVaild(info.brigade_name))
+                                        daduiName.add("已选择("+info.brigade_name+")");
                                     else
                                         daduiName.add("请选择");
                                 } else {

@@ -37,7 +37,8 @@
 
                 >
                 <TextView
-                    android:background="#bdbdbd"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:background="#dddddd"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:gravity="center|left"
@@ -108,7 +109,8 @@
 
 
                 <TextView
-                    android:background="#bdbdbd"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:background="#dddddd"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:gravity="center|left"
@@ -218,7 +220,8 @@
 
 
                 <TextView
-                    android:background="#bdbdbd"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:background="#dddddd"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:gravity="center|left"

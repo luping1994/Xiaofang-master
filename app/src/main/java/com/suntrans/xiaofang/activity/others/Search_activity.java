@@ -32,8 +32,10 @@ import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
+import com.suntrans.xiaofang.model.company.CompanyLicenseInfo;
 import com.suntrans.xiaofang.model.company.CompanyList;
 import com.suntrans.xiaofang.model.company.CompanyListResult;
+import com.suntrans.xiaofang.model.license.LicenseSearchResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
@@ -254,7 +256,7 @@ public class Search_activity extends BasedActivity {
                 searchGroup(text);
                 break;
             case 4:
-                dialog.dismiss();
+//                dialog.dismiss();
                 searchLicense(text);
                 break;
             case 5:
@@ -547,16 +549,60 @@ public class Search_activity extends BasedActivity {
     }
 
 
-    private void searchLicense(String text) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("行政许可搜索接口暂未实现");
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+    public void searchLicense(String text) {
+        RetrofitHelper.getApi().searchLicense(text)
+                .compose(this.<LicenseSearchResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<LicenseSearchResult>() {
+                    @Override
+                    public void onCompleted() {
 
-            }
-        });
-        builder.create().show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        }, 700);
+                    }
+
+                    @Override
+                    public void onNext(LicenseSearchResult result) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        }, 700);
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                datas.clear();
+                                List<CompanyLicenseInfo.License> lists = result.result;
+                                if (lists != null) {
+                                    for (CompanyLicenseInfo.License info :
+                                            lists) {
+                                        SparseArray<String> map = new SparseArray<String>();
+                                        map.put(0, info.id);
+                                        map.put(1, "建设单位:"+info.name);
+                                        map.put(2, "名称:"+info.cmyname);
+                                        map.put(3, "地址:"+info.addr);
+                                        datas.add(map);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
     }
 
 

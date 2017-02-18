@@ -25,6 +25,8 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.suntrans.xiaofang.R.id.password_edit;
+
 /**
  * Created by Looney on 2017/1/5.
  */
@@ -33,6 +35,7 @@ public class ModifyPassword_Activity extends BasedActivity {
 
     private EditText oldPasswordEdit;
     private EditText newPasswordEdit;
+    private EditText newPasswordEdit_re;
     private Toolbar toolbar;
 
     @Override
@@ -46,7 +49,8 @@ public class ModifyPassword_Activity extends BasedActivity {
 
     private void init() {
         oldPasswordEdit = (EditText) findViewById(R.id.old_password_edit);
-        newPasswordEdit = (EditText) findViewById(R.id.password_edit);
+        newPasswordEdit = (EditText) findViewById(password_edit);
+        newPasswordEdit_re = (EditText) findViewById(R.id.re_password_edit);
     }
     private void setupToolBar() {
         StatusBarCompat.compat(this, Color.rgb(0x2f,0x9d,0xce));
@@ -59,19 +63,27 @@ public class ModifyPassword_Activity extends BasedActivity {
         actionBar.setDisplayShowTitleEnabled(true);
     }
     public void modify(View view){
-        String password = App.getSharedPreferences().getString("password","-1");
-        if (password.equals("-1")){
+        String oldPassword = App.getSharedPreferences().getString("password","-1");
+        if (oldPassword.equals("-1")){
             UiUtils.showToast("修改失败");
             return;
         }
+
+
+
+        if (!oldPassword.equals(oldPasswordEdit.getText().toString())){
+            UiUtils.showToast("旧密码错误");
+            return;
+        }
+
         String newPassword = newPasswordEdit.getText().toString();
+        String newPassword2 = newPasswordEdit_re.getText().toString();
         if (newPassword==null||newPassword.equals("")){
             UiUtils.showToast("密码为空");
             return;
         }
-
-        if (!password.equals(oldPasswordEdit)){
-            UiUtils.showToast("旧密码错误");
+        if (!newPassword2.equals(newPassword)){
+            UiUtils.showToast("两次输入的密码不一致");
             return;
         }
         RetrofitHelper.getApi().changedPassword(newPassword)

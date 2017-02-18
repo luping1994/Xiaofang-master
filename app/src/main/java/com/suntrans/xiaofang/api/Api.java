@@ -2,6 +2,7 @@ package com.suntrans.xiaofang.api;
 
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
+import com.suntrans.xiaofang.model.company.CompanyLicenseResult;
 import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.model.company.CompanyPassResult;
 import com.suntrans.xiaofang.model.event.EventDetailResult;
@@ -17,6 +18,7 @@ import com.suntrans.xiaofang.model.firestation.AddFireStationResult;
 import com.suntrans.xiaofang.model.firestation.FireStationDetailResult;
 import com.suntrans.xiaofang.model.license.AddLicenseResult;
 import com.suntrans.xiaofang.model.license.LicenseDetailResult;
+import com.suntrans.xiaofang.model.license.LicenseSearchResult;
 import com.suntrans.xiaofang.model.login.LoginInfo;
 import com.suntrans.xiaofang.model.personal.CPasswordResult;
 import com.suntrans.xiaofang.model.personal.UserInfoResult;
@@ -78,17 +80,33 @@ public interface Api {
     @POST("/api/v1/company/range")
     Observable<CompanyListResult> getCompanyList(@Field("lng") String lng,
                                            @Field("lat") String Lat,
-                                           @Field("distance") String distance);
+                                           @Field("distance") String distance,
+                                                 @Field("special") String special);
+
 
     /**
-     * 获取等待审核的单位
+     * 根据坐标以及范围查找单位信息
      *
-     * @param id
+     * @param lng     中心点的经度
+     * @param Lat     中心点的纬度
+     * @param distance
+     *
      * @return
      */
     @FormUrlEncoded
-    @POST("/api/v1/social/all")
-    Call<CompanyListResult> getCompanyCheck(@Field("id") String id);
+    @POST("/api/v1/commcmy/range")
+    Observable<CompanyListResult> getCommcmyList(@Field("lng") String lng,
+                                                 @Field("lat") String Lat,
+                                                 @Field("distance") String distance);
+    /**
+     * 获取等待审核的重点单位
+     *
+     * @param status
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/company/subset")
+    Call<CompanyListResult> getCompanyCheck(@Field("status") String status,@Field("source_id") String source_id);
 
 
     /**
@@ -102,7 +120,7 @@ public interface Api {
     Call<CompanyDetailnfoResult> getCompanyCheckDetail(@Field("id") String id);
 
     /**
-     * 获取公司详情
+     * 获取重点单位详情
      *
      * @param id
      * @return
@@ -110,6 +128,17 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/company/detail")
     Observable<CompanyDetailnfoResult> getCompanyDetail(@Field("id") String id);
+
+
+    /**
+     * 获取一般单位详情
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/detail")
+    Observable<CompanyDetailnfoResult> getCommcmyDetail(@Field("id") String id);
 
 
     /**
@@ -122,6 +151,16 @@ public interface Api {
     @POST("/api/v1/company/create")
     Observable<AddCompanyResult> createCompany(@FieldMap Map<String, String> info);
 
+
+    /**
+     * 添加一般单位
+     *
+     * @param info
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/create")
+    Observable<AddCompanyResult> createCommCompany(@FieldMap Map<String, String> info);
     /**
      * 删除公司信息
      *
@@ -132,8 +171,18 @@ public interface Api {
     @POST("/api/v1/company/delete")
     Observable<AddCompanyResult> deleteCompany(@Field("id") String id);
 
+
     /**
-     * 更新公司信息
+     * 删除公司信息
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/delete")
+    Observable<AddCompanyResult> deleteCommCompany(@Field("id") String id);
+    /**
+     * 更新重点单位信息
      *
      * @param info
      * @return
@@ -141,7 +190,15 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/company/update")
     Observable<AddCompanyResult> updateCompany(@FieldMap Map<String, String> info);
-
+    /**
+     * 更新一般单位信息
+     *
+     * @param info
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/update")
+    Observable<AddCompanyResult> updateCommCompany(@FieldMap Map<String, String> info);
 
     /**
      * 根据关键词查询公司信息
@@ -196,13 +253,24 @@ public interface Api {
     @POST("/api/v1/firegroup/search")
     Observable<CompanyListResult> queryFiregroup(@Field("name") String name);
 
-    /**社会单位审查通过
+    /**重点单位审查通过
      * @param id
      * @return
      */
     @FormUrlEncoded
-    @POST("/api/v1/social/pass")
-    Call<CompanyPassResult> passCompany(@Field("id") String id);
+    @POST("/api/v1/company/verify")
+    Observable<CompanyPassResult> passCompany(@Field("id") String id);
+
+
+
+
+    /**一般单位审查通过
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/verify")
+    Observable<CompanyPassResult> passCommCompany(@Field("id") String id);
 
 
     /**
@@ -396,14 +464,14 @@ public interface Api {
     Observable<LicenseDetailResult> getLicenseDetailInfo(@Field("id") String id);
 
     /**
-     * 验收接口
+     * 更新license
      *
      * @param map
      * @return
      */
     @FormUrlEncoded
-    @POST("/api/v1/license/complete")
-    Observable<AddLicenseResult> completeLicense(@FieldMap Map<String, String> map);
+    @POST("/api/v1/license/update")
+    Observable<AddLicenseResult> updateLicense(@FieldMap Map<String, String> map);
 
 
     /**
@@ -596,5 +664,46 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/firebrigade/search")
     Observable<CompanyListResult> queryFireBrigade(@Field("name") String name);
+
+
+    /**
+     * 新增行政审批项目信息
+     * @param map
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/createDetail")
+    Observable<AddLicenseResult> createLicenseDetail(@FieldMap Map<String, String> map);
+
+    /**
+     * 查找单位绑定的行政审批
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/company/license")
+    Observable<CompanyLicenseResult> getCompanyLicense(@Field("id") String id);
+
+    /**
+     * 根据name查找行政审批项目
+     *
+     * @param name
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/search")
+    Observable<LicenseSearchResult> searchLicense(@Field("name") String name);
+
+
+    /**
+     *
+     *绑定行政审批
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/company/attachlicense")
+    Observable<AddCompanyResult> attachLicense(@Field("company_id") String company_id,
+                                               @Field("license_detail_id") String license_detail_id);
 }
 

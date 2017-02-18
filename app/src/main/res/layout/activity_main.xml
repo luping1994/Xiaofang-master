@@ -86,7 +86,7 @@
                 android:id="@+id/xiangcun"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="乡村专职小型站"
+                android:text="乡镇专职消防队"
                 android:textColor="@color/white" />
 
             <android.support.v7.widget.AppCompatCheckBox
@@ -99,7 +99,7 @@
                 android:id="@+id/xingzhenshenpi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="行政审批建筑"
+                android:text="行政审批项目"
                 android:textColor="@color/white" />
 
             <!--<android.support.v7.widget.AppCompatCheckBox-->
@@ -164,8 +164,9 @@
         </android.support.v7.widget.CardView>
 
         <ImageButton
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:background="@drawable/textview_border"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_above="@+id/bottom_menu"
             android:layout_marginBottom="50dp"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"

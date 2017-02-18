@@ -58,7 +58,7 @@
                     android:id="@+id/type3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="乡村专职消防队" />
+                    android:text="乡镇专职消防队" />
 
                 <android.support.v7.widget.AppCompatRadioButton
                     android:id="@+id/type2"
@@ -70,7 +70,7 @@
                     android:id="@+id/type5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="行政许可项目" />
+                    android:text="行政审批项目" />
 
 
             </RadioGroup>

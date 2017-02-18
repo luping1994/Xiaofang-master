@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -19,6 +21,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -31,8 +34,11 @@ import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
+import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.model.company.InchargeInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.DbHelper;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.suntrans.xiaofang.views.dialog.AttrSelector;
@@ -56,6 +62,9 @@ import butterknife.OnClick;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static android.R.attr.level;
+import static com.suntrans.xiaofang.R.id.map;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -200,6 +209,14 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
     EditText firemannum;
     @BindView(R.id.nearby)
     EditText nearby;
+    @BindView(R.id.dangerlevel1)
+    RadioButton dangerlevel1;
+    @BindView(R.id.dangerlevel2)
+    RadioButton dangerlevel2;
+    @BindView(R.id.dangerlevel3)
+    RadioButton dangerlevel3;
+    @BindView(R.id.dangerlevel4)
+    RadioButton dangerlevel4;
 
 
     private int mYear;
@@ -220,6 +237,10 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
     List<String> paichusuoName;
     List<String> paichusuoId;
     List<String> paichusuoPath;
+
+
+    private String dadui_id_path;
+    private String paichusuo_id_path;
 
     @Nullable
     @Override
@@ -250,7 +271,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                 startActivityForResult(intent, 601);
                 getActivity().overridePendingTransition(android.support.design.R.anim.abc_slide_in_bottom, android.support.design.R.anim.abc_slide_out_bottom);
 
-
             }
         });
 
@@ -276,32 +296,56 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
                     dangerlevels = "1";
 
-                    getIncharge("0", 0, "0");
                 } else if (checkedId == R.id.dangerlevel2) {
-                    attributeLl.setVisibility(View.VISIBLE);
 
+
+                    attributeLl.setVisibility(View.VISIBLE);
                     inchargeDadui.setVisibility(View.VISIBLE);
                     inchargePaichusuo.setVisibility(View.GONE);
                     dangerlevels = "2";
-                    getIncharge("0", 0, "0");
-                } else if (checkedId == R.id.dangerlevel3) {
-                    attributeLl.setVisibility(View.VISIBLE);
 
+                } else if (checkedId == R.id.dangerlevel3) {
+
+
+                    attributeLl.setVisibility(View.VISIBLE);
                     inchargeDadui.setVisibility(View.VISIBLE);
                     inchargePaichusuo.setVisibility(View.VISIBLE);
                     dangerlevels = "3";
+
                 } else if (checkedId == R.id.dangerlevel4) {
+
+
+                    mainAttrId = null;
+                    subAttrId = null;
                     dangerlevels = "4";
                     attributeLl.setVisibility(View.GONE);
                     inchargeDadui.setVisibility(View.VISIBLE);
                     inchargePaichusuo.setVisibility(View.VISIBLE);
+
                 }
             }
         });
 
+        daduiName = new ArrayList<>();
+        daduiId = new ArrayList<>();
+        daduiIdPath = new ArrayList<>();
+
+        paichusuoName = new ArrayList<>();
+        paichusuoPath = new ArrayList<>();
+        paichusuoId = new ArrayList<>();
         inchargeDadui.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (flag == 1) {
+                    if (position == 0) {
+                        inchargePaichusuo.setSelection(0);
+                        dadui_id_path = null;
+                        return;
+                    }
+                    dadui_id_path = daduiIdPath.get(position - 1);
+                    String nextId = daduiId.get(position - 1);
+                    getIncharge(nextId, 1, "1");
+                }
 
             }
 
@@ -314,7 +358,13 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         inchargePaichusuo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                if (flag == 1) {
+                    if (position == 0) {
+                        paichusuo_id_path = null;
+                        return;
+                    }
+                    paichusuo_id_path = paichusuoPath.get(position - 1);
+                }
             }
 
             @Override
@@ -325,6 +375,9 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
         daduiAdapter = new ArrayAdapter(getActivity(), R.layout.item_spinner, R.id.tv_spinner, daduiName);
         paichusuoAdapter = new ArrayAdapter(getActivity(), R.layout.item_spinner, R.id.tv_spinner, paichusuoName);
+
+        inchargeDadui.setAdapter(daduiAdapter);
+        inchargePaichusuo.setAdapter(paichusuoAdapter);
     }
 
 
@@ -334,10 +387,10 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         if (requestCode == 601) {
             if (resultCode == -1) {
                 PoiItem poiItem = data.getParcelableExtra("addrinfo");
-                name.setText(poiItem.getTitle());
+//                name.setText(poiItem.getTitle());
                 lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
                 lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
-                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+                addr.setText(poiItem.getSnippet());
             }
         }
 
@@ -426,7 +479,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
     }
 
 
-    Map<String, String> map;
     ProgressDialog dialog;
 
     @OnClick(R.id.commit)
@@ -452,11 +504,12 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
     }
 
 
-    String incharge1 = "0-1-80";//消防管辖
+    String incharge1 = "";//消防管辖
+
 
     public void addCommit() {
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
-        map = null;
+        Map<String, String> map = null;
 
         String name1 = name.getText().toString();
         String addr1 = addr.getText().toString();
@@ -510,6 +563,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             }
         }
 
+
         if (addr1 == null || addr1.equals("")) {
             UiUtils.showToast("公司地址不不能为空!");
             return;
@@ -519,10 +573,13 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             UiUtils.showToast("单位名称不能为空");
             return;
         }
-        System.out.println("单位主属性id="+mainAttrId);
-        if (!Utils.isVaild(mainAttrId) ) {
-            UiUtils.showToast("单位属性不能为空");
-            return;
+
+        System.out.println("单位主属性id=" + mainAttrId);
+        if (!dangerlevels.equals("4")) {
+            if (!Utils.isVaild(mainAttrId)) {
+                UiUtils.showToast("单位属性不能为空");
+                return;
+            }
         }
 
         if (!Utils.isVaild(buildarea1)) {
@@ -541,10 +598,8 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         }
 
 
-        if (Utils.isVaild(dangerlevels)) {
-            builder.put("dangerlevel", dangerlevels);
-        } else {
-            UiUtils.showToast("请选择火灾危险等级!");
+        if (!Utils.isVaild(dangerlevels)) {
+            UiUtils.showToast("请选择火灾危险性!");
             return;
         }
 
@@ -554,27 +609,47 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             return;
         }
 
-        if (!Utils.isVaild(artiname1)){
+        if (!Utils.isVaild(artiname1)) {
             UiUtils.showToast("请输入法定人姓名");
             return;
         }
 
-        if (!Utils.isVaild(artiphone1)){
+        if (!Utils.isVaild(artiphone1)) {
             UiUtils.showToast("请输入法定人电话");
             return;
         }
 
 
-        if (name1 != null) {
-            name1 = name1.replace(" ", "");
-            if (!TextUtils.equals(" ", name1))
-                builder.put("name", name1);
+        if (dangerlevels.equals("1") || dangerlevels.equals("4")) {
+            if (!Utils.isVaild(dadui_id_path)) {
+                UiUtils.showToast("请选择消防管辖");
+                return;
+            } else {
+                incharge1 = dadui_id_path;
+            }
+        } else if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
+            if (!Utils.isVaild(paichusuo_id_path)) {
+                UiUtils.showToast("请选择消防管辖");
+                return;
+            } else {
+                incharge1 = paichusuo_id_path;
+            }
         }
+
+
+//        if (name1 != null) {
+//            name1 = name1.replace(" ", "");
+//            if (!TextUtils.equals(" ", name1))
+        builder.put("name", name1);
+//        }
         if (addr1 != null) {
             addr1 = addr1.replace(" ", "");
             if (!TextUtils.equals(" ", addr1))
                 builder.put("addr", addr1);
         }
+
+        builder.put("dangerlevel", dangerlevels);
+
         if (Utils.isVaild(firemannum1)) {
             builder.put("firemannum", firemannum1);
         }
@@ -598,12 +673,10 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
 //        builder.put("cmystate", "0");
 
-        if (incharge1 != null) {
-            incharge1 = incharge1.replace(" ", "");
-            if (!TextUtils.equals("", incharge1))
-                builder.put("incharge", incharge1);
-        }
 
+        if (Utils.isVaild(incharge1)){
+            builder.put("incharge", incharge1);
+        }
 
         if (Utils.isVaild(buildarea1)) {
             builder.put("buildarea", buildarea1);
@@ -620,7 +693,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             if (!TextUtils.equals("", stairnum1))
                 builder.put("stairnum", stairnum.getText().toString());
         }
-
 
 
         facility1 = facility1.replace(" ", "");
@@ -777,7 +849,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 //
 //        }
 
-        if (Utils.isVaild(nearby1)){
+        if (Utils.isVaild(nearby1)) {
             builder.put("nearby", nearby1);
         }
 
@@ -814,55 +886,108 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             String value = entry.getValue().toString();
             System.out.println(key + "," + value);
         }
-        RetrofitHelper.getApi().createCompany(map)
-                .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<AddCompanyResult>() {
-                    @Override
-                    public void onCompleted() {
 
-                    }
+        if (dangerlevels.equals("1") || dangerlevels.equals("2")) {
+            RetrofitHelper.getApi().createCompany(map)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        UiUtils.showToast("添加失败");
-                    }
-
-                    @Override
-                    public void onNext(AddCompanyResult result) {
-                        try {
-                            if (result != null) {
-                                if (result.status.equals("1")) {
-                                    final AlertDialog dialog1;
-                                    dialog1 = new AlertDialog.Builder(getActivity())
-                                            .setMessage(result.result)
-                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    getActivity().finish();
-                                                }
-                                            })
-                                            .create();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            dialog1.show();
-                                        }
-                                    }, 500);
-                                } else {
-
-                                    UiUtils.showToast(UiUtils.getContext(), result.msg);
-                                }
-                            } else {
-                                UiUtils.showToast(UiUtils.getContext(), "添加失败");
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
-                    }
-                });
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            UiUtils.showToast("添加失败");
+                        }
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            try {
+                                if (result != null) {
+                                    if (result.status.equals("1")) {
+                                        final AlertDialog dialog1;
+                                        dialog1 = new AlertDialog.Builder(getActivity())
+                                                .setMessage(result.result)
+                                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        getActivity().finish();
+                                                    }
+                                                })
+                                                .create();
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                dialog1.show();
+                                            }
+                                        }, 500);
+                                    } else {
+
+                                        UiUtils.showToast(UiUtils.getContext(), result.msg);
+                                    }
+                                } else {
+                                    UiUtils.showToast(UiUtils.getContext(), "添加失败");
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+        } else if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
+            RetrofitHelper.getApi().createCommCompany(map)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            UiUtils.showToast("添加失败");
+                        }
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            try {
+                                if (result != null) {
+                                    if (result.status.equals("1")) {
+                                        final AlertDialog dialog1;
+                                        dialog1 = new AlertDialog.Builder(getActivity())
+                                                .setMessage(result.result)
+                                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        getActivity().finish();
+                                                    }
+                                                })
+                                                .create();
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                dialog1.show();
+                                            }
+                                        }, 500);
+                                    } else {
+
+                                        UiUtils.showToast(UiUtils.getContext(), result.msg);
+                                    }
+                                } else {
+                                    UiUtils.showToast(UiUtils.getContext(), "添加失败");
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+        }
     }
 
     Handler handler = new Handler();
@@ -878,78 +1003,9 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
     }
 
+    int flag = 0;
 
-//    private void getArea( String pid, final int type) {
-//        RetrofitHelper.getApi().getArea(pid)
-//                .compose(this.<Map<String, String>>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(Schedulers.io())
-//                .subscribe(new Subscriber<Map<String, String>>() {
-//                    @Override
-//                    public void onCompleted() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    @Override
-//                    public void onNext(Map<String, String> map) {
-//                        if (type==0){
-//                            qvyuItems=null;
-//                            qvyuItems = new String[map.keySet().size()];
-//                            qvyuItems_id = new String[map.keySet().size()];
-//
-//                            ArrayList<String> list = new ArrayList<String>();
-//                            ArrayList<String> list1 = new ArrayList<String>();
-//                            for (String key :
-//                                    map.keySet()) {
-//                                list.add(key);
-//                                list1.add(map.get(key));
-//                                System.out.println(key + ":" + map.get(key));
-//                            }
-//                            list1.toArray(qvyuItems_id);
-//                            list.toArray(qvyuItems);
-//                        }else if (type==1){
-//                            jiedaoItems=null;
-//                            jiedaoItems = new String[map.keySet().size()];
-//                            jiedaoItems_id = new String[map.keySet().size()];
-//
-//                            ArrayList<String> list = new ArrayList<String>();
-//                            ArrayList<String> list1 = new ArrayList<String>();
-//                            for (String key :
-//                                    map.keySet()) {
-//                                list.add(key);
-//                                list1.add(map.get(key));
-//                                System.out.println(key + ":" + map.get(key));
-//                            }
-//                            list1.toArray(jiedaoItems_id);
-//                            list.toArray(jiedaoItems);
-//                        }else if (type==2){
-//                            sheqvItem=null;
-//                            sheqvItem = new String[map.keySet().size()];
-//                            sheqvItem_id = new String[map.keySet().size()];
-//
-//                            ArrayList<String> list = new ArrayList<String>();
-//                            ArrayList<String> list1 = new ArrayList<String>();
-//                            for (String key :
-//                                    map.keySet()) {
-//                                list.add(key);
-//                                list1.add(map.get(key));
-//                                System.out.println(key + ":" + map.get(key));
-//                            }
-//                            list.toArray(sheqvItem);
-//                            list1.toArray(sheqvItem_id);
-//                        }
-//
-//                    }
-//                });
-//    }
-
-
-    private void getIncharge(String pid, int type, String vtype) {
+    private void getIncharge(String pid, final int type, String vtype) {
         RetrofitHelper.getApi().getFireChargeArea(pid, vtype)
                 .compose(this.<List<InchargeInfo>>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .subscribeOn(Schedulers.io())
@@ -969,10 +1025,41 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                     public void onNext(List<InchargeInfo> inchargeInfos) {
 
                         if (inchargeInfos != null) {
+                            if (type == 0) {
+                                daduiName.clear();
+                                daduiId.clear();
+                                daduiIdPath.clear();
+                                if (info != null) {
+                                    if (info.incharge != null) {
+                                        daduiName.add("已选择(" + info.incharge + ")");
+                                    } else {
+                                        daduiName.add("请选择");
+                                    }
+                                } else {
+                                    daduiName.add("请选择");
+                                }
+                                for (InchargeInfo info :
+                                        inchargeInfos) {
+                                    daduiName.add(info.name);
+                                    daduiId.add(info.id);
+                                    daduiIdPath.add(info.parent_id_path);
+                                }
+                                daduiAdapter.notifyDataSetChanged();
+                                flag = 1;
+                            } else if (type == 1) {
+                                paichusuoName.clear();
+                                paichusuoId.clear();
+                                paichusuoPath.clear();
 
-                            for (InchargeInfo info :
-                                    inchargeInfos) {
-                                System.out.println(info.toString());
+                                paichusuoName.add("请选择");
+
+                                for (InchargeInfo info :
+                                        inchargeInfos) {
+                                    paichusuoName.add(info.name);
+                                    paichusuoPath.add(info.parent_id_path);
+                                    paichusuoId.add(info.id);
+                                }
+                                paichusuoAdapter.notifyDataSetChanged();
                             }
                         }
                     }
@@ -981,4 +1068,569 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
     }
 
 
+    private CompanyDetailnfo info;
+
+    public void setData(CompanyDetailnfo info) {
+        this.info = info;
+        if (info != null) {
+            if (info.incharge != null) {
+                paichusuoName.add("已选择(" + info.incharge + ")");
+            } else {
+                paichusuoName.add("请选择");
+            }
+        } else {
+
+            paichusuoName.add("请选择");
+        }
+        paichusuoAdapter.notifyDataSetChanged();
+        String[] hasFire = App.getApplication().getResources().getStringArray(R.array.autofire);
+        String[] laneArray = App.getApplication().getResources().getStringArray(R.array.lane);
+        name.setText(info.name);
+        addr.setText(info.addr);
+
+        lat.setText(info.lat);
+        lng.setText(info.lng);
+
+        if (info.dangerlevel != null) {
+            String level = info.dangerlevel;
+            if (level.equals("1"))
+                dangerlevel1.setChecked(true);
+            else if (level.equals("2"))
+                dangerlevel2.setChecked(true);
+            else if (level.equals("3")) {
+                dangerlevel3.setChecked(true);
+            } else if (level.equals("4")) {
+                dangerlevel4.setChecked(true);
+            }
+        } else {
+            dangerlevel1.setChecked(false);
+            dangerlevel2.setChecked(false);
+            dangerlevel3.setChecked(false);
+            dangerlevel4.setChecked(false);
+        }
+        buildarea.setText(info.buildarea);
+        exitnum.setText(info.exitnum);
+        stairnum.setText(info.stairnum);
+
+        if (info.facility != null) {
+            String[] fire = info.facility.split("#");
+            for (int i = 0; i < fire.length; i++) {
+                for (int j = 0; j < hasFire.length; j++) {
+                    if (fire[i].equals(hasFire[j]))
+                        autofire[j].setChecked(true);
+                }
+            }
+        }
+
+
+        if (info.lanepos != null) {
+            String[] lanpos1 = info.lanepos.split("#");
+            for (int i = 0; i < lanpos1.length; i++) {
+                for (int j = 0; j < laneArray.length; j++) {
+                    if (lanpos1[i].equals(laneArray[j]))
+                        lane[j].setChecked(true);
+                }
+            }
+        }
+
+        artiname.setText(info.artiname);
+        artiid.setText(info.artiid);
+        artiphone.setText(info.artiphone);
+
+        managername.setText(info.managername);
+        managerid.setText(info.managerid);
+        managerphone.setText(info.managerphone);
+
+        responname.setText(info.responname);
+        responid.setText(info.responid);
+        responphone.setText(info.responphone);
+
+        orgid.setText(info.orgid);
+        leaderdepart.setText(info.leaderdepart);
+        foundtime.setText(info.foundtime);
+        phone.setText(info.phone);
+
+        straffnum.setText(info.staffnum);
+        area.setText(info.area);
+        lanenum.setText(info.lanenum);
+        elevatornum.setText(info.elevatornum);
+        refugenum.setText(info.refugenum);
+        refugepos.setText(info.refugepos);
+
+        nearby.setText(info.nearby);
+
+
+        String mainId = info.mainattribute;
+        if (mainId != null) {
+            DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
+            SQLiteDatabase db = helper.getReadableDatabase();
+            db.beginTransaction();
+            Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
+            if (cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    attribute.setText(cursor.getString(0));
+                }
+            }
+            cursor.close();
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getIncharge("0", 0, "0");
+    }
+
+    public void updateCompany(int companyType) {
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        Map<String, String> map = null;
+
+        String name1 = name.getText().toString();
+        String addr1 = addr.getText().toString();
+
+        String buildarea1 = buildarea.getText().toString();
+        String exitnum1 = exitnum.getText().toString();//出口数量
+        String stairnum1 = stairnum.getText().toString();//楼梯数量
+
+        String artiname1 = artiname.getText().toString();//法人
+        String artiid1 = artiid.getText().toString();
+        String artiphone1 = artiphone.getText().toString();
+
+        String managername1 = managername.getText().toString();//管理人
+        String managerid1 = managerid.getText().toString();
+        String managerphone1 = managerphone.getText().toString();
+
+        String responname1 = responname.getText().toString();//责任人
+        String responid1 = responid.getText().toString();
+        String responphone1 = responphone.getText().toString();
+
+        String orgid1 = orgid.getText().toString();
+        String leaderdepart1 = leaderdepart.getText().toString();
+        String foundtime1 = foundtime.getText().toString();//成立时间
+        String phone1 = phone.getText().toString();
+        String staffnum1 = straffnum.getText().toString();
+        String area1 = area.getText().toString();//面积
+
+        String lanenum1 = lanenum.getText().toString();
+
+        String elevatornum1 = elevatornum.getText().toString();//消防电梯
+
+        String refugenum1 = refugenum.getText().toString();
+        String refugepos1 = refugepos.getText().toString();
+
+//        String east1 = east.getText().toString();
+//        String south1 = south.getText().toString();
+//        String north1 = north.getText().toString();
+//        String west1 = west.getText().toString();
+
+        String remark1 = marker.getText().toString();//备注
+
+        String nearby1 = nearby.getText().toString();
+        String firemannum1 = firemannum.getText().toString();//消防队员人数
+        String otherdisp1 = otherdisp.getText().toString();//单位其它情况
+        String companyid1 = companyid.getText().toString();//公司编码
+
+        String facility1 = "";
+        for (int i = 0; i < autofire.length; i++) {
+            if (autofire[i].isChecked()) {
+                facility1 += App.getApplication().getResources().getStringArray(R.array.autofire)[i] + "#";
+            }
+        }
+
+
+        if (addr1 == null || addr1.equals("")) {
+            UiUtils.showToast("公司地址不不能为空!");
+            return;
+        }
+
+        if (!Utils.isVaild(name1)) {
+            UiUtils.showToast("单位名称不能为空");
+            return;
+        }
+
+        System.out.println("单位主属性id=" + mainAttrId);
+//        if (!dangerlevels.equals("4")) {
+//            if (!Utils.isVaild(mainAttrId)) {
+//                UiUtils.showToast("单位属性不能为空");
+//                return;
+//            }
+//        }
+
+        if (!Utils.isVaild(buildarea1)) {
+            UiUtils.showToast("请输入建筑面积");
+            return;
+        }
+
+        if (!Utils.isVaild(exitnum1)) {
+            UiUtils.showToast("请输入安全出口数");
+            return;
+        }
+
+        if (!Utils.isVaild(stairnum1)) {
+            UiUtils.showToast("请消防楼梯数");
+            return;
+        }
+
+
+        if (!Utils.isVaild(dangerlevels)) {
+            UiUtils.showToast("请选择火灾危险性!");
+            return;
+        }
+
+
+        if (!Utils.isVaild(facility1)) {
+            UiUtils.showToast("请选择自动消防设施");
+            return;
+        }
+
+        if (!Utils.isVaild(artiname1)) {
+            UiUtils.showToast("请输入法定人姓名");
+            return;
+        }
+
+        if (!Utils.isVaild(artiphone1)) {
+            UiUtils.showToast("请输入法定人电话");
+            return;
+        }
+
+
+        if (dangerlevels.equals("1") || dangerlevels.equals("4")) {
+
+            incharge1 = dadui_id_path;
+        } else if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
+            incharge1 = paichusuo_id_path;
+        }
+
+
+//        if (name1 != null) {
+//            name1 = name1.replace(" ", "");
+//            if (!TextUtils.equals(" ", name1))
+        builder.put("name", name1);
+//        }
+        if (addr1 != null) {
+            addr1 = addr1.replace(" ", "");
+            if (!TextUtils.equals(" ", addr1))
+                builder.put("addr", addr1);
+        }
+
+        builder.put("dangerlevel", dangerlevels);
+
+        if (Utils.isVaild(firemannum1)) {
+            builder.put("firemannum", firemannum1);
+        }
+
+        if (Utils.isVaild(otherdisp1)) {
+            builder.put("otherdisp", otherdisp1);
+        }
+        if (Utils.isVaild(companyid1)) {
+            builder.put("companyid", companyid1);
+        }
+//        if (name1 != null) {
+//            name1 = name1.replace(" ", "");
+//            if (!TextUtils.equals(" ", name1))
+//                builder.put("name", name1);
+//        }
+//        if (addr1 != null) {
+//            addr1 = addr1.replace(" ", "");
+//            if (!TextUtils.equals(" ", addr1))
+//                builder.put("addr", addr1);
+//        }
+
+//        builder.put("cmystate", "0");
+
+
+
+        if (Utils.isVaild(incharge1)){
+            builder.put("incharge", incharge1);
+        }
+        if (Utils.isVaild(buildarea1)) {
+            builder.put("buildarea", buildarea1);
+        }
+
+        if (exitnum1 != null) {
+            exitnum1 = exitnum1.replace(" ", "");
+            if (!TextUtils.equals("", exitnum1))
+                builder.put("exitnum", exitnum1);
+        }
+
+        if (stairnum1 != null) {
+            stairnum1 = stairnum1.replace(" ", "");
+            if (!TextUtils.equals("", stairnum1))
+                builder.put("stairnum", stairnum.getText().toString());
+        }
+
+
+        facility1 = facility1.replace(" ", "");
+        if (!TextUtils.equals("", facility1))
+            builder.put("facility", facility1);//备注单位属性未添加
+
+
+        if (artiname1 != null) {
+            artiname1 = artiname1.replace(" ", "");
+            if (!TextUtils.equals("", artiname1))
+                builder.put("artiname", artiname1);
+
+        }
+        if (artiid1 != null) {
+            artiid1 = artiid1.replace(" ", "");
+            if (!TextUtils.equals("", artiid1))
+                builder.put("artiid", artiid1);
+        }
+        if (artiphone1 != null) {
+            artiphone1 = artiphone1.replace(" ", "");
+            if (!TextUtils.equals("", artiphone1))
+                builder.put("artiphone", artiphone1);
+
+        }
+        if (managername1 != null) {
+            managername1 = managername1.replace(" ", "");
+            if (!TextUtils.equals("", managername1))
+                builder.put("managername", managername1);
+        }
+
+        if (managerid1 != null) {
+            managerid1 = managerid1.replace(" ", "");
+            if (!TextUtils.equals("", managerid1))
+                builder.put("managerid", managerid1);
+        }
+
+        if (managerphone1 != null) {
+            managerphone1 = managerphone1.replace(" ", "");
+            if (!TextUtils.equals("", managerphone1))
+                builder.put("managerphone", managerphone1);
+        }
+        if (responname1 != null) {
+            responname1 = responname1.replace(" ", "");
+            if (!TextUtils.equals("", responname1))
+                builder.put("responname", responname1);
+        }
+
+        if (responid1 != null) {
+            responid1 = responid1.replace(" ", "");
+            if (!TextUtils.equals("", responid1))
+                builder.put("responid", responid1);
+        }
+
+        if (responphone1 != null) {
+            responphone1 = responphone1.replace(" ", "");
+            if (!TextUtils.equals("", responphone1))
+                builder.put("responphone", responphone1);
+        }
+        if (orgid1 != null) {
+            orgid1 = orgid1.replace(" ", "");
+            if (!TextUtils.equals("", orgid1))
+                builder.put("orgid", orgid1);
+        }
+
+        if (leaderdepart1 != null) {
+            leaderdepart1 = leaderdepart1.replace(" ", "");
+            if (!TextUtils.equals("", leaderdepart1))
+                builder.put("leaderdepart", leaderdepart1);
+
+        }
+        if (foundtime1 != null) {
+            foundtime1 = foundtime1.replace(" ", "");
+            if (!TextUtils.equals("", foundtime1))
+                builder.put("foundtime", foundtime1);
+        }
+        if (phone1 != null) {
+            phone1 = phone1.replace(" ", "");
+            if (!TextUtils.equals("", phone1))
+                builder.put("phone", phone1);
+
+        }
+
+        if (staffnum1 != null) {
+            staffnum1 = staffnum1.replace(" ", "");
+            if (!TextUtils.equals("", staffnum1))
+                builder.put("staffnum", staffnum1);
+        }
+
+        if (area1 != null) {
+            area1 = area1.replace(" ", "");
+            if (!TextUtils.equals("", area1))
+                builder.put("area", area1);
+        }
+
+        if (lanenum1 != null) {
+            lanenum1 = lanenum1.replace(" ", "");
+            if (!TextUtils.equals("", lanenum1))
+                builder.put("lanenum", lanenum1);
+
+        }
+        String lanpos1 = "";
+        for (int i = 0; i < lane.length; i++) {
+            if (lane[i].isChecked()) {
+                lanpos1 += App.getApplication().getResources().getStringArray(R.array.lane)[i] + "#";
+            }
+        }
+        if (Utils.isVaild(lanpos1)) {
+            builder.put("lanepos", lanpos1);//消防车道类型为添加
+        }
+
+        if (elevatornum1 != null) {
+            elevatornum1 = elevatornum1.replace(" ", "");
+            if (!TextUtils.equals("", elevatornum1))
+                builder.put("elevatornum", elevatornum1);//消防车道类型为添加
+        }
+
+        if (refugenum1 != null) {
+            refugenum1 = refugenum1.replace(" ", "");
+            if (!TextUtils.equals("", refugenum1))
+                builder.put("refugenum", refugenum1);
+        }
+
+        if (refugepos1 != null) {
+            refugepos1 = refugepos1.replace(" ", "");
+            if (!TextUtils.equals("", refugepos1))
+                builder.put("refugepos", refugepos1);
+
+        }
+
+
+        if (Utils.isVaild(nearby1)) {
+            builder.put("nearby", nearby1);
+        }
+
+        if (remark1 != null) {
+            remark1 = remark1.replace(" ", "");
+            if (!TextUtils.equals("", remark1))
+                builder.put("remark", remark1);
+        }
+        String lng1 = lng.getText().toString();
+        String lat1 = lat.getText().toString();
+        if (lng1 != null) {
+            lng1 = lng1.replace(" ", "");
+            if (!TextUtils.equals("", lng1))
+                builder.put("lng", lng1);
+        }
+
+        if (lat1 != null) {
+            lat1 = lat1.replace(" ", "");
+            if (!TextUtils.equals("", lat1))
+                builder.put("lat", lat1);
+        }
+
+
+        if (Utils.isVaild(mainAttrId)) {
+            builder.put("mainattribute", mainAttrId);
+        }
+
+        if (Utils.isVaild(subAttrId)) {
+            builder.put("subattribute", subAttrId);
+        }
+
+        builder.put("id", info.id);
+        map = builder.build();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey().toString();
+            String value = entry.getValue().toString();
+            System.out.println(key + "," + value);
+        }
+        if (companyType == MarkerHelper.S0CIETY) {
+            RetrofitHelper.getApi().updateCompany(map)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            UiUtils.showToast("服务器错误,更新单位信息失败!");
+                        }
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            try {
+                                if (result != null) {
+                                    if (result.status.equals("1")) {
+                                        final AlertDialog dialog1;
+                                        dialog1 = new AlertDialog.Builder(getActivity())
+                                                .setMessage(result.result)
+                                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        getActivity().finish();
+                                                    }
+                                                })
+                                                .create();
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                dialog1.show();
+                                            }
+                                        }, 500);
+                                    } else {
+
+                                        UiUtils.showToast(UiUtils.getContext(), result.msg);
+                                    }
+                                } else {
+                                    UiUtils.showToast(UiUtils.getContext(), "更新失败");
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+        } else if (companyType == MarkerHelper.COMMONCOMPANY) {
+            RetrofitHelper.getApi().updateCommCompany(map)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            UiUtils.showToast("服务器错误,更新单位信息失败!");
+                        }
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            try {
+                                if (result != null) {
+                                    if (result.status.equals("1")) {
+                                        final AlertDialog dialog1;
+                                        dialog1 = new AlertDialog.Builder(getActivity())
+                                                .setMessage(result.result)
+                                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        getActivity().finish();
+                                                    }
+                                                })
+                                                .create();
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                dialog1.show();
+                                            }
+                                        }, 500);
+                                    } else {
+
+                                        UiUtils.showToast(UiUtils.getContext(), result.msg);
+                                    }
+                                } else {
+                                    UiUtils.showToast(UiUtils.getContext(), "更新失败");
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+        }
+
+    }
 }

@@ -3,6 +3,7 @@ package com.suntrans.xiaofang.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
+import android.util.SparseArray;
 
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
@@ -14,6 +15,7 @@ import com.suntrans.xiaofang.model.company.CompanyList;
 import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.model.fireroom.FireComponentGeneralInfo;
 import com.suntrans.xiaofang.model.fireroom.FireComponentGeneralInfoList;
+import com.suntrans.xiaofang.model.map.RegionItem;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
@@ -30,6 +32,8 @@ import rx.schedulers.Schedulers;
  */
 
 public class MarkerHelper {
+
+    private static final String TAG = "MarkerHelper";
     public static final int S0CIETY = 0;//标识社会单位
     public static final int FIREROOM = 1;//标识社区消防室标识
     public static final int FIRESTATION = 2;//标识乡村小型站
@@ -37,43 +41,73 @@ public class MarkerHelper {
     public static final int LICENSE = 4;//标识行政审批
     public static final int FIREBRIGADE = 5;//标识消防大队
     public static final int FIREADMINSTATION = 6;//标识政府小型站
-    Bitmap fireroomBitmap;
-    Bitmap firegroupBitmap;
-    Bitmap firestationBitmap;
-    Bitmap companyBitmap;
-    Bitmap zddwBitmap;
+    public static final int COMMONCOMPANY = 7;//标识一般单位
 
+    public static final int ERROR_EMPTY = 0;
+    public static final int ERROR_FAILED = 1;
 
+    public SparseArray<String> com = new SparseArray<>();
     Main_Activity activity;
+    private onGetInfoFinishListener listener;
 
-    public MarkerHelper(Main_Activity activity){
-        fireroomBitmap = BitmapFactory.decodeResource(App.getApplication().getResources(), R.drawable.ic_fireroom);
-        firegroupBitmap = BitmapFactory.decodeResource(App.getApplication().getResources(), R.drawable.ic_firegroup);
-        firestationBitmap = BitmapFactory.decodeResource(App.getApplication().getResources(), R.drawable.firestation_marker);
-        companyBitmap = BitmapFactory.decodeResource(App.getApplication().getResources(), R.drawable.company);
-        zddwBitmap = BitmapFactory.decodeResource(App.getApplication().getResources(), R.drawable.zddw);
-
+    public MarkerHelper(Main_Activity activity) {
         this.activity = activity;
+        com.put(MarkerHelper.S0CIETY, "重点单位");
+        com.put(MarkerHelper.FIREROOM, "消防室");
+        com.put(MarkerHelper.FIRESTATION, "消防队");
+        com.put(MarkerHelper.FIREGROUP, "中队");
+        com.put(MarkerHelper.LICENSE, "审批");
+        com.put(MarkerHelper.FIREADMINSTATION, "小型站");
+        com.put(MarkerHelper.COMMONCOMPANY, "一般单位");
     }
 
-    //获取附近的社会单位位置
-    public int getCompanyInfo( LatLng center, String distance) {
+
+    public void setOnGetInfoFinishListener(MarkerHelper.onGetInfoFinishListener onGetInfoFinishListener) {
+        this.listener = onGetInfoFinishListener;
+    }
+
+    public interface onGetInfoFinishListener {
+
+        void onCompanyDataFinish(List<RegionItem> items);
+
+        void onCommCmyDataFinish(List<RegionItem> items);
+
+        void onFireRoomDataFinish(List<RegionItem> items);
+
+        void onFireBrigadeDataFinish(List<RegionItem> items);
+
+        void onFireGroupDataFinish(List<RegionItem> items);
+
+        void onFireAdminStationDataFinish(List<RegionItem> items);
+
+        void onFireStationDataFinish(List<RegionItem> items);
+
+        void onLicenseDataFinish(List<RegionItem> items);
+
+        void onLoadFailure(int code);
+    }
+
+
+    //获重点单位位置
+    public int getCompanyList(LatLng center, String distance, String special) {
         final int[] size = {0};
-        RetrofitHelper.getApi().getCompanyList(String.valueOf(center.longitude), String.valueOf(center.latitude), distance)
+        RetrofitHelper.getApi().getCompanyList(String.valueOf(center.longitude), String.valueOf(center.latitude), distance, "1")
                 .compose(activity.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<CompanyListResult>() {
                     @Override
                     public void call(CompanyListResult result) {
 
                         if (result == null) {
-                            UiUtils.showToast(App.getApplication(), "获取服务器单位信息数据失败!");
+                            LogUtil.e(TAG, "重点单位数据为空");
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
                             return;
                         }
                         if (!result.status.equals("0") && result != null) {
                             List<CompanyList> lists = result.results;
-                            ArrayList<MarkerOptions> optionses = new ArrayList<MarkerOptions>();
+
+                            List<RegionItem> items = new ArrayList<RegionItem>();
                             for (CompanyList info : lists) {
                                 if (info.lat == null || info.lng == null) {
                                     continue;
@@ -81,51 +115,92 @@ public class MarkerHelper {
                                 double lat = Double.valueOf(info.lat);
                                 double lng = Double.valueOf(info.lng);
                                 LatLng src = new LatLng(lat, lng);
-                                if (info.special != null) {
-                                    if (info.special.equals("1")) {
-                                        MarkerOptions marker = new MarkerOptions()
-                                                .position(src).title(info.name + "#" + info.address)
-                                                .snippet(info.id + "#" + S0CIETY + "#" + "1")
-                                                .icon(BitmapDescriptorFactory.fromBitmap(zddwBitmap));
-                                        optionses.add(marker);
-                                    } else {
-                                        MarkerOptions marker = new MarkerOptions()
-                                                .position(src).title(info.name + "#" + info.address)
-                                                .snippet(info.id + "#" + S0CIETY + "#" + "1")
-                                                .icon(BitmapDescriptorFactory.fromBitmap(companyBitmap));
-                                        optionses.add(marker);
-                                    }
-
-                                }
+                                RegionItem item = new RegionItem(src, "");
+                                item.setId(info.id);
+                                item.setName(info.name);
+                                item.setAddr(info.address);
+                                item.setType(MarkerHelper.S0CIETY);
+                                items.add(item);
                             }
-                            listener.onCompanyInfoGetFinish(optionses);
 
-//                            showCompanyMarker();
+                            listener.onCompanyDataFinish(items);
+
                         } else {
-//                    UiUtils.showToast(App.getApplication(), result.msg);
-                            LogUtil.i(result.msg);
+                            LogUtil.e("company:", result.msg);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
                         }
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         throwable.printStackTrace();
-                        UiUtils.showToast("请求失败");
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+
                     }
                 });
         return 0;
     }
 
+    //一般单位
+    public int getCommcmyList(LatLng center, String distance) {
+        final int[] size = {0};
+        RetrofitHelper.getApi().getCommcmyList(String.valueOf(center.longitude), String.valueOf(center.latitude), distance)
+                .compose(activity.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<CompanyListResult>() {
+                    @Override
+                    public void call(CompanyListResult result) {
+
+                        if (result == null) {
+                            LogUtil.e(TAG, "一般单位数据为空");
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            return;
+                        }
+                        if (!result.status.equals("0") && result != null) {
+                            List<CompanyList> lists = result.results;
+
+                            List<RegionItem> items = new ArrayList<RegionItem>();
+                            for (CompanyList info : lists) {
+                                if (info.lat == null || info.lng == null) {
+                                    continue;
+                                }
+                                double lat = Double.valueOf(info.lat);
+                                double lng = Double.valueOf(info.lng);
+                                LatLng src = new LatLng(lat, lng);
+                                RegionItem item = new RegionItem(src, "");
+                                item.setId(info.id);
+                                item.setName(info.name);
+                                item.setAddr(info.address);
+                                item.setType(MarkerHelper.COMMONCOMPANY);
+                                items.add(item);
+                            }
+
+                            listener.onCommCmyDataFinish(items);
+
+                        } else {
+                            LogUtil.e("commCmy:", result.msg);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
 
 
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+
+                    }
+                });
+        return 0;
+    }
 
     /**
      * 获取消防室数据
      */
     public int getFireRoomList(LatLng center, String distance) {
-        System.out.println("消防室请求距离="+distance+"km");
-        final int[] size = {0};
-        RetrofitHelper.getApi().getFireroomList(String.valueOf(center.longitude), String.valueOf(center.latitude),distance)
+        RetrofitHelper.getApi().getFireroomList(String.valueOf(center.longitude), String.valueOf(center.latitude), distance)
                 .compose(activity.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
@@ -138,38 +213,40 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
                     }
 
                     @Override
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
-                            UiUtils.showToast(App.getApplication(), "获取数据失败");
+                            LogUtil.e(TAG, "fireroom数据为空");
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
                             return;
                         }
                         if (list.status.equals("1")) {
                             List<FireComponentGeneralInfo> lists = list.result;
-                            ArrayList<MarkerOptions> optionses = new ArrayList<MarkerOptions>();
 
+                            List<RegionItem> items = new ArrayList<RegionItem>();
                             for (FireComponentGeneralInfo info : lists) {
                                 if (info.lat == null || info.lng == null) {
                                     continue;
                                 }
-
                                 double lat = Double.valueOf(info.lat);
                                 double lng = Double.valueOf(info.lng);
                                 LatLng src = new LatLng(lat, lng);
-                                //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                MarkerOptions markerOptions = new MarkerOptions()
-                                        .position(src).title(info.name + "#" + info.addr)
-                                        .snippet(info.id + "#" + FIREROOM)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(fireroomBitmap));
-                                optionses.add(markerOptions);
+                                RegionItem item = new RegionItem(src, "");
+                                item.setId(info.id);
+                                item.setName(info.name);
+                                item.setAddr(info.addr);
+                                item.setType(MarkerHelper.FIREROOM);
+                                items.add(item);
                             }
-
-                            listener.onFireRoomInfoGetFinish(optionses);
+                            listener.onFireRoomDataFinish(items);
 //
                         } else {
-                            LogUtil.i("fireroom", list.msg);
+                            LogUtil.e("fireroom", list.msg);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+
                         }
                     }
                 });
@@ -178,10 +255,10 @@ public class MarkerHelper {
 
 
     /**
-     * 获取station数据
+     * 获取消防大队
      */
-    public int  getFirStationList(LatLng center, String distance) {
-        RetrofitHelper.getApi().getFirestationList(String.valueOf(center.longitude), String.valueOf(center.latitude),distance)
+    public int getFireBrigadeList(LatLng center, String distance) {
+        RetrofitHelper.getApi().getFirebrigade(String.valueOf(center.longitude), String.valueOf(center.latitude), distance)
                 .compose(activity.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
@@ -194,16 +271,18 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
                     }
 
                     @Override
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
-                            UiUtils.showToast(App.getApplication(), "获取数据失败");
+                            LogUtil.e(TAG, "firebrigade数据为空");
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
                             return;
                         }
                         if (list.status.equals("1")) {
-                            ArrayList<MarkerOptions> optionses = new ArrayList<MarkerOptions>();
+                            List<RegionItem> items = new ArrayList<RegionItem>();
                             List<FireComponentGeneralInfo> lists = list.result;
                             for (FireComponentGeneralInfo info : lists) {
                                 if (info.lat != null || info.lng != null || !TextUtils.equals("", String.valueOf(info.lat)) || !TextUtils.equals("", String.valueOf(info.lng))) {
@@ -211,19 +290,19 @@ public class MarkerHelper {
                                     double lat = Double.valueOf(info.lat);
                                     double lng = Double.valueOf(info.lng);
                                     LatLng src = new LatLng(lat, lng);
-
-                                    //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                    MarkerOptions markerOptions = new MarkerOptions()
-                                            .position(src)
-                                            .title(info.name + "#" + info.addr)
-                                            .snippet(info.id + "#" + FIRESTATION)
-                                            .icon(BitmapDescriptorFactory.fromBitmap(firestationBitmap));
-                                    optionses.add(markerOptions);
+                                    RegionItem item = new RegionItem(src, "");
+                                    item.setId(info.id);
+                                    item.setName(info.name);
+                                    item.setAddr(info.addr);
+                                    item.setType(MarkerHelper.FIREBRIGADE);
+                                    items.add(item);
                                 }
                             }
-                            listener.onFireStationInfoGetFinish(optionses);
+                            listener.onFireBrigadeDataFinish(items);
                         } else {
-                            LogUtil.i("firestation", list.msg);
+                            LogUtil.e("FIREBrigade", list.msg);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+
                         }
                     }
                 });
@@ -236,7 +315,7 @@ public class MarkerHelper {
      */
     public int getFireGroupList(LatLng center, String distance) {
         final int[] size = {0};
-        RetrofitHelper.getApi().getFireGroupList(String.valueOf(center.longitude), String.valueOf(center.latitude),"3")
+        RetrofitHelper.getApi().getFireGroupList(String.valueOf(center.longitude), String.valueOf(center.latitude), distance)
                 .compose(activity.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
 //        RetrofitHelper.getApi().getFireGroupList("114.342014", "30.547186")
                 .observeOn(Schedulers.io())
@@ -250,18 +329,21 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
                     }
 
                     @Override
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
-                            UiUtils.showToast(App.getApplication(), "获取数据失败");
+                            LogUtil.e(TAG, "firegroup数据为空");
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+
                             return;
                         }
                         if (list.status.equals("1")) {
-                            ArrayList<MarkerOptions> optionses = new ArrayList<MarkerOptions>();
 
                             List<FireComponentGeneralInfo> lists = list.result;
+                            List<RegionItem> items = new ArrayList<RegionItem>();
                             for (FireComponentGeneralInfo info : lists) {
                                 if (info.lat == null || info.lng == null) {
                                     continue;
@@ -270,17 +352,132 @@ public class MarkerHelper {
                                 double lat = Double.valueOf(info.lat);
                                 double lng = Double.valueOf(info.lng);
                                 LatLng src = new LatLng(lat, lng);
-                                //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                MarkerOptions markerOptions = new MarkerOptions()
-                                        .position(src).title(info.name + "#" + info.addr)
-                                        .snippet(info.id + "#" + FIREGROUP)
-
-                                        .icon(BitmapDescriptorFactory.fromBitmap(firegroupBitmap));
-                                optionses.add(markerOptions);
+                                RegionItem item = new RegionItem(src, "");
+                                item.setId(info.id);
+                                item.setName(info.name);
+                                item.setAddr(info.addr);
+                                item.setType(MarkerHelper.FIREGROUP);
+                                items.add(item);
                             }
-                            listener.onFireGroupInfoGetFinish(optionses);
+
+                            listener.onFireGroupDataFinish(items);
                         } else {
-                            LogUtil.i("firegroup", list.msg);
+                            LogUtil.e("firegroup", list.msg);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                        }
+                    }
+                });
+        return 0;
+    }
+
+
+    /**
+     * 获取政府station数据
+     */
+    public int getFireAdminStationList(LatLng center, String distance) {
+        RetrofitHelper.getApi().getFireadminstation(String.valueOf(center.longitude), String.valueOf(center.latitude), distance)
+                .compose(activity.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<FireComponentGeneralInfoList>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+
+                    }
+
+                    @Override
+                    public void onNext(FireComponentGeneralInfoList list) {
+                        if (list == null) {
+                            LogUtil.e(TAG, "获取政府station数据为空");
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+
+                            return;
+                        }
+                        if (list.status.equals("1")) {
+                            List<RegionItem> items = new ArrayList<RegionItem>();
+                            List<FireComponentGeneralInfo> lists = list.result;
+                            for (FireComponentGeneralInfo info : lists) {
+                                if (info.lat != null || info.lng != null || !TextUtils.equals("", String.valueOf(info.lat)) || !TextUtils.equals("", String.valueOf(info.lng))) {
+//                                    LogUtil.i("小型站" + info.toString());
+                                    double lat = Double.valueOf(info.lat);
+                                    double lng = Double.valueOf(info.lng);
+                                    LatLng src = new LatLng(lat, lng);
+                                    RegionItem item = new RegionItem(src, "");
+                                    item.setId(info.id);
+                                    item.setName(info.name);
+                                    item.setAddr(info.addr);
+                                    item.setType(MarkerHelper.FIREADMINSTATION);
+                                    items.add(item);
+                                }
+                            }
+                            listener.onFireAdminStationDataFinish(items);
+                        } else {
+                            LogUtil.i("FIREADMINSTATION", list.msg);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                        }
+                    }
+                });
+        return 0;
+    }
+
+
+    /**
+     * 获取station数据
+     */
+    public int getFireStationList(LatLng center, String distance) {
+        RetrofitHelper.getApi().getFirestationList(String.valueOf(center.longitude), String.valueOf(center.latitude), distance)
+                .compose(activity.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<FireComponentGeneralInfoList>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+
+                    }
+
+                    @Override
+                    public void onNext(FireComponentGeneralInfoList list) {
+                        if (list == null) {
+                            LogUtil.e(TAG, "firestation数据为空");
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+
+                            return;
+                        }
+                        if (list.status.equals("1")) {
+                            List<RegionItem> items = new ArrayList<RegionItem>();
+                            List<FireComponentGeneralInfo> lists = list.result;
+                            for (FireComponentGeneralInfo info : lists) {
+                                if (info.lat != null || info.lng != null || !TextUtils.equals("", String.valueOf(info.lat)) || !TextUtils.equals("", String.valueOf(info.lng))) {
+//                                    LogUtil.i("小型站" + info.toString());
+                                    double lat = Double.valueOf(info.lat);
+                                    double lng = Double.valueOf(info.lng);
+                                    LatLng src = new LatLng(lat, lng);
+                                    RegionItem item = new RegionItem(src, "");
+                                    item.setId(info.id);
+                                    item.setName(info.name);
+                                    item.setAddr(info.addr);
+                                    item.setType(MarkerHelper.FIRESTATION);
+                                    items.add(item);
+                                }
+                            }
+                            listener.onFireStationDataFinish(items);
+                        } else {
+                            LogUtil.e("firestation", list.msg);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
                         }
                     }
                 });
@@ -292,7 +489,7 @@ public class MarkerHelper {
      * 获取行政许可建筑数据
      */
     public int getLicenseList(LatLng center, String distance) {
-        RetrofitHelper.getApi().getLicenseList(String.valueOf(center.longitude), String.valueOf(center.latitude),distance)
+        RetrofitHelper.getApi().getLicenseList(String.valueOf(center.longitude), String.valueOf(center.latitude), distance)
                 .compose(activity.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
@@ -305,17 +502,20 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+
                     }
 
                     @Override
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
                             UiUtils.showToast(App.getApplication(), "获取数据失败");
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+
                             return;
                         }
                         if (list.status.equals("1")) {
-                            ArrayList<MarkerOptions> optionses = new ArrayList<MarkerOptions>();
-
+                            List<RegionItem> items = new ArrayList<RegionItem>();
                             List<FireComponentGeneralInfo> lists = list.result;
                             for (FireComponentGeneralInfo info : lists) {
                                 if (info.lat == null || info.lng == null) {
@@ -325,181 +525,20 @@ public class MarkerHelper {
                                 double lat = Double.valueOf(info.lat);
                                 double lng = Double.valueOf(info.lng);
                                 LatLng src = new LatLng(lat, lng);
-                                //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                MarkerOptions markerOptions = new MarkerOptions()
-                                        .position(src).title(info.name + "#" + info.addr)
-                                        .snippet(info.id + "#" + LICENSE)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(fireroomBitmap));
-                                optionses.add(markerOptions);
+                                RegionItem item = new RegionItem(src, "");
+                                item.setId(info.id);
+                                item.setName(info.name);
+                                item.setAddr(info.addr);
+                                item.setType(MarkerHelper.LICENSE);
+                                items.add(item);
                             }
-                            listener.onLicenseInfoGetFinish(optionses);
+                            listener.onLicenseDataFinish(items);
                         } else {
-                            LogUtil.i("LICENSE", list.msg);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            LogUtil.e("LICENSE", list.msg);
                         }
                     }
                 });
         return 0;
     }
-
-
-    public void setOnGetInfoFinishListener(MarkerHelper.onGetInfoFinishListener onGetInfoFinishListener) {
-        this.listener = onGetInfoFinishListener;
-    }
-
-    private onGetInfoFinishListener listener;
-    public interface onGetInfoFinishListener{
-        void onCompanyInfoGetFinish(ArrayList<MarkerOptions> optionses);
-        void onFireRoomInfoGetFinish(ArrayList<MarkerOptions> optionses);
-        void onFireStationInfoGetFinish(ArrayList<MarkerOptions> optionses);
-        void onFireGroupInfoGetFinish(ArrayList<MarkerOptions> optionses);
-        void onLicenseInfoGetFinish(ArrayList<MarkerOptions> optionses);
-
-        void onFireAdminStationInfoGetFinish(ArrayList<MarkerOptions> optionses);
-        void onFireBrigadeInfoGetFinish(ArrayList<MarkerOptions> optionses);
-    }
-
-
-//    private Point mScreenPoint;
-//    /**
-//     * 展示社会单位
-//     */
-//    private void showCompanyMarker(int flag,int type) {
-//        if ((flag & 0x01) != 0x01) {
-//            return;
-//        }
-//        if (optionsArray.get(type).isEmpty()) {
-//            UiUtils.showToast(App.getApplication(), "附近无该类型单位信息");
-//            return;
-//        }
-//        for (int i = 0; i < CompanyMarkerOptions.size(); i++) {
-//            if (isShow(CompanyMarkerOptions.get(i), mScreenPoint)) {//假如markeroption的位置在屏幕上则把它添加到map并且放入CompanyMarkers集合
-//                boolean a = false;
-//                for (Marker ma : CompanyMarkers) {//遍历companymarkers是否添加了该markeroption
-//                    ma.setVisible(true);
-//                    if (ma.getOptions().equals(CompanyMarkerOptions.get(i))) {
-//                        a = true;
-//                        break;
-//                    }
-//
-//                }
-//                if (!a) {//假如CompanyMarker里面还没有添加过,则添加上amap,并显示
-//                    Marker mar = aMap.addMarker(CompanyMarkerOptions.get(i));
-//                    CompanyMarkers.add(mar);
-//                    mar.setVisible(true);
-//                }
-//
-//            } else {
-//
-//            }
-//        }
-//    }
-//
-
-    /**
-     * 获取政府station数据
-     */
-    public int  getFireAdminStationList(LatLng center, String distance) {
-        RetrofitHelper.getApi().getFireadminstation(String.valueOf(center.longitude), String.valueOf(center.latitude),distance)
-                .compose(activity.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<FireComponentGeneralInfoList>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(FireComponentGeneralInfoList list) {
-                        if (list == null) {
-                            LogUtil.i("获取政府station数据失败");
-                            return;
-                        }
-                        if (list.status.equals("1")) {
-                            ArrayList<MarkerOptions> optionses = new ArrayList<MarkerOptions>();
-                            List<FireComponentGeneralInfo> lists = list.result;
-                            for (FireComponentGeneralInfo info : lists) {
-                                if (info.lat != null || info.lng != null || !TextUtils.equals("", String.valueOf(info.lat)) || !TextUtils.equals("", String.valueOf(info.lng))) {
-//                                    LogUtil.i("小型站" + info.toString());
-                                    double lat = Double.valueOf(info.lat);
-                                    double lng = Double.valueOf(info.lng);
-                                    LatLng src = new LatLng(lat, lng);
-
-                                    //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                    MarkerOptions markerOptions = new MarkerOptions()
-                                            .position(src)
-                                            .title(info.name + "#" + info.addr)
-                                            .snippet(info.id + "#" + FIREADMINSTATION)
-                                            .icon(BitmapDescriptorFactory.fromBitmap(firestationBitmap));
-                                    optionses.add(markerOptions);
-                                }
-                            }
-                            listener.onFireAdminStationInfoGetFinish(optionses);
-                        } else {
-                            LogUtil.i("FIREADMINSTATION", list.msg);
-                        }
-                    }
-                });
-        return 0;
-    }
-
-
-    /**
-     * 获取消防大队
-     */
-    public int  getFireBrigadeList(LatLng center, String distance) {
-        RetrofitHelper.getApi().getFirebrigade(String.valueOf(center.longitude), String.valueOf(center.latitude),distance)
-                .compose(activity.<FireComponentGeneralInfoList>bindUntilEvent(ActivityEvent.DESTROY))
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<FireComponentGeneralInfoList>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(FireComponentGeneralInfoList list) {
-                        if (list == null) {
-                            UiUtils.showToast(App.getApplication(), "获取数据失败");
-                            return;
-                        }
-                        if (list.status.equals("1")) {
-                            ArrayList<MarkerOptions> optionses = new ArrayList<MarkerOptions>();
-                            List<FireComponentGeneralInfo> lists = list.result;
-                            for (FireComponentGeneralInfo info : lists) {
-                                if (info.lat != null || info.lng != null || !TextUtils.equals("", String.valueOf(info.lat)) || !TextUtils.equals("", String.valueOf(info.lng))) {
-//                                    LogUtil.i("小型站" + info.toString());
-                                    double lat = Double.valueOf(info.lat);
-                                    double lng = Double.valueOf(info.lng);
-                                    LatLng src = new LatLng(lat, lng);
-
-                                    //title后面拼凑字符串 name + addr;snippet 内容为 id+ 单位类型(社会单位、消防室四种，用于详情activity决定使用哪个fragment)+
-                                    MarkerOptions markerOptions = new MarkerOptions()
-                                            .position(src)
-                                            .title(info.name + "#" + info.addr)
-                                            .snippet(info.id + "#" + FIREBRIGADE);
-//                                            .icon(BitmapDescriptorFactory.fromBitmap(firestationBitmap));
-                                    optionses.add(markerOptions);
-                                }
-                            }
-                            listener.onFireBrigadeInfoGetFinish(optionses);
-                        } else {
-                            LogUtil.i("FIREBrigade", list.msg);
-                        }
-                    }
-                });
-        return 0;
-    }
-
 }

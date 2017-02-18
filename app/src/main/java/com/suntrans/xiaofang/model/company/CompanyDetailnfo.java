@@ -88,6 +88,8 @@ public class CompanyDetailnfo implements Serializable{
     public  String updated_at;
     public  String created_at;
     public  String deleted_at;
+    public  String source_id;
+    public  String special;
 
     @Override
     public String toString() {

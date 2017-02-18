@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.journeyapps.barcodescanner.Util;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
@@ -77,11 +78,12 @@ public class Help_activity extends BasedActivity {
     }
 
     public void onClick(View view) {
-        if (value.getText().toString().equals("")&&value.getText().toString()==null){
-            UiUtils.showToast(App.getApplication(),"请输入内容");
+
+        String value1 = value.getText().toString().replace(" ","");
+        if (!Utils.isVaild(value1)){
+            UiUtils.showToast("请输入内容");
             return;
         }
-        String value1 = value.getText().toString().replace(" ","");
         RetrofitHelper.getApi().commitGuesBook(value1)
                 .compose(this.<AddCompanyResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribeOn(Schedulers.io())
@@ -107,7 +109,7 @@ public class Help_activity extends BasedActivity {
                         }
                         if (result.status.equals("1")){
                             AlertDialog.Builder builder = new AlertDialog.Builder(Help_activity.this);
-                            builder.setMessage("感谢你的反馈,祝你生活愉快")
+                            builder.setMessage("已收到你的反馈")
                                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {

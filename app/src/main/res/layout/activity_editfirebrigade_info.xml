@@ -22,10 +22,10 @@
     </android.support.v7.widget.Toolbar>
 
     <ScrollView
+        android:background="@color/bg_color"
         android:id="@+id/scroll"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
@@ -145,15 +145,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1px"
                 android:background="@color/white"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading">
 
                 <TextView
+
                     android:layout_width="wrap_content"
-                    android:layout_height="45dp"
+                    android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="*联系电话(2个)"
+                    android:text="*联系电话"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
                 <LinearLayout
@@ -235,13 +236,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1px"
                 android:background="@color/white"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading">
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="职工人数"
                     android:textColor="@color/balck"
@@ -307,7 +308,35 @@
                             android:textSize="@dimen/text_size"
                             />
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="消防文员："
+                            android:textSize="@dimen/text_size" />
+                        <EditText
+                            android:inputType="number"
+                            android:id="@+id/wenyuan"
+                            android:layout_width="wrap_content"
+                            android:minWidth="60dp"
+                            android:layout_height="match_parent"
+                            android:gravity="left|center"
+                            android:textColor="@color/balck"
+                            android:textSize="@dimen/text_size1" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="人"
+                            android:textSize="@dimen/text_size"
+                            />
+                    </LinearLayout>
                     <LinearLayout
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_width="wrap_content"
@@ -339,35 +368,7 @@
                     </LinearLayout>
 
 
-                    <LinearLayout
-                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="消防文员："
-                            android:textSize="@dimen/text_size" />
-                        <EditText
-                            android:inputType="number"
-                            android:id="@+id/wenyuan"
-                            android:layout_width="wrap_content"
-                            android:minWidth="60dp"
-                            android:layout_height="match_parent"
-                            android:gravity="left|center"
-                            android:textColor="@color/balck"
-                            android:textSize="@dimen/text_size1" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="人"
-                            android:textSize="@dimen/text_size"
-                            />
-                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>

@@ -1,8 +1,12 @@
 package com.suntrans.xiaofang.activity.mapnav;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
@@ -359,9 +363,7 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
      * 开始导航
      */
     private void startNavi() {
-        Intent gpsintent = new Intent(getApplicationContext(), RouteNavi_Activity.class);
-        gpsintent.putExtra("gps", true); // gps 为true为真实导航，为false为模拟导航
-        startActivity(gpsintent);
+      initGPS();
     }
 
     /**
@@ -808,5 +810,42 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
     @Override
     public void updateAimlessModeCongestionInfo(AimLessModeCongestionInfo aimLessModeCongestionInfo) {
 
+    }
+
+
+
+    private void initGPS() {
+        LocationManager locationManager = (LocationManager) this.getSystemService(getApplicationContext().LOCATION_SERVICE);
+        // 判断GPS模块是否开启，如果没有则开启
+        if (!locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+            Toast.makeText(CalculateRoute_Activity.this, "请打开GPS", Toast.LENGTH_SHORT).show();
+            final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setTitle("请打开GPS连接");
+            dialog.setPositiveButton("设置", new android.content.DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    // 转到手机设置界面，用户设置GPS
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    Toast.makeText(CalculateRoute_Activity.this, "打开后直接点击返回键即可，若不打开返回下次将再次出现", Toast.LENGTH_SHORT).show();
+                    startActivityForResult(intent, 0); // 设置完成后返回到原来的界面
+                }
+            });
+            dialog.setNeutralButton("取消", new android.content.DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    arg0.dismiss();
+                }
+            });
+            dialog.show();
+        } else {
+            Intent gpsintent = new Intent(getApplicationContext(), RouteNavi_Activity.class);
+            gpsintent.putExtra("gps", true); // gps 为true为真实导航，为false为模拟导航
+            startActivity(gpsintent);
+//            searchRouteResult(startPoint, endPoint);//路径规划
+            // 弹出Toast
+//          Toast.makeText(TrainDetailsActivity.this, "GPS is ready",Toast.LENGTH_LONG).show();
+//          // 弹出对话框
+//          new AlertDialog.Builder(this).setMessage("GPS is ready").setPositiveButton("OK", null).show();
+        }
     }
 }

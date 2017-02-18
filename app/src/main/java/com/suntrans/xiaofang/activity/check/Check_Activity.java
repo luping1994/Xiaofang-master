@@ -22,6 +22,8 @@ import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +101,11 @@ public class Check_Activity extends BaseActivity {
     }
 
     private void getDataFromServer() {
-        RetrofitHelper.getApi().getCompanyCheck("1").enqueue(new Callback<CompanyListResult>() {
+        JSONArray array = new JSONArray();
+        array.put("1");
+        array.put("3");
+        String source_id=array.toString();
+        RetrofitHelper.getApi().getCompanyCheck("0",source_id).enqueue(new Callback<CompanyListResult>() {
             @Override
             public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
                 CompanyListResult result = response.body();
@@ -116,6 +122,8 @@ public class Check_Activity extends BaseActivity {
                             map1.put("state", "0");
                             map1.put("name", info.name);
                             map1.put("id", info.id);
+                            map1.put("source_id", info.source_id);
+                            map1.put("special", info.special);
                             datas.add(map1);
                             handler.sendEmptyMessageDelayed(1, 500);
 //                            handler.sendEmptyMessage(1);
@@ -154,6 +162,17 @@ public class Check_Activity extends BaseActivity {
         public ViewHolder1(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.name);
+            name.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Check_Activity.this, Check_detail_Activity.class);
+                    intent.putExtra("id", datas.get(getAdapterPosition()).get("id"));
+                    intent.putExtra("source_id",datas.get(getAdapterPosition()).get("source_id"));
+                    intent.putExtra("special",datas.get(getAdapterPosition()).get("special"));
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                }
+            });
         }
     }
 
@@ -187,15 +206,7 @@ public class Check_Activity extends BaseActivity {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             if (holder instanceof ViewHolder1) {
                 ((ViewHolder1) holder).name.setText("单位名称:" + datas.get(position).get("name"));
-                ((ViewHolder1) holder).name.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(Check_Activity.this, Check_detail_Activity.class);
-                        intent.putExtra("id", datas.get(position).get("id"));
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    }
-                });
+
             } else {
                 ((ViewHolder2) holder).name.setText("无待审核单位");
             }

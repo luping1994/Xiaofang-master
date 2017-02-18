@@ -167,8 +167,8 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
         zhongduiId = new ArrayList<>();
         zhongduiPath = new ArrayList<>();
 
-        daduiName.add(info.brigade_path == null ? "请选择" : info.brigade_path+")当前)");
-        zhongduiName.add(info.group_path == null ? "请选择" : info.group_path+"(当前)");
+        daduiName.add(info.brigade_path == null ? "请选择" : "已选择("+info.brigade_name + ")");
+        zhongduiName.add(info.group_path == null ? "请选择" :"已选择("+ info.group_name + ")");
 
         adduiAdapter = new ArrayAdapter(this, R.layout.item_spinner, R.id.tv_spinner, daduiName);
         zhongduiAdapter = new ArrayAdapter(this, R.layout.item_spinner, R.id.tv_spinner, zhongduiName);
@@ -190,6 +190,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (flag == 1) {
                     if (position == 0) {
+                        liandongzhongdui.setSelection(0);
                         dadui_id_path = null;
                         return;
                     }
@@ -197,7 +198,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
                     zhongduiName.clear();
                     zhongduiName.add("请选择");
                     System.out.println("大队" + daduiName.get(position - 1) + "==>" + dadui_id_path);
-                    String nextId = daduiId.get(position-1);
+                    String nextId = daduiId.get(position - 1);
                     getIncharge(nextId, 1, "2");
                 }
             }
@@ -217,7 +218,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
                         return;
                     }
                     zhongdui_id_path = zhongduiPath.get(position - 1);
-                    System.out.println("中队" + zhongduiName.get(position - 1) + "==>" + zhongdui_id_path);
+//                    System.out.println("中队" + zhongduiName.get(position - 1) + "==>" + zhongdui_id_path);
                 }
             }
 
@@ -381,6 +382,8 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
         String phone1 = phone.getText().toString();
         String membernum1 = membernum.getText().toString();
 
+        String lat1 = lat.getText().toString();
+        String lng1 =lng.getText().toString();
 
         if (!Utils.isVaild(name1)) {
             UiUtils.showToast("名称不能为空");
@@ -439,6 +442,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
 //        String group1 = group.getText().toString();
         builder.put("name", name1.replace(" ", ""));
         builder.put("addr", addr1.replace(" ", ""));
+
         builder.put("id", info.id);
 
         if (Utils.isVaild(contact1)) {
@@ -470,14 +474,18 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
 //            builder.put("group", group1.replace(" ", ""));
 //        }
 
-        if (Utils.isVaild(zhongdui_id_path)) {
-            if (Utils.isVaild(dadui_id_path)){
-                builder.put("group_path", zhongdui_id_path);
-                builder.put("brigade_path", dadui_id_path);
-            }else {
-                UiUtils.showToast("请选择联动中队");
-            }
+        if (Utils.isVaild(zhongdui_id_path) && Utils.isVaild(dadui_id_path)) {
+            builder.put("group_path", zhongdui_id_path);
+            builder.put("brigade_path", dadui_id_path);
 
+        } else {
+//            UiUtils.showToast("请选择联动中队");
+        }
+
+
+        if (Utils.isVaild(lat1)&&Utils.isVaild(lng1)){
+            builder.put("lat",lat1.replace(" ",""));
+            builder.put("lng",lng1.replace(" ",""));
         }
 
         map1 = builder.build();
@@ -601,7 +609,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
                                 daduiName.clear();
                                 daduiId.clear();
                                 daduiIdPath.clear();
-                                daduiName.add(info.brigade_path == null ? "请选择" : info.brigade_path + "当前");
+                                daduiName.add(info.brigade_path == null ? "请选择" : "已选择("+info.brigade_name + ")");
                                 for (InchargeInfo info :
                                         inchargeInfos) {
                                     daduiName.add(info.name);

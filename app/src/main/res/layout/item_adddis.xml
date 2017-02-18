@@ -25,6 +25,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center|start"
                 android:minWidth="100dp"
+                android:maxWidth="150dp"
                 android:singleLine="true"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -42,12 +43,11 @@
 
             <EditText
                 android:id="@+id/con_detail"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:ellipsize="end"
                 android:gravity="center|start"
                 android:maxLines="1"
-                android:minWidth="50dp"
                 android:singleLine="true"
                 android:textSize="14sp" />
         </LinearLayout>

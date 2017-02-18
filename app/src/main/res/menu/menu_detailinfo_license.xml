@@ -15,28 +15,23 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/help"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_edit"
-        android:title="编辑" />
+        android:id="@+id/delete"
+        android:title="删除"
+        app:showAsAction="never" />
     <item
-            android:id="@+id/changedpassword"
-            app:showAsAction="never"
-            android:title="修改密码" />
-
-    <item
-        android:id="@+id/zhuxiao"
-        app:showAsAction="never"
-        android:title="注销登录" />
+        android:id="@+id/add_item"
+        android:title="添加审批信息"
+        app:showAsAction="never" />
 
     <item
-        android:id="@+id/changed"
-        app:showAsAction="never"
-        android:title="更换头像" />
-
-
-
+        android:id="@+id/xiugai"
+        android:title="修改审批项目信息"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/gohere"
+        android:title="到这去"
+        app:showAsAction="never" />
 
 </menu>

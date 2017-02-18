@@ -22,6 +22,8 @@ import com.suntrans.xiaofang.App;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.tencent.bugly.crashreport.inner.InnerApi.context;
+
 
 public class UiUtils {
 
@@ -62,6 +64,8 @@ public class UiUtils {
 	public static int dip2px(int dip) {
 		final float scale = getResource1().getDisplayMetrics().density;
 		return (int) (dip * scale + 0.5f);
+
+
 	}
 
 	/**

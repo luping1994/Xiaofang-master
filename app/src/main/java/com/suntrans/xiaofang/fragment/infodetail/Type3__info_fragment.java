@@ -23,13 +23,11 @@ import android.widget.TextView;
 import com.amap.api.maps.model.LatLng;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.activity.edit.EditFireAdminStationInfo_activity;
 import com.suntrans.xiaofang.activity.edit.EditFirestationnfo_activity;
 import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.fragment.BasedFragment;
-import com.suntrans.xiaofang.fragment.addinfo.Type3_fragment;
 import com.suntrans.xiaofang.model.firestation.AddFireStationResult;
 import com.suntrans.xiaofang.model.firestation.FireStationDetailInfo;
 import com.suntrans.xiaofang.model.firestation.FireStationDetailResult;
@@ -41,7 +39,6 @@ import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -50,9 +47,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
-import static com.suntrans.xiaofang.R.id.gonganganbu;
-import static com.suntrans.xiaofang.R.id.xianyiganbu;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -89,7 +83,7 @@ public class Type3__info_fragment extends BasedFragment  {
         if (getArguments()!=null){
             type = getArguments().getInt("type");
         }
-        return inflater.inflate(R.layout.fragment_info_type1_backup, container, false);
+        return inflater.inflate(R.layout.fragment_info_others, container, false);
     }
 
     @Override
@@ -129,74 +123,74 @@ public class Type3__info_fragment extends BasedFragment  {
     private void initData() {
         SparseArray<String> array = new SparseArray<>();
         array.put(0, "名称");
-        array.put(1, "--");
+        array.put(1, "");
         datas.add(array);
 
         SparseArray<String> array1 = new SparseArray<>();
         array1.put(0, "地址");
-        array1.put(1, "--");
+        array1.put(1, "");
         datas.add(array1);
 
         SparseArray<String> array2 = new SparseArray<>();
         array2.put(0, "辖区面积");
-        array2.put(1, "--");
+        array2.put(1, "");
         datas.add(array2);
 
 
         SparseArray<String> array3 = new SparseArray<>();
         array3.put(0, "联系电话");
-        array3.put(1, "--");
+        array3.put(1, "");
         datas.add(array3);
 
         SparseArray<String> array4 = new SparseArray<>();
         array4.put(0, "人员组成");
-        array4.put(1, "--");
+        array4.put(1, "");
         datas.add(array4);
 
 //        SparseArray<String> array5 = new SparseArray<>();
 //        array5.put(0, "消防队员人数（专职）");
-//        array5.put(1, "--");
+//        array5.put(1, "");
 //        datas.add(array5);
 
         SparseArray<String> array6 = new SparseArray<>();
         array6.put(0, "消防车总数");
-        array6.put(1, "--");
+        array6.put(1, "");
         datas.add(array6);
 
         SparseArray<String> array7 = new SparseArray<>();
         array7.put(0, "消防车辆配置情况");
-        array7.put(1, "--");
+        array7.put(1, "");
         datas.add(array7);
 
         SparseArray<String> array8 = new SparseArray<>();
         array8.put(0, "车载水总量（吨）");
-        array8.put(1, "--");
+        array8.put(1, "");
         datas.add(array8);
 
 
         SparseArray<String> array10 = new SparseArray<>();
         array10.put(0, "车载泡沫总量（吨）");
-        array10.put(1, "--");
+        array10.put(1, "");
         datas.add(array10);
 
         SparseArray<String> array11 = new SparseArray<>();
         array11.put(0, "所属大队");
-        array11.put(1, "--");
+        array11.put(1, "");
         datas.add(array11);
 
         SparseArray<String> array12 = new SparseArray<>();
         array12.put(0, "联动中队");
-        array12.put(1, "--");
+        array12.put(1, "");
         datas.add(array12);
 
 //        SparseArray<String> array13 = new SparseArray<>();
 //        array13.put(0, "所属社区");
-//        array13.put(1, "--");
+//        array13.put(1, "");
 //        datas.add(array13);
 //
 //        SparseArray<String> array14 = new SparseArray<>();
 //        array14.put(0, "所属大队");
-//        array14.put(1, "--");
+//        array14.put(1, "");
 //        datas.add(array14);
 
     }
@@ -359,15 +353,15 @@ public class Type3__info_fragment extends BasedFragment  {
     private void refreshView(FireStationDetailInfo info) {
         datas.get(0).put(1, info.name);//名字
         datas.get(1).put(1, info.addr);//地址
-        datas.get(2).put(1, info.area == null ? "--" : info.area + "平方公里");
-        datas.get(3).put(1, info.phone == null ? "--" : info.phone);
+        datas.get(2).put(1, info.area == null ? "" : info.area + "平方公里");
+        datas.get(3).put(1, info.phone == null ? "" : info.phone);
 
         String member = info.membernum;
         if (member!=null&&!member.equals("")){
             try {
 
                 String a = Utils.parseJson(member);
-                datas.get(4).put(1, a==null?"--":a);
+                datas.get(4).put(1, a==null?"":a);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -389,12 +383,12 @@ public class Type3__info_fragment extends BasedFragment  {
             e.printStackTrace();
         }
 
-        datas.get(5).put(1, info.carnum == null ? "--" : info.carnum);
-        datas.get(6).put(1, info.cardisp == null ? "--" : cardis);
-        datas.get(7).put(1, info.waterweight == null ? "--" : info.waterweight);
-        datas.get(8).put(1, info.soapweight == null ? "--" : info.soapweight);
-        datas.get(9).put(1, info.brigade_name == null ? "--" : info.brigade_name);
-        datas.get(10).put(1, info.group_name==null?"--":info.group_name);
+        datas.get(5).put(1, info.carnum == null ? "" : info.carnum);
+        datas.get(6).put(1, info.cardisp == null ? "" : cardis);
+        datas.get(7).put(1, info.waterweight == null ? "" : info.waterweight);
+        datas.get(8).put(1, info.soapweight == null ? "" : info.soapweight);
+        datas.get(9).put(1, info.brigade_name == null ? "" : info.brigade_name);
+        datas.get(10).put(1, info.group_name==null?"":info.group_name);
 //        datas.get(12).put(1, info.community + info.community);
 //        datas.get(13).put(1, info.group + info.group);
         myAdapter.notifyDataSetChanged();

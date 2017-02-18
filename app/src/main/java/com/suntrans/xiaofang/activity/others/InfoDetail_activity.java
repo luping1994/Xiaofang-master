@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.fragment.infodetail.Type1__info_fragment;
+import com.suntrans.xiaofang.fragment.infodetail.Type1__info_yiban_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type2__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type3__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type4__info_fragment;
@@ -14,6 +15,7 @@ import com.suntrans.xiaofang.fragment.infodetail.Type5__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type6__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type7__info_fragment;
 import com.suntrans.xiaofang.model.company.UnitInfo;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.MarkerHelper;
 
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public class InfoDetail_activity extends BasedActivity {
     private void initView() {
         companyId = getIntent().getStringExtra("companyID").split("#")[0];
         companyType = getIntent().getStringExtra("companyID").split("#")[1];
-        System.out.println("InfodetailActivity:"+"id="+companyId);
+        LogUtil.i("InfodetailActivity:"+"id="+companyId);
         switch (Integer.valueOf(companyType)){
             case 0:
                 Type1__info_fragment type1__info_fragment = new Type1__info_fragment();
@@ -81,7 +83,10 @@ public class InfoDetail_activity extends BasedActivity {
             case MarkerHelper.FIREADMINSTATION:
                 Type3__info_fragment type3__info_fragment_admin =Type3__info_fragment.newInstance(MarkerHelper.FIREADMINSTATION);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type3__info_fragment_admin).commit();
-
+                break;
+            case MarkerHelper.COMMONCOMPANY:
+                Type1__info_yiban_fragment fragment = new Type1__info_yiban_fragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, fragment).commit();
                 break;
         }
 

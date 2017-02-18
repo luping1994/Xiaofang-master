@@ -29,27 +29,6 @@ import butterknife.ButterKnife;
  */
 
 public class EditFiregoupinfo_activity extends BasedActivity {
-//    @BindView(R.id.name)
-//    EditText name;
-//    @BindView(R.id.addr)
-//    EditText addr;
-//    @BindView(R.id.lng)
-//    EditText lng;
-//    @BindView(R.id.lat)
-//    EditText lat;
-//    @BindView(R.id.area)
-//    EditText area;
-//    @BindView(R.id.phone)
-//    EditText phone;
-//
-//    @BindView(R.id.carnum)
-//    EditText carnum;
-//    @BindView(R.id.cardisp)
-//    EditText cardisp;
-//    @BindView(R.id.waterweight)
-//    EditText waterweight;
-//    @BindView(R.id.soapweight)
-//    EditText soapweight;
 
     private Toolbar toolbar;
     private EditText txName;
@@ -93,10 +72,14 @@ public class EditFiregoupinfo_activity extends BasedActivity {
 
     private void initData() {
         if (info != null) {
-            fragment.setData(info);
+            if (!flag){
+                fragment.setData(info);
+                flag = true;
+            }
         }
     }
 
+    boolean flag =false;
     private void setupToolBar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);

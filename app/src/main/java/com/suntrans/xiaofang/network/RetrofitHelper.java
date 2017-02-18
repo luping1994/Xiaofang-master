@@ -34,6 +34,7 @@ public class RetrofitHelper {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
+                .client(mOkHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         return retrofit.create(Api.class);
@@ -101,7 +102,7 @@ public class RetrofitHelper {
                 if (mOkHttpClient==null){
                     mOkHttpClient = new OkHttpClient.Builder()
                             .addInterceptor(netInterceptor)
-                            .connectTimeout(15, TimeUnit.SECONDS)
+                            .connectTimeout(8, TimeUnit.SECONDS)
                             .build();
                 }
             }

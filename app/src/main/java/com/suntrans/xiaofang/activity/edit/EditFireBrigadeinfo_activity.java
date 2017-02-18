@@ -168,7 +168,7 @@ public class EditFireBrigadeinfo_activity extends BasedActivity {
 //        StatusBarCompat.compat(this, Color.rgb(0x2f, 0x9d, 0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle("修改单位信息");
+        toolbar.setTitle("修改大队信息");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -322,7 +322,7 @@ public class EditFireBrigadeinfo_activity extends BasedActivity {
 //                name.setText(poiItem.getTitle());
                 lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
                 lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
-                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+                addr.setText(poiItem.getSnippet());
             }
         }
 

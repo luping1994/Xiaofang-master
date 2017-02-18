@@ -35,27 +35,6 @@
                 android:hint="请输入"
                 android:textColor="@color/balck"
                 android:textSize="@dimen/text_size1" />
-            <RadioGroup
-                android:id="@+id/group"
-                android:visibility="gone"
-                android:orientation="horizontal"
-                android:gravity="left|center"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <RadioButton
-                    android:checked="true"
-                    android:id="@+id/yes"
-                    android:text="是"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-                <RadioButton
-                    android:id="@+id/no"
-                    android:text="否"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-            </RadioGroup>
         </RelativeLayout>
     </LinearLayout>
 

@@ -3,6 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/ll_item"
     android:padding="8dp"
     android:gravity="center_vertical">
 
@@ -32,6 +33,7 @@
     </LinearLayout>
 
     <ImageView
+        android:visibility="invisible"
         android:id="@+id/image_check"
         android:layout_width="32dp"
         android:layout_height="32dp"

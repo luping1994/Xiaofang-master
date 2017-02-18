@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">基础信息采集端</string>
+    <string name="app_name">信息采集</string>
     <string name="menu_personal">个人中心</string>
     <string name="menu_scan">扫一扫</string>
     <string name="menu_pulldata">导出数据</string>

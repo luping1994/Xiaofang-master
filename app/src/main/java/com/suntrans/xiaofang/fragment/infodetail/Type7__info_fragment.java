@@ -24,7 +24,6 @@ import com.amap.api.maps.model.LatLng;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.edit.EditFireAdminStationInfo_activity;
-import com.suntrans.xiaofang.activity.edit.EditFirestationnfo_activity;
 import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
@@ -47,8 +46,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
-import static com.suntrans.xiaofang.R.id.zhuanzhi;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -75,7 +72,7 @@ public class Type7__info_fragment extends BasedFragment implements View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initData();
-        return inflater.inflate(R.layout.fragment_info_type1_backup, container, false);
+        return inflater.inflate(R.layout.fragment_info_others, container, false);
     }
 
     @Override
@@ -342,17 +339,6 @@ public class Type7__info_fragment extends BasedFragment implements View.OnClickL
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()) {
-            case R.id.fab1:
-
-                break;
-            case R.id.fab2:
-
-                break;
-            case R.id.fab3:
-
-                break;
-        }
     }
 
     private void delete() {
