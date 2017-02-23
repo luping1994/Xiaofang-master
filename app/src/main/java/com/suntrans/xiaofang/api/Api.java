@@ -106,18 +106,21 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/company/subset")
-    Call<CompanyListResult> getCompanyCheck(@Field("status") String status,@Field("source_id") String source_id);
+    Observable<CompanyListResult> getCompanyCheck(@Field("status") String status,@Field("source_id") String source_id);
 
 
     /**
-     * 获取等待审核的单位详情
+     * 获取等待审核的一般单位
      *
-     * @param id
+     * @param status
      * @return
      */
     @FormUrlEncoded
-    @POST("/api/v1/social/detail")
-    Call<CompanyDetailnfoResult> getCompanyCheckDetail(@Field("id") String id);
+    @POST("/api/v1/commcmy/subset")
+    Observable<CompanyListResult> getCommcmyCheck(@Field("status") String status,@Field("source_id") String source_id);
+
+
+
 
     /**
      * 获取重点单位详情
@@ -201,7 +204,7 @@ public interface Api {
     Observable<AddCompanyResult> updateCommCompany(@FieldMap Map<String, String> info);
 
     /**
-     * 根据关键词查询公司信息
+     * 根据关键词查询重点单位信息
      *
      * @param name
      * @return
@@ -209,7 +212,14 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/company/search")
     Observable<CompanyListResult> queryCompany(@Field("name") String name);
-
+    /**
+     * 根据关键词查询一般单位信息
+     * @param name
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/search")
+    Observable<CompanyListResult> queryCommcmy(@Field("name") String name);
 
     /**
      * 根据关键词查询fireroom信息
@@ -676,7 +686,7 @@ public interface Api {
     Observable<AddLicenseResult> createLicenseDetail(@FieldMap Map<String, String> map);
 
     /**
-     * 查找单位绑定的行政审批
+     * 查找重点单位绑定的行政审批
      *
      * @param id
      * @return
@@ -684,6 +694,17 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/company/license")
     Observable<CompanyLicenseResult> getCompanyLicense(@Field("id") String id);
+
+
+    /**
+     * 查找一般单位绑定的行政审批
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/license")
+    Observable<CompanyLicenseResult> getCommcmyLicense(@Field("id") String id);
 
     /**
      * 根据name查找行政审批项目
@@ -704,6 +725,16 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/company/attachlicense")
     Observable<AddCompanyResult> attachLicense(@Field("company_id") String company_id,
+                                               @Field("license_detail_id") String license_detail_id);
+
+    /**
+     *
+     *绑定行政审批
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/attachlicense")
+    Observable<AddCompanyResult> attachCommLicense(@Field("company_id") String company_id,
                                                @Field("license_detail_id") String license_detail_id);
 }
 

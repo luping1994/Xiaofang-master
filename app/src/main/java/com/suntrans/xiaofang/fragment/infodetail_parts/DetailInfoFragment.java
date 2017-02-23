@@ -1,10 +1,13 @@
 package com.suntrans.xiaofang.fragment.infodetail_parts;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -14,20 +17,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.amap.api.maps.model.LatLng;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.edit.EditCommcmyInfo_activity;
+import com.suntrans.xiaofang.activity.edit.EditCompanyInfo_activity;
+import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
+import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
+import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.DbHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
+import com.suntrans.xiaofang.utils.UiUtils;
+import com.suntrans.xiaofang.utils.Utils;
+import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
+
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Looney on 2016/12/22.
  */
 
-public class DetailInfoFragment extends RxFragment {
+public class DetailInfoFragment extends RxFragment implements View.OnClickListener {
 
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -35,19 +54,47 @@ public class DetailInfoFragment extends RxFragment {
     private MyAdapter myAdapter;
 
 
+    private FloatingActionMenu menuRed;
+    private FloatingActionButton fab1;
+    private FloatingActionButton fab2;
+    private FloatingActionButton fab3;
+    private CompanyDetailnfo myInfo;
+
+    private int companyType;
+
+
+    public static DetailInfoFragment newInstance(int companyType) {
+        DetailInfoFragment fragment = new DetailInfoFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("companyType", companyType);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detailinfo, container, false);
         initData();
+        companyType = getArguments().getInt("companyType");
         System.out.println("onCreateView");
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view,savedInstanceState);
+        super.onViewCreated(view, savedInstanceState);
         LogUtil.i("DetailInfoFragment==>onViewVreated");
+
+        menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
+        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
+        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
+        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
+
+        fab1.setOnClickListener(this);
+        fab2.setOnClickListener(this);
+        fab3.setOnClickListener(this);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
         manager = new LinearLayoutManager(getActivity());
         myAdapter = new MyAdapter();
@@ -298,6 +345,7 @@ public class DetailInfoFragment extends RxFragment {
 
 
     public void setData(CompanyDetailnfo info) {
+        this.myInfo = info;
         refreshView(info);
     }
 
@@ -305,16 +353,16 @@ public class DetailInfoFragment extends RxFragment {
         datas.get(0).put(1, info.name);//名字
         datas.get(1).put(1, info.addr);//地址
         datas.get(2).put(1, info.incharge == null ? "" : info.incharge);
-        String dangerlevels="";
-        if (info.dangerlevel!=null){
-            if (info.dangerlevel.equals("1")){
+        String dangerlevels = "";
+        if (info.dangerlevel != null) {
+            if (info.dangerlevel.equals("1")) {
                 dangerlevels = "火灾高危单位";
-            }else if (info.dangerlevel.equals("2")){
+            } else if (info.dangerlevel.equals("2")) {
                 dangerlevels = "一般消防安全重点单位";
-            }else if (info.dangerlevel.equals("3")){
-                dangerlevels =  "十小场所";
-            }else if (info.dangerlevel.equals("4")){
-                dangerlevels="其他非重点单位";
+            } else if (info.dangerlevel.equals("3")) {
+                dangerlevels = "十小场所";
+            } else if (info.dangerlevel.equals("4")) {
+                dangerlevels = "其他非重点单位";
             }
         }
         datas.get(3).put(1, dangerlevels);
@@ -324,28 +372,44 @@ public class DetailInfoFragment extends RxFragment {
         datas.get(7).put(1, info.facility == null ? "" : info.facility);
 
         String mainId = info.mainattribute;
-        if (mainId!=null){
-            if (info.special!=null){
-                if (info.special.equals("1")){
-                    DbHelper helper = new DbHelper(getActivity(),"Fire",null,1);
+
+        if (mainId != null) {
+            if (info.special != null) {
+                if (info.special.equals("1")) {
+                    StringBuilder sb = new StringBuilder();
+                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
                     SQLiteDatabase db = helper.getReadableDatabase();
                     db.beginTransaction();
-                    Cursor cursor = db.rawQuery("select Name from attr_main where Id=?",new String[]{mainId});
-                    if (cursor.getCount()>0){
-                        while (cursor.moveToNext()){
-                            datas.get(8).put(1, cursor.getString(0));
+                    Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
+                    if (cursor.getCount() > 0) {
+                        while (cursor.moveToNext()) {
+                            sb.append(cursor.getString(0));
                         }
                     }
+                    if (info.subattribute != null) {
+                        Cursor cursor2 = db.rawQuery("select Name from attr_sub where Id=?", new String[]{info.subattribute});
+                        if (cursor2.getCount() > 0) {
+                            while (cursor2.moveToNext()) {
+                                sb.append("(")
+                                        .append(cursor2.getString(0))
+                                        .append(")");
+                            }
+                        }
+                        cursor2.close();
+                    }
+                    String attr = sb.toString();
+                    if (Utils.isVaild(attr))
+                        datas.get(8).put(1, attr);
                     cursor.close();
                     db.setTransactionSuccessful();
                     db.endTransaction();
-                }else if (info.special.equals("0")){
-                    DbHelper helper = new DbHelper(getActivity(),"Fire",null,1);
+                } else if (info.special.equals("0")) {
+                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
                     SQLiteDatabase db = helper.getReadableDatabase();
                     db.beginTransaction();
-                    Cursor cursor = db.rawQuery("select Name from attr_general where Id=?",new String[]{mainId});
-                    if (cursor.getCount()>0){
-                        while (cursor.moveToNext()){
+                    Cursor cursor = db.rawQuery("select Name from attr_general where Id=?", new String[]{mainId});
+                    if (cursor.getCount() > 0) {
+                        while (cursor.moveToNext()) {
                             datas.get(8).put(1, cursor.getString(0));
                         }
                     }
@@ -354,7 +418,6 @@ public class DetailInfoFragment extends RxFragment {
                     db.endTransaction();
                 }
             }
-
 
         }
 
@@ -378,7 +441,7 @@ public class DetailInfoFragment extends RxFragment {
         datas.get(18).put(1, info.leaderdepart == null ? "" : info.leaderdepart);
         datas.get(19).put(1, info.foundtime == null ? "" : info.foundtime);
         datas.get(20).put(1, info.phone == null ? "" : info.phone);
-        datas.get(21).put(1, info.staffnum==null?"":info.staffnum+ "人");
+        datas.get(21).put(1, info.staffnum == null ? "" : info.staffnum + "人");
         datas.get(22).put(1, info.area == null ? "" : info.area + "平方米");
         datas.get(23).put(1, info.firemannum == null ? "" : info.firemannum + "人");
         datas.get(24).put(1, info.lanenum == null ? "" : info.lanenum + "个");
@@ -392,12 +455,184 @@ public class DetailInfoFragment extends RxFragment {
 //
 //            datas.get(30).put(1,"东:"+ info.east + "\n" + "西:" + info.west + "\n" + "南:" + info.south + "\n" + "北:" + info.north);
 //        }
-        if (info.nearby!=null){
-            datas.get(29).put(1,info.nearby);
+        if (info.nearby != null) {
+            datas.get(29).put(1, info.nearby);
         }
         datas.get(30).put(1, info.remark);
 
         myAdapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab1:
+                if (myInfo == null) {
+                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+                    break;
+                }
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        delete();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.setTitle("确定删除该单位?");
+                dialog.show();
+                break;
+            case R.id.fab2:
+                editInfo();
+                break;
+            case R.id.fab3:
+                if (myInfo == null) {
+                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+                    break;
+                }
+                LatLng to =null;
+                if (Utils.isVaild(myInfo.lat) && Utils.isVaild(myInfo.lng))
+                    to = new LatLng(Double.valueOf(myInfo.lat), Double.valueOf(myInfo.lng));
+
+                Intent intent1 = new Intent();
+                intent1.setClass(getActivity(), CalculateRoute_Activity.class);
+                if (getActivity().getIntent().getParcelableExtra("from") == null || to == null) {
+                    final AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                    builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog dialog1 = builder1.create();
+                    dialog1.setTitle("无法获取当前位置或单位未添加地理坐标,无法导航!");
+                    dialog1.show();
+                    break;
+                }
+                intent1.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
+                intent1.putExtra("to", to);
+                startActivity(intent1);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                break;
+        }
+    }
+
+    private void delete() {
+        if (companyType == MarkerHelper.S0CIETY) {
+            RetrofitHelper.getApi().deleteCompany(myInfo.id)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            UiUtils.showToast(UiUtils.getContext(), "删除失败");
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
+                                        }
+                                    });
+                                    builder.create().show();
+                                } else {
+                                    builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    });
+                                    builder.create().show();
+                                }
+                            } else {
+                                UiUtils.showToast("删除失败");
+                            }
+                        }
+                    });
+        } else if (companyType == MarkerHelper.COMMONCOMPANY) {
+            RetrofitHelper.getApi().deleteCommCompany(myInfo.id)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            UiUtils.showToast(UiUtils.getContext(), "删除失败");
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
+                                        }
+                                    });
+                                    builder.create().show();
+                                } else {
+                                    builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    });
+                                    builder.create().show();
+                                }
+                            } else {
+                                UiUtils.showToast("删除失败");
+                            }
+                        }
+                    });
+        }
+    }
+
+    public void editInfo() {
+
+        if (myInfo == null) {
+            UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+            return;
+        }
+        Intent intent = new Intent();
+        if (companyType == MarkerHelper.S0CIETY) {
+
+            intent.setClass(getActivity(), EditCompanyInfo_activity.class);
+        } else {
+            intent.setClass(getActivity(), EditCommcmyInfo_activity.class);
+
+        }
+        intent.putExtra("title", myInfo.name);
+        intent.putExtra("info", myInfo);
+
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
 }

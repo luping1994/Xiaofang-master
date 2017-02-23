@@ -29,7 +29,7 @@
             android:textSize="25sp"
             android:layout_above="@+id/ll_login"
             android:layout_marginBottom="60dp"
-            android:text="消防安全网格化管理平台"/>
+            android:text="消防信息采集端"/>
     </LinearLayout>
 
 

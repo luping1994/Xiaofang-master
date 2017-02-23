@@ -233,10 +233,16 @@ public class EditFireBrigadeinfo_activity extends BasedActivity {
         builder.put("id", info.id);
         if (Utils.isVaild(name1)) {
             builder.put("name", name1.replace(" ", ""));
+        }else {
+            UiUtils.showToast("名称不能为空");
+            return;
         }
 
         if (Utils.isVaild(addr1)) {
             builder.put("addr", addr1.replace(" ", ""));
+        }else {
+            UiUtils.showToast("地址不能为空");
+            return;
         }
         if (Utils.isVaild(lng1)) {
             builder.put("lng", lng1.replace(" ", ""));

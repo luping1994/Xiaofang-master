@@ -63,10 +63,11 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp" />
             <EditText
+                android:textSize="@dimen/text_size"
                 android:inputType="text"
                 android:singleLine="true"
                 android:imeOptions="actionSearch"
-                android:hint="搜索单位"
+                android:hint="搜索行政审批项目"
                 android:id="@+id/tx_search"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

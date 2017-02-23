@@ -1,5 +1,6 @@
 package com.suntrans.xiaofang.activity.check;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -456,69 +458,84 @@ public class Check_detail_Activity extends BaseActivity {
 //
 
     public void passCheck(View view) {
-//        if (source_id.equals("3")){
-            if (special.equals("1")){
-                RetrofitHelper.getApi().passCompany(id)
-                        .compose(this.<CompanyPassResult>bindUntilEvent(ActivityEvent.DESTROY))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<CompanyPassResult>() {
-                            @Override
-                            public void onCompleted() {
+        new AlertDialog.Builder(Check_detail_Activity.this)
+                .setMessage("是否通过/保存?")
+                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        passCheck();
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                            }
+                    }
+                }).create().show();
+    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                e.printStackTrace();
-                                UiUtils.showToast("服务器错误");
+    private void passCheck() {
+        if (special.equals("1")){
+            RetrofitHelper.getApi().passCompany(id)
+                    .compose(this.<CompanyPassResult>bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<CompanyPassResult>() {
+                        @Override
+                        public void onCompleted() {
 
-                            }
+                        }
 
-                            @Override
-                            public void onNext(CompanyPassResult result) {
-                                if (result!=null){
-                                    if (result.status.equals("1")){
-                                        UiUtils.showToast(result.result);
-                                        finish();
-                                    }else {
-                                        UiUtils.showToast(result.msg);
-                                    }
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            UiUtils.showToast("服务器错误");
+
+                        }
+
+                        @Override
+                        public void onNext(CompanyPassResult result) {
+                            if (result!=null){
+                                if (result.status.equals("1")){
+                                    UiUtils.showToast(result.result);
+                                    finish();
+                                }else {
+                                    UiUtils.showToast(result.msg);
                                 }
                             }
-                        });
-            }else if (special.equals("0")){
-                RetrofitHelper.getApi().passCommCompany(id)
-                        .compose(this.<CompanyPassResult>bindUntilEvent(ActivityEvent.DESTROY))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<CompanyPassResult>() {
-                            @Override
-                            public void onCompleted() {
+                        }
+                    });
+        }else if (special.equals("0")){
+            RetrofitHelper.getApi().passCommCompany(id)
+                    .compose(this.<CompanyPassResult>bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<CompanyPassResult>() {
+                        @Override
+                        public void onCompleted() {
 
-                            }
+                        }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                e.printStackTrace();
-                                UiUtils.showToast("服务器错误");
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            UiUtils.showToast("服务器错误");
 
-                            }
+                        }
 
-                            @Override
-                            public void onNext(CompanyPassResult result) {
-                                if (result!=null){
-                                    if (result.status.equals("1")){
-                                        UiUtils.showToast(result.result);
-                                        finish();
-                                    }else {
-                                        UiUtils.showToast(result.msg);
-                                    }
+                        @Override
+                        public void onNext(CompanyPassResult result) {
+                            if (result!=null){
+                                if (result.status.equals("1")){
+                                    UiUtils.showToast(result.result);
+                                    finish();
+                                }else {
+                                    UiUtils.showToast(result.msg);
                                 }
                             }
-                        });
-            }
-//        }
+                        }
+                    });
+        }
     }
 
 
@@ -532,9 +549,11 @@ public class Check_detail_Activity extends BaseActivity {
             if (special.equals("1")){
                 intent.setClass(this, EditCompanyInfo_activity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }else if (special.equals("0")){
                 intent.setClass(this, EditCommcmyInfo_activity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             finish();
         }

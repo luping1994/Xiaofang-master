@@ -3,6 +3,7 @@ package com.suntrans.xiaofang.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.suntrans.xiaofang.R;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import java.util.LinkedList;
@@ -41,5 +42,11 @@ public class  BasedActivity extends RxAppCompatActivity {
             activity.finish();
         }
 
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

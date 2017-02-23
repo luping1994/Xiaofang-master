@@ -28,12 +28,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.amap.api.maps.model.LatLng;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.edit.EditLicense_activity;
 import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
+import com.suntrans.xiaofang.activity.others.Search_license_activity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
 import com.suntrans.xiaofang.fragment.BasedFragment;
 import com.suntrans.xiaofang.model.company.CompanyLicenseInfo;
@@ -44,6 +46,7 @@ import com.suntrans.xiaofang.model.license.LicenseDetailResult;
 import com.suntrans.xiaofang.model.license.LicenseItemInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -62,13 +65,14 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.suntrans.xiaofang.R.id.fab3;
 import static com.suntrans.xiaofang.utils.Utils.pad;
 
 /**
  * Created by Looney on 2017/1/9.
  */
 
-public class GovApproal_fragment extends BasedFragment {
+public class GovApproal_fragment extends BasedFragment implements View.OnClickListener {
 
     private static final String TAG = "GovApproal_fragment";
     private ArrayList<SparseArray<String>> datas = new ArrayList<>();
@@ -76,11 +80,25 @@ public class GovApproal_fragment extends BasedFragment {
     private LinearLayoutManager manager;
     private GovApproal_fragment.MyAdapter myAdapter;
 
+    private FloatingActionButton fab1;
+    private FloatingActionButton fab2;
 
+
+    private int companyType;
+
+
+    public static GovApproal_fragment newInstance(int companyType) {
+        GovApproal_fragment fragment = new GovApproal_fragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("companyType", companyType);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initData();
+        companyType = getArguments().getInt("companyType");
         return inflater.inflate(R.layout.fragment_company_govapproal, container, false);
     }
 
@@ -93,7 +111,17 @@ public class GovApproal_fragment extends BasedFragment {
 
         recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.VERTICAL));
         recyclerView.setVisibility(View.INVISIBLE);
+        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
+        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
 
+        fab1.setOnClickListener(this);
+        fab2.setOnClickListener(this);
+
+
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
 
     }
 
@@ -109,10 +137,94 @@ public class GovApproal_fragment extends BasedFragment {
 
     }
 
+    int mYear;
+    int mMonth;
+    int mDay;
 
+
+    private boolean hasBinding = false;
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.fab1:
+                addCompanyLicense();
+                break;
+            case R.id.fab2:
+                if (hasBinding){
+                    //若已经绑定项目 可以绑定或者解绑 或者更改
+                }else {
+                    Intent intent2 = new Intent();
+                    intent2.putExtra("companyID", id);
+                    intent2.putExtra("type", MarkerHelper.S0CIETY);
+                    intent2.setClass(getActivity(), Search_license_activity.class);
+                    startActivity(intent2);
+                    getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                }
+                break;
+        }
+    }
+
+    private void addCompanyLicense() {
+        AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
+        final View view = LayoutInflater.from(getContext()).inflate(R.layout.add_license_item, null);
+        view.findViewById(R.id.time).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        mYear = year;
+                        mMonth = month;
+                        mDay = dayOfMonth;
+                        ((TextView) v).setText(
+                                new StringBuilder()
+                                        .append(mYear).append("-")
+                                        .append(pad(mMonth + 1)).append("-")
+                                        .append(pad(mDay))
+                        );
+                    }
+                }, mYear, mMonth, mDay);
+                pickerDialog.show();
+            }
+        });
+        builder2.setView(view)
+                .setTitle("新增行政审批信息")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int typeid = ((RadioGroup) view.findViewById(R.id.radioGroup_leixing)).getCheckedRadioButtonId();
+                        int hegeid = ((RadioGroup) view.findViewById(R.id.radioGroup_hege)).getCheckedRadioButtonId();
+                        String number1 = ((EditText) view.findViewById(R.id.number)).getText().toString();
+                        String time1 = ((TextView) view.findViewById(R.id.time)).getText().toString();
+                        String type = "";
+                        String isq = "";
+                        if (typeid == R.id.jianshen) {
+                            type = "1";
+                        } else if (typeid == R.id.yanshou) {
+                            type = "2";
+                        } else if (typeid == R.id.kaiye) {
+                            type = "3";
+                        }
+                        if (hegeid == R.id.radio_hege) {
+                            isq = "1";
+                        } else if (hegeid == R.id.radio_buhege) {
+                            isq = "0";
+                        }
+                        dialog.dismiss();
+                        addCompantLicenseDetail(type, number1, time1, isq);
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder2.create().show();
+    }
+
+    private void addCompantLicenseDetail(String type, String number1, String time1, String isq) {
+
     }
 
 
@@ -220,17 +332,19 @@ public class GovApproal_fragment extends BasedFragment {
     LatLng to;
 
     private void getData(String id) {
-        RetrofitHelper.getApi().getCompanyLicense(id)
-                .compose(this.<CompanyLicenseResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<CompanyLicenseResult>() {
-                    @Override
-                    public void call(CompanyLicenseResult result) {
-                        if (result != null) {
-                            if (result.status.equals("1")) {
-                                GovApproal_fragment.this.infos = result.result;
-                                refreshView(GovApproal_fragment.this.infos);
+        if (companyType == MarkerHelper.S0CIETY){
+            RetrofitHelper.getApi().getCompanyLicense(id)
+                    .compose(this.<CompanyLicenseResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Action1<CompanyLicenseResult>() {
+                        @Override
+                        public void call(CompanyLicenseResult result) {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    GovApproal_fragment.this.infos = result.result;
+                                    refreshView(GovApproal_fragment.this.infos);
+                                }
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
@@ -239,22 +353,59 @@ public class GovApproal_fragment extends BasedFragment {
                                         error.setVisibility(View.GONE);
                                     }
                                 }, 500);
+                            } else {
+                                progressBar.setVisibility(View.INVISIBLE);
+                                error.setVisibility(View.VISIBLE);
+                                UiUtils.showToast(App.getApplication(), "请求失败!");
                             }
-                        } else {
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            throwable.printStackTrace();
                             progressBar.setVisibility(View.INVISIBLE);
                             error.setVisibility(View.VISIBLE);
-                            UiUtils.showToast(App.getApplication(), "请求失败!");
+                            UiUtils.showToast(App.getApplication(), "请求失败");
                         }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throwable.printStackTrace();
-                        progressBar.setVisibility(View.INVISIBLE);
-                        error.setVisibility(View.VISIBLE);
-                        UiUtils.showToast(App.getApplication(), "请求失败");
-                    }
-                });
+                    });
+        }else {
+            RetrofitHelper.getApi().getCommcmyLicense(id)
+                    .compose(this.<CompanyLicenseResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Action1<CompanyLicenseResult>() {
+                        @Override
+                        public void call(CompanyLicenseResult result) {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    GovApproal_fragment.this.infos = result.result;
+                                    refreshView(GovApproal_fragment.this.infos);
+                                }
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                        recyclerView.setVisibility(View.VISIBLE);
+                                        error.setVisibility(View.GONE);
+                                    }
+                                }, 500);
+                            } else {
+                                progressBar.setVisibility(View.INVISIBLE);
+                                error.setVisibility(View.VISIBLE);
+                                UiUtils.showToast(App.getApplication(), "请求失败!");
+                            }
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            throwable.printStackTrace();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            error.setVisibility(View.VISIBLE);
+                            UiUtils.showToast(App.getApplication(), "请求失败");
+                        }
+                    });
+        }
+
     }
 
     Handler handler = new Handler();

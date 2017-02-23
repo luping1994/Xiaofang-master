@@ -77,7 +77,7 @@ public class EditFirestationnfo_activity extends BasedActivity {
 
             toolbar.setTitle("修改政府小型站信息");
         } else if (type == MarkerHelper.FIRESTATION) {
-            toolbar.setTitle("修改乡村消防队信息");
+            toolbar.setTitle("修改乡镇消防队信息");
 
         }
         setSupportActionBar(toolbar);

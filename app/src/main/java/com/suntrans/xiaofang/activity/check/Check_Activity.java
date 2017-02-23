@@ -1,11 +1,13 @@
 package com.suntrans.xiaofang.activity.check;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.iflytek.thirdparty.E;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
@@ -21,6 +24,7 @@ import com.suntrans.xiaofang.model.company.CompanyList;
 import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import org.json.JSONArray;
 
@@ -32,6 +36,9 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Looney on 2016/12/12.
@@ -47,14 +54,16 @@ public class Check_Activity extends BaseActivity {
             switch (msg.what) {
                 case 1:
                     adapter.notifyDataSetChanged();
+                    dismissDailog();
                     break;
                 case 0:
-                    if (msg.obj!=null)
-                    UiUtils.showToast(App.getApplication(), (String) msg.obj);
+//                    if (msg.obj != null)
+//                        UiUtils.showToast((String) msg.obj);
                     break;
             }
         }
     };
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,89 +95,112 @@ public class Check_Activity extends BaseActivity {
         recyclerView.addItemDecoration(new RecyclerViewDivider(this, LinearLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+        dialog = new ProgressDialog(Check_Activity.this);
+        dialog.setCancelable(false);
+        dialog.setMessage("加载数据中,请稍后..");
     }
 
     @Override
     protected void setUpData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                datas.clear();
-                getDataFromServer();
-            }
-        }).start();
+        datas.clear();
+        getDataFromServer();
 
+    }
+
+
+    private void dismissDailog() {
+        if (dialog != null) {
+            if (dialog.isShowing())
+                dialog.dismiss();
+        }
     }
 
     private void getDataFromServer() {
+        dialog.show();
         JSONArray array = new JSONArray();
         array.put("1");
         array.put("3");
-        String source_id=array.toString();
-        RetrofitHelper.getApi().getCompanyCheck("0",source_id).enqueue(new Callback<CompanyListResult>() {
-            @Override
-            public void onResponse(Call<CompanyListResult> call, Response<CompanyListResult> response) {
-                CompanyListResult result = response.body();
-                System.out.println("raw:" + response.raw());
-                System.out.println("message" + response.message());
-                if (result != null) {
-                    if (!result.status.equals("0") && result != null) {
-                        List<CompanyList> lists = result.results;
-                        for (CompanyList info : lists) {
-                            if (info.id == null || info.name == null) {
-                                continue;
-                            }
-                            HashMap<String, String> map1 = new HashMap<String, String>();
-                            map1.put("state", "0");
-                            map1.put("name", info.name);
-                            map1.put("id", info.id);
-                            map1.put("source_id", info.source_id);
-                            map1.put("special", info.special);
-                            datas.add(map1);
-                            handler.sendEmptyMessageDelayed(1, 500);
-//                            handler.sendEmptyMessage(1);
-                        }
-                    } else {
-                        try {
-                            Message msg = new Message();
-                            msg.what=0;
-                            msg.obj = result.msg;
-                            handler.sendMessageDelayed(msg,500);
+        final String source_id = array.toString();
+        RetrofitHelper.getApi().getCompanyCheck("0", source_id)
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
 
-                        } catch (Exception e) {
-
-                        }
                     }
-                } else {
-                    Message msg = new Message();
-                    msg.what=0;
-                    msg.obj = "获取审核单位失败!";
-                    handler.sendMessageDelayed(msg,500);
-                }
-            }
 
-            @Override
-            public void onFailure(Call<CompanyListResult> call, Throwable t) {
-                t.printStackTrace();
-                UiUtils.showToast(App.getApplication(), "获取审核单位失败,可能权限不足");
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dismissDailog();
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                List<CompanyList> lists = result.results;
+                                for (CompanyList info : lists) {
+                                    if (info.id == null || info.name == null) {
+                                        continue;
+                                    }
+                                    HashMap<String, String> map1 = new HashMap<String, String>();
+                                    map1.put("state", "0");
+                                    map1.put("name", info.name);
+                                    map1.put("id", info.id);
+                                    map1.put("source_id", info.source_id);
+                                    map1.put("special", info.special);
+                                    datas.add(map1);
+                                }
+                            } else {
+                                try {
+                                    Message msg = new Message();
+                                    msg.what = 0;
+                                    msg.obj = result.msg;
+                                    handler.sendMessageDelayed(msg, 500);
+
+                                } catch (Exception e) {
+
+                                }
+                            }
+                        } else {
+                            Message msg = new Message();
+                            msg.what = 0;
+                            msg.obj = "获取审核单位失败!";
+                            handler.sendMessageDelayed(msg, 500);
+                        }
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                getCommcmyData(source_id);
+
+                            }
+                        }.start();
+                    }
+                });
     }
 
 
+    /**
+     * CompanyListResult result = response.body();
+     */
+
     class ViewHolder1 extends RecyclerView.ViewHolder {
         TextView name;
-
+        CardView cardView;
         public ViewHolder1(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.name);
-            name.setOnClickListener(new View.OnClickListener() {
+            cardView = (CardView) itemView.findViewById(R.id.cardview);
+            cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Check_Activity.this, Check_detail_Activity.class);
                     intent.putExtra("id", datas.get(getAdapterPosition()).get("id"));
-                    intent.putExtra("source_id",datas.get(getAdapterPosition()).get("source_id"));
-                    intent.putExtra("special",datas.get(getAdapterPosition()).get("special"));
+                    intent.putExtra("source_id", datas.get(getAdapterPosition()).get("source_id"));
+                    intent.putExtra("special", datas.get(getAdapterPosition()).get("special"));
                     startActivity(intent);
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
@@ -232,4 +264,69 @@ public class Check_Activity extends BaseActivity {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
     }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    private void getCommcmyData(String source_id) {
+        RetrofitHelper.getApi().getCommcmyCheck("0", source_id)
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        dismissDailog();
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+
+                        if (result != null) {
+                            if (!result.status.equals("0") && result != null) {
+                                List<CompanyList> lists = result.results;
+                                for (CompanyList info : lists) {
+                                    if (info.id == null || info.name == null) {
+                                        continue;
+                                    }
+                                    HashMap<String, String> map1 = new HashMap<String, String>();
+                                    map1.put("state", "0");
+                                    map1.put("name", info.name);
+                                    map1.put("id", info.id);
+                                    map1.put("source_id", info.source_id);
+                                    map1.put("special", info.special);
+                                    datas.add(map1);
+                                    //                            handler.sendEmptyMessage(1);
+                                }
+                            } else {
+                                try {
+//                                    Message msg = new Message();
+//                                    msg.what=0;
+//                                    msg.obj = result.msg;
+//                                    handler.sendMessageDelayed(msg,500);
+
+                                } catch (Exception e) {
+
+                                }
+                            }
+                        } else {
+                            Message msg = new Message();
+                            msg.what = 0;
+                            msg.obj = "获取审核单位失败!";
+                            handler.sendMessageDelayed(msg, 500);
+                        }
+                        handler.sendEmptyMessageDelayed(1, 500);
+                    }
+                });
+    }
+
 }

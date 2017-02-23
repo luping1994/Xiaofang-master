@@ -193,8 +193,7 @@ public class Search_license_activity extends BasedActivity {
                         Intent intent = new Intent();
                         intent.putExtra("licenseID", datas.get(position).get(0));
                         intent.putExtra("companyID", getIntent().getStringExtra("companyID"));
-//                        companyType = getIntent().getStringExtra("companyID").split("#")[1];
-//                        intent.putExtra("to",to);
+                        intent.putExtra("type", getIntent().getIntExtra("type",MarkerHelper.S0CIETY));
                         intent.setClass(Search_license_activity.this, Attachlicense_activity.class);
                         startActivity(intent);
                         finish();

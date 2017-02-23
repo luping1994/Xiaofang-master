@@ -198,7 +198,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="辖区面积"
+                    android:text="*辖区面积"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -234,7 +234,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="人员组成"
+                    android:text="*人员组成"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
                 <LinearLayout

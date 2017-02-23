@@ -41,6 +41,7 @@ import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -64,10 +65,7 @@ public class Type1__info_fragment extends BasedFragment {
 //    private MyAdapter myAdapter;
 //    private CompanyDetailnfo data;
 
-//    private FloatingActionMenu menuRed;
-//    private FloatingActionButton fab1;
-//    private FloatingActionButton fab2;
-//    private FloatingActionButton fab3;
+
 
 
     private TabLayout tabLayout;
@@ -159,11 +157,11 @@ public class Type1__info_fragment extends BasedFragment {
             switch (position) {
                 case 0:
                     if (detailInfoFragment0 == null)
-                        detailInfoFragment0 = new DetailInfoFragment();
+                        detailInfoFragment0 = DetailInfoFragment.newInstance(MarkerHelper.S0CIETY);
                     return detailInfoFragment0;
                 case 1:
                     if (govApproal_fragment == null)
-                        govApproal_fragment = new GovApproal_fragment();
+                        govApproal_fragment = GovApproal_fragment.newInstance(MarkerHelper.S0CIETY);
                     return govApproal_fragment;
                 case 2:
                     if (superviseFragment == null) {
@@ -246,7 +244,6 @@ public class Type1__info_fragment extends BasedFragment {
                                 handler.sendMessageDelayed(Message.obtain(handler, 100, info.name), 500);
                             } else {
                                 UiUtils.showToast(result.msg);
-
                             }
                         } else {
                             UiUtils.showToast(App.getApplication(), "请求失败!");
@@ -289,7 +286,7 @@ public class Type1__info_fragment extends BasedFragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        UiUtils.showToast(UiUtils.getContext(), "删除失败错误");
+                        UiUtils.showToast(UiUtils.getContext(), "删除失败");
                         e.printStackTrace();
                     }
 
@@ -383,18 +380,18 @@ public class Type1__info_fragment extends BasedFragment {
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
             case R.id.xiugai:
-                if (myInfo == null) {
-                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
-                    break;
-                }
-                Intent intent = new Intent();
-                intent.setClass(getActivity(), EditCompanyInfo_activity.class);
-                intent.putExtra("title", title);
-                intent.putExtra("info", myInfo);
-//                intent.putExtra("id", ((InfoDetail_activity) getActivity()).companyId);
-//                intent.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
-                startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//                if (myInfo == null) {
+//                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+//                    break;
+//                }
+//                Intent intent = new Intent();
+//                intent.setClass(getActivity(), EditCompanyInfo_activity.class);
+//                intent.putExtra("title", title);
+//                intent.putExtra("info", myInfo);
+////                intent.putExtra("id", ((InfoDetail_activity) getActivity()).companyId);
+////                intent.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
+//                startActivity(intent);
+//                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
             case R.id.banding:
                 if (govApproal_fragment != null) {
@@ -402,6 +399,7 @@ public class Type1__info_fragment extends BasedFragment {
                     if (id == null) {
                         Intent intent2 = new Intent();
                         intent2.putExtra("companyID", myInfo.id);
+                        intent2.putExtra("type", MarkerHelper.S0CIETY);
                         intent2.setClass(getActivity(), Search_license_activity.class);
                         startActivity(intent2);
                         getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -410,6 +408,7 @@ public class Type1__info_fragment extends BasedFragment {
                         Intent intent2 = new Intent();
                         intent2.putExtra("companyID", myInfo.id);
                         intent2.putExtra("licenseID", id);
+                        intent2.putExtra("type", MarkerHelper.S0CIETY);
                         if (Utils.isVaild(itemIds))
                             intent2.putExtra("licenseItemIds", itemIds);
                         intent2.setClass(getActivity(), Attachlicense_activity.class);
@@ -425,7 +424,7 @@ public class Type1__info_fragment extends BasedFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_detailinfo_type1, menu);
+//        inflater.inflate(R.menu.menu_detailinfo_type1, menu);
     }
 
 }

@@ -1,10 +1,13 @@
 package com.suntrans.xiaofang.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +26,7 @@ import android.os.Handler;
 import android.os.Process;
 import android.os.SystemClock;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -175,6 +179,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
     private void initView() {
 
+        IntentFilter mFilter = new IntentFilter();
+        mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(myNetReceiver, mFilter);   //注册接收网络连接状态改变广播接收器
 
         helper = new MarkerHelper(this);
         helper.setOnGetInfoFinishListener(this);
@@ -218,13 +225,16 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         name = (TextView) findViewById(R.id.text_company_name);
         addrDes = (TextView) findViewById(R.id.text_company_addr);
         detail = (LinearLayout) findViewById(R.id.ll_detail);
-
-
-        detail.setOnClickListener(this);
+        LinearLayout llBottommenu = (LinearLayout) findViewById(R.id.ll_bottom2);
+        llBottommenu.setOnClickListener(this);
 
         mScreenPoint = new Point();
         WindowManager manager = this.getWindowManager();
         manager.getDefaultDisplay().getSize(mScreenPoint);
+
+        getDataDialog = new ProgressDialog(Main_Activity.this);
+        getDataDialog.setCancelable(false);
+        getDataDialog.setMessage("正在加载消防信息,请稍后..");
 
     }
 
@@ -271,18 +281,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                 public void onMapClick(LatLng latLng) {
 //                    LogUtil.i("点击的坐标为:" + latLng.latitude + "," + latLng.longitude);
                     LogUtil.i("map被点击了");
-                    if (bottom2.getVisibility() == View.VISIBLE)
-                    {
-
-                        bottom2.setVisibility(View.GONE);
-                        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.menushow);
-                        bottom2.startAnimation(animation);
-                    }
-                    if (llMoreDanwei.getVisibility() == View.VISIBLE) {
-
-                        llMoreDanwei.setVisibility(View.GONE);
-                        isShowDanweiMenu = false;
-                    }
+                    closeBottomMenu();
+                    closeDanwei();
                     mUiSettings.setLogoBottomMargin(UiUtils.dip2px(5));
 
                 }
@@ -303,11 +303,14 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         geocodeSearch = new GeocodeSearch(getApplicationContext());
     }
 
+    private void closeBottomMenu() {
+        if (bottom2.getVisibility() == View.VISIBLE) {
+            bottom2.setVisibility(View.GONE);
+        }
+    }
+
     private void getData() {
 
-        getDataDialog = new ProgressDialog(Main_Activity.this);
-        getDataDialog.setCancelable(false);
-        getDataDialog.setMessage("正在加载消防信息,请稍后..");
         getDataDialog.show();
         LatLng latLng = new LatLng(30.54260, 114.358693);
         final String dis = "1000000";
@@ -387,7 +390,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.ll_detail:
+            case R.id.ll_bottom2:
                 if (currentmarkerOptions == null) {
                     LogUtil.e("当前选择的图标不存在");
                     return;
@@ -480,21 +483,17 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     intent.putExtra("companyID", id + "#" + MarkerHelper.S0CIETY);
                     intent.setClass(Main_Activity.this, InfoDetail_activity.class);
                     startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 } else {
                     UiUtils.showToast("无效的二维码");
                 }
-                Intent intent = new Intent();
-                intent.putExtra("id", result);
-                intent.setClass(this, InfoDetail_activity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
 
         } else {
             IntentResult result1 = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             if (result1 != null) {
                 if (result1.getContents() == null) {
-//                    UiUtils.showToast("无效的二维码");
+                    UiUtils.showToast("无效的二维码");
                 } else {
 //                    LogUtil.i("扫描结果为:" + result1.getContents());
 //                    UiUtils.showToast(App.getApplication(), result1.getContents());
@@ -508,6 +507,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 //                        .snippet(info.id + "#" + S0CIETY + "#" + "1")
                         intent1.setClass(Main_Activity.this, InfoDetail_activity.class);
                         startActivity(intent1);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     } else {
                         UiUtils.showToast("无效的二维码");
                     }
@@ -556,8 +556,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (bottom2.getVisibility() == View.VISIBLE) {
-                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.menuhide);
                 bottom2.setVisibility(View.GONE);
+                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), android.support.design.R.anim.abc_slide_out_bottom);
                 bottom2.startAnimation(animation);
                 return true;
             }
@@ -643,12 +643,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                 break;
             case R.id.danwei:
                 if (isShowDanweiMenu) {
-                    llMoreDanwei.setVisibility(View.GONE);
-                    isShowDanweiMenu = false;
+                    closeDanwei();
                 } else {
-                    llMoreDanwei.setVisibility(View.VISIBLE);
-                    isShowDanweiMenu = true;
-
+                    openDanwei();
                 }
                 break;
             default:
@@ -711,6 +708,10 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         mFireGroupClusterOverlay.onDestroy();
         mLicenseClusterOverlay.onDestroy();
         mCommCmyClusterOverlay.onDestroy();
+
+        if (myNetReceiver != null) {
+            unregisterReceiver(myNetReceiver);   //注销接收网络变化的广播通知的广播接收器
+        }
         super.onDestroy();
     }
 
@@ -722,7 +723,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     private int i = 0;
 
     public void changedViewType(View view) {
-        if (mMyLocation==null){
+        if (mMyLocation == null) {
             UiUtils.showToast("正在定位,请稍后..");
             return;
         }
@@ -894,12 +895,14 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
     @Override
     public void onCompanyDataFinish(final List<RegionItem> items) {
-        LogUtil.i("重点单位个数:" + items.size());
+        LogUtil.i(TAG, "重点单位个数:" + items.size());
         new Thread() {
             @Override
             public void run() {
                 List<ClusterItem> items1 = new ArrayList<ClusterItem>(items);
-
+                if (mClusterOverlay != null) {
+                    mClusterOverlay.onDestroy();
+                }
                 mClusterOverlay = new ClusterOverlay(aMap, items1,
                         UiUtils.dip2px(clusterRadius, getApplicationContext()),
                         getApplicationContext(), true);
@@ -917,10 +920,10 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             }
                             return bitmapDrawable;
                         } else {
-                            Drawable bitmapDrawable = mFireroomDrawables.get(2);
+                            Drawable bitmapDrawable = mCompanyDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(159, 0, 220, 255)));
+                                        Color.argb(159, 0, 0xa1, 0xe9)));
                                 mCompanyDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -944,7 +947,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             @Override
             public void run() {
                 List<ClusterItem> items2 = new ArrayList<ClusterItem>(items);
-
+                if (mCommCmyClusterOverlay != null) {
+                    mCommCmyClusterOverlay.onDestroy();
+                }
                 mCommCmyClusterOverlay = new ClusterOverlay(aMap, items2,
                         UiUtils.dip2px(clusterRadius, getApplicationContext()),
                         getApplicationContext(), false);
@@ -960,10 +965,10 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             }
                             return bitmapDrawable;
                         } else {
-                            Drawable bitmapDrawable = mFireroomDrawables.get(2);
+                            Drawable bitmapDrawable = mCommCmyDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(159, 139, 0, 197)));
+                                        Color.argb(159, 0xae, 0x5d, 0xa1)));
                                 mCommCmyDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -985,7 +990,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             @Override
             public void run() {
                 List<ClusterItem> items2 = new ArrayList<ClusterItem>(items);
-
+                if (mFireRoomClusterOverlay != null) {
+                    mFireRoomClusterOverlay.onDestroy();
+                }
                 mFireRoomClusterOverlay = new ClusterOverlay(aMap, items2,
                         UiUtils.dip2px(clusterRadius, getApplicationContext()),
                         getApplicationContext(), false);
@@ -1004,7 +1011,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireroomDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(159, 0, 220, 255)));
+                                        Color.argb(159, 0x18, 0x1d, 0x4b)));
                                 mFireroomDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1027,7 +1034,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             @Override
             public void run() {
                 List<ClusterItem> items2 = new ArrayList<ClusterItem>(items);
-
+                if (mFireBrigadeClusterOverlay != null) {
+                    mFireBrigadeClusterOverlay.onDestroy();
+                }
                 mFireBrigadeClusterOverlay = new ClusterOverlay(aMap, items2,
                         UiUtils.dip2px(fireGroupClusterRadius, getApplicationContext()),
                         getApplicationContext(), false);
@@ -1037,7 +1046,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         if (clusterNum == 1) {
                             Drawable bitmapDrawable = mFireBrigadeDrawables.get(1);
                             if (bitmapDrawable == null) {
-                                Bitmap src = getBitmap(R.drawable.ic_firegroup);
+                                Bitmap src = getBitmap(R.drawable.ic_firebrigade);
                                 bitmapDrawable = new BitmapDrawable(getApplicationContext().getResources(), src);
                                 mFireBrigadeDrawables.put(1, bitmapDrawable);
                             }
@@ -1046,7 +1055,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireBrigadeDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(159, 255, 0, 0)));
+                                        Color.argb(159, 0x96, 0x58, 0x2a)));
                                 mFireBrigadeDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1068,7 +1077,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             @Override
             public void run() {
                 List<ClusterItem> items2 = new ArrayList<ClusterItem>(items);
-
+                if (mFireGroupClusterOverlay != null) {
+                    mFireGroupClusterOverlay.onDestroy();
+                }
                 mFireGroupClusterOverlay = new ClusterOverlay(aMap, items2,
                         UiUtils.dip2px(fireGroupClusterRadius, getApplicationContext()),
                         getApplicationContext(), false);
@@ -1087,7 +1098,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireGroupDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(159, 195, 0, 0)));
+                                        Color.argb(159, 0xe6, 0, 0x12)));
                                 mFireGroupDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1110,7 +1121,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             @Override
             public void run() {
                 List<ClusterItem> items2 = new ArrayList<ClusterItem>(items);
-
+                if (mFireAdminStationClusterOverlay != null) {
+                    mFireAdminStationClusterOverlay.onDestroy();
+                }
                 mFireAdminStationClusterOverlay = new ClusterOverlay(aMap, items2,
                         UiUtils.dip2px(clusterRadius, getApplicationContext()),
                         getApplicationContext(), false);
@@ -1120,7 +1133,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         if (clusterNum == 1) {
                             Drawable bitmapDrawable = mFireAdminStationDrawables.get(1);
                             if (bitmapDrawable == null) {
-                                Bitmap src = getBitmap(R.drawable.ic_fireroom);
+                                Bitmap src = getBitmap(R.drawable.ic_fireadminstation);
                                 bitmapDrawable = new BitmapDrawable(getApplicationContext().getResources(), src);
                                 mFireAdminStationDrawables.put(1, bitmapDrawable);
                             }
@@ -1129,7 +1142,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireAdminStationDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(159, 0x7f, 0xff, 0)));
+                                        Color.argb(159, 0xf2, 0x91, 0x49)));
                                 mFireAdminStationDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1151,7 +1164,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             @Override
             public void run() {
                 List<ClusterItem> items2 = new ArrayList<ClusterItem>(items);
-
+                if (mFireStationClusterOverlay != null) {
+                    mFireStationClusterOverlay.onDestroy();
+                }
                 mFireStationClusterOverlay = new ClusterOverlay(aMap, items2,
                         UiUtils.dip2px(clusterRadius, getApplicationContext()),
                         getApplicationContext(), false);
@@ -1161,7 +1176,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         if (clusterNum == 1) {
                             Drawable bitmapDrawable = mFireStationDrawables.get(1);
                             if (bitmapDrawable == null) {
-                                Bitmap src = getBitmap(R.drawable.ic_fireroom);
+                                Bitmap src = getBitmap(R.drawable.ic_firestation);
                                 bitmapDrawable = new BitmapDrawable(getApplicationContext().getResources(), src);
                                 mFireStationDrawables.put(1, bitmapDrawable);
                             }
@@ -1171,7 +1186,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireStationDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(159, 0xda, 0xa5, 0x20)));
+                                        Color.argb(159, 0xff, 0xea, 0x00)));
                                 mFireStationDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1193,7 +1208,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             @Override
             public void run() {
                 List<ClusterItem> items2 = new ArrayList<ClusterItem>(items);
-
+                if (mLicenseClusterOverlay != null) {
+                    mLicenseClusterOverlay.onDestroy();
+                }
                 mLicenseClusterOverlay = new ClusterOverlay(aMap, items2,
                         UiUtils.dip2px(clusterRadius, getApplicationContext()),
                         getApplicationContext(), false);
@@ -1212,7 +1229,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mLicenseDrawablse.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(159, 0, 0, 0)));
+                                        Color.argb(159, 0x00, 0x71, 0x30)));
                                 mLicenseDrawablse.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1236,7 +1253,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                 public void run() {
                     getDataDialog.dismiss();
                 }
-            },500);
+            }, 500);
         }
     }
 
@@ -1259,12 +1276,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             currentmarkerOptions.title(markerTitle)
                     .snippet(markerSnippet)
                     .position(po);
-
-            mUiSettings.setLogoBottomMargin(UiUtils.dip2px(100));
-
-            bottom2.setVisibility(View.VISIBLE);
-            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.menushow);
-            bottom2.startAnimation(animation);
+            mUiSettings.setLogoBottomMargin(UiUtils.dip2px(70));
+            showBottom2Menu();
             name.setText(name1);
             distance = calculateLineDistance(mMyLocation, clusterItems.get(0).getPosition());
             DecimalFormat df = new DecimalFormat("######0.");
@@ -1342,6 +1355,14 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             aMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 0));
         }
 
+    }
+
+    private void showBottom2Menu() {
+        if (bottom2.getVisibility()==View.GONE){
+            bottom2.setVisibility(View.VISIBLE);
+            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), android.support.design.R.anim.abc_slide_in_bottom);
+            bottom2.startAnimation(animation);
+        }
     }
 
 
@@ -1461,13 +1482,28 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
     @Override
     public boolean onMenuOpened(int featureId, Menu menu) {
-        if (llMoreDanwei.getVisibility() == View.VISIBLE) {
-            llMoreDanwei.setVisibility(View.GONE);
-            isShowDanweiMenu = false;
-        }
+        closeDanwei();
         return super.onMenuOpened(featureId, menu);
     }
 
+
+    private void closeDanwei() {
+        if (llMoreDanwei.getVisibility() == View.VISIBLE) {
+            llMoreDanwei.setVisibility(View.GONE);
+            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), android.support.design.R.anim.abc_slide_out_top);
+            llMoreDanwei.startAnimation(animation);
+            isShowDanweiMenu = false;
+        }
+    }
+
+    private void openDanwei() {
+        if (llMoreDanwei.getVisibility() == View.GONE) {
+            llMoreDanwei.setVisibility(View.VISIBLE);
+            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), android.support.design.R.anim.abc_slide_in_top);
+            llMoreDanwei.startAnimation(animation);
+            isShowDanweiMenu = true;
+        }
+    }
 
     private Bitmap drawCircle(int radius, int color) {
 
@@ -1519,32 +1555,37 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
     private ConnectivityManager mConnectivityManager;
     private NetworkInfo netInfo;
+    boolean isNetWorkAvailable = false;
     private BroadcastReceiver myNetReceiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 
-                mConnectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 netInfo = mConnectivityManager.getActiveNetworkInfo();
-                if(netInfo != null && netInfo.isAvailable()) {
-
+                if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+                    LogUtil.i(TAG, "网络可用");
+                    if (!isNetWorkAvailable) {
+//                        getData();
+                        isNetWorkAvailable = true;
+                    }
                     /////////////网络连接
                     String name = netInfo.getTypeName();
 
-                    if(netInfo.getType()== ConnectivityManager.TYPE_WIFI){
-                        LogUtil.i("Internet","网络改变==>网络变成了wifi");
+                    if (netInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                        LogUtil.i("Internet", "网络改变==>网络变成了wifi");
 
-                    }else if(netInfo.getType()== ConnectivityManager.TYPE_ETHERNET) {
+                    } else if (netInfo.getType() == ConnectivityManager.TYPE_ETHERNET) {
                         LogUtil.i("Internet", "网络改变==>网络变成了有线");
 
-                    }else if(netInfo.getType()== ConnectivityManager.TYPE_MOBILE) {
+                    } else if (netInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
                         LogUtil.i("Internet", "网络改变==>网络变成了移动网");
                     }
                 } else {
-                    LogUtil.i("Internet","网络改变==>网络断开");
-
+                    UiUtils.showToast("");
+                    LogUtil.i("Internet", "网络改变==>网络断开");
+                    isNetWorkAvailable = false;
                 }
             }
 

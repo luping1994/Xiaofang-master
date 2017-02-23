@@ -237,17 +237,22 @@ public class Type6_fragment extends RxFragment {
 
         String group1 = group.getText().toString();
 
-        if (name1.equals("") || name1 == null) {
-            UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
+        if (!Utils.isVaild(name1)) {
+            UiUtils.showToast(UiUtils.getContext(), "名称不不能为空!");
             return;
         }
         if (addr1 == null || addr1.equals("")) {
-            UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
+            UiUtils.showToast( "地址不不能为空!");
             return;
         }
 
         if (!Utils.isVaild(phone2)&&!Utils.isVaild(phone2)&&!Utils.isVaild(phone3)) {
             UiUtils.showToast("请输入联系电话");
+            return;
+        }
+
+        if (!Utils.isVaild(area1)){
+            UiUtils.showToast("请输入辖区面积");
             return;
         }
 
@@ -258,6 +263,12 @@ public class Type6_fragment extends RxFragment {
         jsonObject.addProperty("专职消防员", zhuanzhi1);
         jsonObject.addProperty("消防文员", wenyuan1);
         membernum1 = jsonObject.toString();
+
+
+        if (!Utils.isVaild(membernum1)){
+            UiUtils.showToast("请输入人员组成");
+            return;
+        }
         if (Utils.isVaild(name1)) {
             builder.put("name", name1.replace(" ", ""));
         }
@@ -280,6 +291,8 @@ public class Type6_fragment extends RxFragment {
         array.put(phone2);
         array.put(phone3);
         builder.put("phone",array.toString());
+
+
         if (Utils.isVaild(membernum1)) {
             builder.put("membernum", membernum1);
         }
@@ -289,9 +302,9 @@ public class Type6_fragment extends RxFragment {
             builder.put("carnum", carnum1.replace(" ", ""));
         }
 
-        if (Utils.isVaild(cardisp1)) {
-            builder.put("cardisp", cardisp1.replace(" ", ""));
-        }
+//        if (Utils.isVaild(cardisp1)) {
+//            builder.put("cardisp", cardisp1.replace(" ", ""));
+//        }
         if (Utils.isVaild(waterweight1)) {
             builder.put("waterweight", waterweight1.replace(" ", ""));
         }

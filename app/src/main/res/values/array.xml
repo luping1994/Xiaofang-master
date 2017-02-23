@@ -52,14 +52,14 @@
     </string-array>
 
     <string-array name="type">
-        <item>社会单位</item>
-        <item>社区消防室</item>
-        <item>乡村专职消防队</item>
-        <item>消防中队</item>
-        <item>行政审批项目</item>
-
+        <item>重点单位</item>
+        <item>一般单位</item>
         <item>消防大队</item>
+        <item>消防中队</item>
         <item>政府专职小型站</item>
+        <item>乡镇专职消防队</item>
+        <item>社区消防室</item>
+        <item>行政审批项目</item>
 
 
     </string-array>
@@ -68,7 +68,6 @@
         <item>是</item>
         <item>否</item>
     </string-array>
-
 
 
     <string-array name="lane">

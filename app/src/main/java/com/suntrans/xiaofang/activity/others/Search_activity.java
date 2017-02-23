@@ -37,6 +37,7 @@ import com.suntrans.xiaofang.model.company.CompanyList;
 import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.model.license.LicenseSearchResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.trello.rxlifecycle.android.ActivityEvent;
@@ -47,6 +48,8 @@ import java.util.List;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static com.suntrans.xiaofang.R.id.marker;
 
 /**
  * Created by Looney on 2016/11/24.
@@ -119,7 +122,32 @@ public class Search_activity extends BasedActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                type = position;
+                switch (position) {
+                    case 0:
+                        type=MarkerHelper.S0CIETY;
+                        break;
+                    case 1:
+                        type=MarkerHelper.COMMONCOMPANY;
+                        break;
+                    case 2:
+                        type=MarkerHelper.FIREBRIGADE;
+                        break;
+                    case 3:
+                        type=MarkerHelper.FIREGROUP;
+                        break;
+                    case 4:
+                        type=MarkerHelper.FIREADMINSTATION;
+                        break;
+                    case 5:
+                        type=MarkerHelper.FIRESTATION;
+                        break;
+                    case 6:
+                        type=MarkerHelper.FIREROOM;
+                        break;
+                    case 7:
+                        type=MarkerHelper.LICENSE;
+                        break;
+                }
             }
 
             @Override
@@ -243,27 +271,30 @@ public class Search_activity extends BasedActivity {
     private void search(String text) {
         dialog.show();
         switch (type) {
-            case 0:
+            case MarkerHelper.S0CIETY:
                 searchCompany(text);
                 break;
-            case 1:
+            case MarkerHelper.FIREROOM:
                 searchRoom(text);
                 break;
-            case 2:
+            case MarkerHelper.FIRESTATION:
                 searchStation(text);//
                 break;
-            case 3:
+            case MarkerHelper.FIREGROUP:
                 searchGroup(text);
                 break;
-            case 4:
+            case MarkerHelper.LICENSE:
 //                dialog.dismiss();
                 searchLicense(text);
                 break;
-            case 5:
+            case MarkerHelper.FIREBRIGADE:
                 searchBrigade(text);
                 break;
-            case 6:
+            case MarkerHelper.FIREADMINSTATION:
                 searchAdminStation(text);
+                break;
+            case MarkerHelper.COMMONCOMPANY:
+                searchCommcmy(text);
                 break;
         }
 
@@ -326,6 +357,61 @@ public class Search_activity extends BasedActivity {
 
     }
 
+    private void searchCommcmy(String text) {
+        RetrofitHelper.getApi().queryCommcmy(text)
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 500);
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+                        if (result != null) {
+                            if (result.status.equals("1")) {
+                                datas.clear();
+                                List<CompanyList> lists = result.results;
+                                for (CompanyList info : lists) {
+                                    SparseArray<String> map = new SparseArray<String>();
+//                            System.out.println("我的id是:====>"+info.id);
+                                    map.put(0, info.id);
+                                    map.put(1, info.name);
+//                            map.put(2,info.lat);
+//                            map.put(3,info.lng);
+                                    datas.add(map);
+                                }
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                UiUtils.showToast(App.getApplication(), result.msg);
+                            }
+                        }
+
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                            }
+                        }, 500);
+                    }
+                });
+
+    }
 
     private void searchRoom(String text) {
         RetrofitHelper.getApi().queryFireroom(text)
@@ -592,9 +678,9 @@ public class Search_activity extends BasedActivity {
                                             lists) {
                                         SparseArray<String> map = new SparseArray<String>();
                                         map.put(0, info.id);
-                                        map.put(1, "建设单位:"+info.name);
-                                        map.put(2, "名称:"+info.cmyname);
-                                        map.put(3, "地址:"+info.addr);
+                                        map.put(1, info.name);
+                                        map.put(2, "建设单位:" + info.cmyname);
+                                        map.put(3, "地址:" + info.addr);
                                         datas.add(map);
                                         adapter.notifyDataSetChanged();
                                     }

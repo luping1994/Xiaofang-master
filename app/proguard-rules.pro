@@ -152,7 +152,51 @@
    public void *(android.view.View);
 }
 
- #如果有引用v4包可以添加下面这行
+
+#lifecycler
+-keep class com.trello.rxlifecycle.** {*;}
+-keep class com.google.guava.** {*;}
+
+# 保留Activity中的方法参数是view的方法，
+# 从而我们在layout里面编写onClick就不会影响
+-keepclassmembers class * extends android.app.Activity {
+    public void * (android.view.View);
+}
+# 保留自定义控件(继承自View)不能被混淆
+-keep public class * extends android.view.View {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+    public void set*(***);
+    *** get* ();
+}
+# 保留Parcelable序列化的类不能被混淆
+-keep class * implements android.os.Parcelable{
+    public static final android.os.Parcelable$Creator *;
+}
+
+# 保留Serializable 序列化的类不被混淆
+-keepclassmembers class * implements java.io.Serializable {
+   static final long serialVersionUID;
+   private static final java.io.ObjectStreamField[] serialPersistentFields;
+   !static !transient <fields>;
+   private void writeObject(java.io.ObjectOutputStream);
+   private void readObject(java.io.ObjectInputStream);
+   java.lang.Object writeReplace();
+   java.lang.Object readResolve();
+}
+
+# 对R文件下的所有类及其方法，都不能被混淆
+-keepclassmembers class **.R$* {
+    *;
+}
+
+# 对于带有回调函数onXXEvent的，不能混淆
+-keepclassmembers class * {
+    void *(**On*Event);
+}
+
+
 -dontwarn android.support.v4.**
 -dontwarn **CompatHoneycomb
 -dontwarn **CompatHoneycombMR2
@@ -161,3 +205,8 @@
 -keep class android.support.v4.** { *; }
 -keep public class * extends android.support.v4.**
 -keep public class * extends android.app.Fragment
+
+#讯飞语音
+-keep class com.iflytek.**{*;}
+-keep class com.google.**{*;}
+

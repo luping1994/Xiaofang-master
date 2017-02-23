@@ -177,7 +177,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="辖区面积"
+                    android:text="*辖区面积"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -213,7 +213,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="消防队员人数"
+                    android:text="*人员组成"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
                 <LinearLayout
@@ -327,7 +327,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="消防车总数"
+                    android:text="*消防车总数"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -401,7 +401,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="车载水总量"
+                    android:text="*车载水总量"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -440,7 +440,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="车载泡沫总量"
+                    android:text="*车载泡沫总量"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -510,7 +510,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="所属大队"
+                    android:text="*所属大队"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
                 <Spinner

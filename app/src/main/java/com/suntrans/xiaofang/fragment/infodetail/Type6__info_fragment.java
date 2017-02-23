@@ -118,12 +118,12 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
 
 
         SparseArray<String> array3 = new SparseArray<>();
-        array3.put(0, "消防队站联系电话");
+        array3.put(0, "联系电话");
         array3.put(1, "");
         datas.add(array3);
 
         SparseArray<String> array4 = new SparseArray<>();
-        array4.put(0, "消防队员人数");
+        array4.put(0, "消防队员组成");
         array4.put(1, "");
         datas.add(array4);
 

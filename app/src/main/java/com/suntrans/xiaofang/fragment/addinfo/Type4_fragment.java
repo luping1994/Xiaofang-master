@@ -53,7 +53,7 @@ import static com.suntrans.xiaofang.R.id.map;
 
 /**
  * Created by Looney on 2016/12/13.
- *
+ * <p>
  * 消防中队
  */
 
@@ -135,7 +135,7 @@ public class Type4_fragment extends RxFragment {
 //                name.setText(poiItem.getTitle());
                 lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
                 lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
-                addr.setText( poiItem.getSnippet());
+                addr.setText(poiItem.getSnippet());
             }
         }
 
@@ -178,8 +178,8 @@ public class Type4_fragment extends RxFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (flag == 1) {
-                    if (position == 0){
-                        pid=null;
+                    if (position == 0) {
+                        pid = null;
                         return;
                     }
                     pid = daduiId.get(position - 1);
@@ -221,14 +221,15 @@ public class Type4_fragment extends RxFragment {
         String shibingnum = shibing.getText().toString();
         String zhuanzhinum = zhuanzhi.getText().toString();
 
-
+        String waterweight1 = waterweight.getText().toString();
+        String soapweight1 = soapweight.getText().toString();
         String cardisp1 = "";
         if (!Utils.isVaild(name1)) {
-            UiUtils.showToast("公司名称不不能为空!");
+            UiUtils.showToast("名称不不能为空!");
             return;
         }
         if (!Utils.isVaild(addr1)) {
-            UiUtils.showToast("公司地址不不能为空!");
+            UiUtils.showToast("地址不不能为空!");
             return;
         }
 
@@ -250,6 +251,19 @@ public class Type4_fragment extends RxFragment {
             return;
         }
 
+        if (!Utils.isVaild(waterweight1)) {
+            UiUtils.showToast("请输入车载水总量");
+            return;
+        }
+
+        if (!Utils.isVaild(soapweight1)) {
+            UiUtils.showToast("请输入车载泡沫总量");
+            return;
+        }
+        if (!Utils.isVaild(carnum1)) {
+            UiUtils.showToast("请输入消防车辆总数");
+            return;
+        }
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("干部", ganbunum);
@@ -277,8 +291,6 @@ public class Type4_fragment extends RxFragment {
         }
 
         cardisp1 = jsonObject2.toString();
-        String waterweight1 = waterweight.getText().toString();
-        String soapweight1 = soapweight.getText().toString();
 
 
         builder.put("name", name1 + "中队".replace(" ", ""));
@@ -550,7 +562,7 @@ public class Type4_fragment extends RxFragment {
                                 daduiIdPath.clear();
                                 if (info != null) {
                                     if (Utils.isVaild(info.brigade_name))
-                                        daduiName.add("已选择("+info.brigade_name+")");
+                                        daduiName.add("已选择(" + info.brigade_name + ")");
                                     else
                                         daduiName.add("请选择");
                                 } else {

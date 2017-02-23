@@ -12,7 +12,7 @@ android {
         applicationId "com.suntrans.xiaofang"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 6
+        versionCode 9
         versionName "1.0.0"
         multiDexEnabled true//这行
         ndk {
@@ -22,10 +22,10 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            shrinkResources true
-//            zipAlignEnabled true
+            shrinkResources true
+            zipAlignEnabled true
 
 //            buildConfigField "boolean","LOG_DEBUG","false"
         }
@@ -50,7 +50,7 @@ dependencies {
     compile files('libs/Msc.jar')
     compile files('libs/AMapNavi_1.9.4_AMapLocation_3.1.0_20161201.jar')
     compile files('libs/AMap_Search_V3.6.1_20161122.jar')
-//    compile 'com.github.clans:fab:1.6.4'
+    compile 'com.github.clans:fab:1.6.4'
     compile project(':zxing-android-embedded')
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
@@ -69,5 +69,5 @@ dependencies {
     compile 'com.trello:rxlifecycle-components:1.0'
     compile 'com.android.support:multidex:1.0.0'//这行
 
-    compile 'com.lapism:searchview:4.0'
+
 }

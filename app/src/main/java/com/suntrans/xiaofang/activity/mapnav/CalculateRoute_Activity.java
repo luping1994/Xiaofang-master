@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -90,7 +92,7 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
     int strategyFlag = 0;
 
     private Button mStartNaviButton;
-    private LinearLayout mRouteLineLayoutOne, mRouteLinelayoutTwo, mRouteLineLayoutThree, backLineLayout,driveLayout;
+    private LinearLayout mRouteLineLayoutOne, mRouteLinelayoutTwo, mRouteLineLayoutThree, backLineLayout, driveLayout;
     private View mRouteViewOne, mRouteViewTwo, mRouteViewThree;
     private TextView mRouteTextStrategyOne, mRouteTextStrategyTwo, mRouteTextStrategyThree;
     private TextView mRouteTextTimeOne, mRouteTextTimeTwo, mRouteTextTimeThree;
@@ -177,8 +179,8 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
         dialog1.dismiss();
     }
 
-
     private RouteOverLay walkOverlay;
+
     /**
      * 单路径算路成功回调
      */
@@ -191,15 +193,15 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
         walkOverlay.setTrafficLine(true);
         walkOverlay.addToMap();
         driveLayout.setVisibility(View.GONE);
-        int dis=path.getAllLength();
+        int dis = path.getAllLength();
         String timeCost;
-        double time = (double) dis/5000;
-        if (time<1){
-            timeCost =  (int)(time*60)+"分";
-        }else {
-            timeCost =  (int)time+"小时";
+        double time = (double) dis / 5000;
+        if (time < 1) {
+            timeCost = (int) (time * 60) + "分";
+        } else {
+            timeCost = (int) time + "小时";
         }
-        mCalculateRouteOverView.setText("距离您"+dis+"米"+" 大约需要"+timeCost);
+        mCalculateRouteOverView.setText("距离您" + dis + "米" + " 大约需要" + timeCost);
         dialog1.dismiss();
     }
 
@@ -245,14 +247,13 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
     }
 
     private int navState = 1;//1为驾车模式,2为步行模式
-    WaitDialog dialog ;
+    WaitDialog dialog;
+
     private void initView() {
         dialog1 = new ProgressDialog(this);
         dialog1.setMessage("计算路径中,请稍候..");
         dialog1.setCancelable(false);
-        dialog= new WaitDialog(CalculateRoute_Activity.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        dialog.setWaitText(getString(R.string.loading));
-        dialog.setCancelable(false);
+
         llCar = (LinearLayout) findViewById(R.id.ll_car);
         llWalk = (LinearLayout) findViewById(R.id.ll_walk);
         imageViewCar = (ImageView) findViewById(R.id.car);
@@ -264,7 +265,6 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
             public void onClick(View v) {
 
                 if (navState == 2) {
-                    dialog1.show();
                     imageViewCar.setImageResource(R.drawable.ic_car_press);
                     imageViewWalk.setImageResource(R.drawable.ic_walk);
                     navState = 1;
@@ -280,11 +280,10 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
             public void onClick(View v) {
                 if (navState == 1) {
                     double distance = AMapUtils.calculateLineDistance(from, to);
-                    if (distance>10000){
-                        UiUtils.showToast(App.getApplication(),"路途太远建议驾车");
+                    if (distance > 10000) {
+                        UiUtils.showToast(App.getApplication(), "路途太远建议驾车");
                         return;
                     }
-                    dialog1.show();
                     imageViewCar.setImageResource(R.drawable.ic_car);
                     imageViewWalk.setImageResource(R.drawable.ic_walk_press);
                     navState = 2;
@@ -311,7 +310,7 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
         mRouteLineLayoutThree = (LinearLayout) findViewById(R.id.route_line_three);
         mRouteLineLayoutThree.setOnClickListener(this);
 
-        driveLayout= (LinearLayout) findViewById(R.id.calculate_route_strategy_tab);
+        driveLayout = (LinearLayout) findViewById(R.id.calculate_route_strategy_tab);
 
 
         mRouteViewOne = (View) findViewById(R.id.route_line_one_view);
@@ -363,7 +362,7 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
      * 开始导航
      */
     private void startNavi() {
-      initGPS();
+        initGPS();
     }
 
     /**
@@ -394,10 +393,10 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
     }
 
     private void cleanRouteOverlay() {
-        if (walkOverlay!=null){
+        if (walkOverlay != null) {
             walkOverlay.removeFromMap();
             walkOverlay.destroy();
-            walkOverlay =null;
+            walkOverlay = null;
         }
 
         for (int i = 0; i < routeOverlays.size(); i++) {
@@ -729,6 +728,11 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
 
     @Override
     public void onCalculateRouteFailure(int i) {
+        if (dialog1 != null) {
+            if (dialog1.isShowing()) {
+                dialog1.dismiss();
+            }
+        }
         Toast.makeText(this.getApplicationContext(), "错误码" + i, Toast.LENGTH_LONG).show();
     }
 
@@ -811,7 +815,6 @@ public class CalculateRoute_Activity extends BasedActivity implements AMapNaviLi
     public void updateAimlessModeCongestionInfo(AimLessModeCongestionInfo aimLessModeCongestionInfo) {
 
     }
-
 
 
     private void initGPS() {

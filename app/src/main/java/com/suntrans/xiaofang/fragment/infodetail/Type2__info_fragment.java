@@ -120,7 +120,7 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
         datas.add(array1);
 
         SparseArray<String> array2 = new SparseArray<>();
-        array2.put(0, "志愿消防队联系人");
+        array2.put(0, "联系人");
         array2.put(1, "");
         datas.add(array2);
 
@@ -131,7 +131,7 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
         datas.add(array3);
 
         SparseArray<String> array4 = new SparseArray<>();
-        array4.put(0, "消防队人数");
+        array4.put(0, "消防队员人数");
         array4.put(1, "");
         datas.add(array4);
 

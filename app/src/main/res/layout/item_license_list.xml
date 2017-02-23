@@ -8,7 +8,6 @@
     <android.support.v7.widget.CardView
         android:id="@+id/ll"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:foreground="?android:attr/selectableItemBackground"
         android:elevation="3dp"
         android:layout_width="match_parent"
@@ -30,7 +29,7 @@
                 android:gravity="center|left"
                 android:text="广州三川有限公司"
                 android:textColor="@color/balck"
-                android:textSize="19sp" />
+                android:textSize="17sp" />
 
             <TextView
                 android:paddingBottom="5dp"

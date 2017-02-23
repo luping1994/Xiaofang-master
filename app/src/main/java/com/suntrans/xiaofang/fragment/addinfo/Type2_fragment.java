@@ -362,11 +362,11 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
         String lat1 = lat.getText().toString();
 
         if (name1.equals("") || name1 == null) {
-            UiUtils.showToast( "公司名称不不能为空!");
+            UiUtils.showToast( "名称不能为空!");
             return;
         }
         if (addr1 == null || addr1.equals("")) {
-            UiUtils.showToast("公司地址不不能为空!");
+            UiUtils.showToast("地址不能为空!");
             return;
         }
 

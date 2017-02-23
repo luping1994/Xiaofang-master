@@ -46,9 +46,6 @@ public class ClusterOverlay implements
 
     private boolean isshowing = true;
 
-    public List<Marker> getmAddMarkers() {
-        return mAddMarkers;
-    }
 
     private List<Marker> mAddMarkers = new ArrayList<Marker>();
     private double mClusterDistance;
@@ -68,7 +65,7 @@ public class ClusterOverlay implements
      * @param context
      */
     public ClusterOverlay(AMap amap, int clusterSize, Context context) {
-        this(amap, null, clusterSize, context,true);
+        this(amap, null, clusterSize, context, true);
 
 
     }
@@ -82,12 +79,13 @@ public class ClusterOverlay implements
      * @param context
      */
     public ClusterOverlay(AMap amap, List<ClusterItem> clusterItems,
-                          int clusterSize, Context context,boolean isStart) {
+                          int clusterSize, Context context, boolean isStart) {
         this.isshowing = isStart;
 //默认最多会缓存80张图片作为聚合显示元素图片,根据自己显示需求和app使用内存情况,可以修改数量
         mLruCache = new LruCache<Integer, BitmapDescriptor>(80) {
             protected void entryRemoved(boolean evicted, Integer key, BitmapDescriptor oldValue, BitmapDescriptor newValue) {
-                oldValue.getBitmap().recycle();
+                if (oldValue.getBitmap() != null)
+                    oldValue.getBitmap().recycle();
             }
         };
         if (clusterItems != null) {
@@ -159,12 +157,12 @@ public class ClusterOverlay implements
     }
 
 
-
-    public void startAssignClusters(){
+    public void startAssignClusters() {
         mPXInMeters = mAMap.getScalePerPixel();
         mClusterDistance = mPXInMeters * mClusterSize;
         assignClusters();
     }
+
     //点击事件
     @Override
     public boolean onMarkerClick(Marker arg0) {
@@ -194,7 +192,7 @@ public class ClusterOverlay implements
             marker.setAnimationListener(myAnimationListener);
             marker.startAnimation();
         }
-
+        mAddMarkers.clear();
         for (Cluster cluster : clusters) {
             addSingleClusterToMap(cluster);
         }
@@ -224,12 +222,14 @@ public class ClusterOverlay implements
 
     public void setVisible(boolean isShow) {
         isshowing = isShow;
-        if (!isShow){
+        if (!isShow) {
+            List<Marker> list = new ArrayList<>();
+            list.addAll(mAddMarkers);
             for (Marker marker :
-                    mAddMarkers) {
+                    list) {
                 marker.remove();
             }
-        }else {
+        } else {
             assignClusters();
         }
 
@@ -357,7 +357,6 @@ public class ClusterOverlay implements
             }
             bitmapDescriptor = BitmapDescriptorFactory.fromView(textView);
             mLruCache.put(num, bitmapDescriptor);
-
         }
         return bitmapDescriptor;
     }

@@ -36,6 +36,7 @@ import com.suntrans.xiaofang.model.license.LicenseDetailResult;
 import com.suntrans.xiaofang.model.license.LicenseItemInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.ActivityEvent;
@@ -73,6 +74,7 @@ public class Attachlicense_activity extends BasedActivity {
     private LicenseDetailInfo info;
     private List<String> licenseItemIds;
     private List<String> licenseItemIds_xiugai;
+    private int type;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -155,56 +157,115 @@ public class Attachlicense_activity extends BasedActivity {
             return false;
         }
         LogUtil.i(TAG, "公司id==>" + companyId + "detailId==>" + licenseDetilId);
-        RetrofitHelper.getApi().attachLicense(companyId, licenseDetilId)
-                .compose(this.<AddCompanyResult>bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<AddCompanyResult>() {
-                    @Override
-                    public void onCompleted() {
-                        dialog.dismiss();
-                    }
+        LogUtil.i(TAG, "社会单位类型==" + type);
+        if (type== MarkerHelper.S0CIETY){
+            RetrofitHelper.getApi().attachLicense(companyId, licenseDetilId)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
+                            dialog.dismiss();
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        dialog.dismiss();
-                        UiUtils.showToast("服务器错误!绑定失败!");
-                    }
-
-                    @Override
-                    public void onNext(AddCompanyResult result) {
-                        if (result != null) {
-                            if (result.status.equals("1")) {
-                                dialog.dismiss();
-                                String msg = result.result;
-                                new AlertDialog.Builder(Attachlicense_activity.this)
-                                        .setMessage(msg)
-                                        .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                finish();
-                                            }
-                                        }).setCancelable(false).create().show();
-                            } else {
-                                dialog.dismiss();
-                                String msg = result.msg;
-                                new AlertDialog.Builder(Attachlicense_activity.this)
-                                        .setMessage(msg)
-                                        .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog1, int which) {
-                                                dialog1.dismiss();
-                                            }
-                                        }).setCancelable(false).create().show();
-                            }
-                        } else {
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
                             dialog.dismiss();
                             UiUtils.showToast("服务器错误!绑定失败!");
                         }
-                    }
-                });
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    dialog.dismiss();
+                                    String msg = result.result;
+                                    new AlertDialog.Builder(Attachlicense_activity.this)
+                                            .setMessage(msg)
+                                            .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                    finish();
+                                                }
+                                            }).setCancelable(false).create().show();
+                                } else {
+                                    dialog.dismiss();
+                                    String msg = result.msg;
+                                    new AlertDialog.Builder(Attachlicense_activity.this)
+                                            .setMessage(msg)
+                                            .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog1, int which) {
+                                                    dialog1.dismiss();
+                                                }
+                                            }).setCancelable(false).create().show();
+                                }
+                            } else {
+                                dialog.dismiss();
+                                UiUtils.showToast("服务器错误!绑定失败!");
+                            }
+                        }
+                    });
+        }else if (type== MarkerHelper.COMMONCOMPANY){
+            RetrofitHelper.getApi().attachCommLicense(companyId, licenseDetilId)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
+                            dialog.dismiss();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            dialog.dismiss();
+                            UiUtils.showToast("服务器错误!绑定失败!");
+                        }
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    dialog.dismiss();
+                                    String msg = result.result;
+                                    new AlertDialog.Builder(Attachlicense_activity.this)
+                                            .setMessage(msg)
+                                            .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                    finish();
+                                                }
+                                            }).setCancelable(false).create().show();
+                                } else {
+                                    dialog.dismiss();
+                                    String msg = result.msg;
+                                    new AlertDialog.Builder(Attachlicense_activity.this)
+                                            .setMessage(msg)
+                                            .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog1, int which) {
+                                                    dialog1.dismiss();
+                                                }
+                                            }).setCancelable(false).create().show();
+                                }
+                            } else {
+                                dialog.dismiss();
+                                UiUtils.showToast("服务器错误!绑定失败!");
+                            }
+                        }
+                    });
+        }else {
+            if (dialog!=null){
+                dialog.dismiss();
+            }
+        }
+
         return true;
     }
 
@@ -221,6 +282,8 @@ public class Attachlicense_activity extends BasedActivity {
         licenseItemIds_xiugai = new ArrayList<>();
         companyId = getIntent().getStringExtra("companyID");
         licenseId = getIntent().getStringExtra("licenseID");
+        type = getIntent().getIntExtra("type",-1);
+
         String jsonIds = getIntent().getStringExtra("licenseItemIds");
         if (jsonIds != null) {
             try {
@@ -311,7 +374,7 @@ public class Attachlicense_activity extends BasedActivity {
         List<LicenseItemInfo> items = info.detail;
         for (LicenseItemInfo item :
                 items) {
-            System.out.println(item.toString());
+//            System.out.println(item.toString());
             SparseArray<String> array = new SparseArray<>();
             if (item.type.equals("1")) {
                 array.put(0, "建审");

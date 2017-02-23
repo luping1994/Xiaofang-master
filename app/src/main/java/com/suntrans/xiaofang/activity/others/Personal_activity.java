@@ -150,7 +150,7 @@ public class Personal_activity extends BasedActivity {
                 Intent intent = new Intent();
                 intent.setClass(Personal_activity.this, ModifyPassword_Activity.class);
                 startActivity(intent);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
             case R.id.about:
                 startActivity(new Intent(this, About_activity.class));

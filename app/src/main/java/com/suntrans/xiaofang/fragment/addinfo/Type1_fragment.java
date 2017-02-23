@@ -38,6 +38,7 @@ import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.model.company.InchargeInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.DbHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
@@ -62,9 +63,6 @@ import butterknife.OnClick;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import static android.R.attr.level;
-import static com.suntrans.xiaofang.R.id.map;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -217,6 +215,8 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
     RadioButton dangerlevel3;
     @BindView(R.id.dangerlevel4)
     RadioButton dangerlevel4;
+    @BindView(R.id.qitatext)
+    EditText qitatext;
 
 
     private int mYear;
@@ -343,6 +343,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         return;
                     }
                     dadui_id_path = daduiIdPath.get(position - 1);
+                    LogUtil.i("大队path=" + dadui_id_path);
                     String nextId = daduiId.get(position - 1);
                     getIncharge(nextId, 1, "1");
                 }
@@ -364,6 +365,8 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         return;
                     }
                     paichusuo_id_path = paichusuoPath.get(position - 1);
+                    LogUtil.i("派出所path=" + paichusuo_id_path);
+
                 }
             }
 
@@ -674,7 +677,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 //        builder.put("cmystate", "0");
 
 
-        if (Utils.isVaild(incharge1)){
+        if (Utils.isVaild(incharge1)) {
             builder.put("incharge", incharge1);
         }
 
@@ -1093,6 +1096,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
         if (info.dangerlevel != null) {
             String level = info.dangerlevel;
+            dangerlevels = level.replace(" ", "");
             if (level.equals("1"))
                 dangerlevel1.setChecked(true);
             else if (level.equals("2"))
@@ -1162,18 +1166,36 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
         String mainId = info.mainattribute;
         if (mainId != null) {
-            DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
-            SQLiteDatabase db = helper.getReadableDatabase();
-            db.beginTransaction();
-            Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
-            if (cursor.getCount() > 0) {
-                while (cursor.moveToNext()) {
-                    attribute.setText(cursor.getString(0));
+            if (info.special != null) {
+                if (info.special.equals("1")) {
+                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
+                    SQLiteDatabase db = helper.getReadableDatabase();
+                    db.beginTransaction();
+                    Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
+                    if (cursor.getCount() > 0) {
+                        while (cursor.moveToNext()) {
+                            attribute.setText(cursor.getString(0));
+                        }
+                    }
+                    cursor.close();
+                    db.setTransactionSuccessful();
+                    db.endTransaction();
+                } else if (info.special.equals("0")) {
+                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
+                    SQLiteDatabase db = helper.getReadableDatabase();
+                    db.beginTransaction();
+                    Cursor cursor = db.rawQuery("select Name from attr_general where Id=?", new String[]{mainId});
+                    if (cursor.getCount() > 0) {
+                        while (cursor.moveToNext()) {
+                            attribute.setText(cursor.getString(0));
+                        }
+                    }
+                    cursor.close();
+                    db.setTransactionSuccessful();
+                    db.endTransaction();
                 }
             }
-            cursor.close();
-            db.setTransactionSuccessful();
-            db.endTransaction();
+
         }
     }
 
@@ -1232,15 +1254,23 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         String firemannum1 = firemannum.getText().toString();//消防队员人数
         String otherdisp1 = otherdisp.getText().toString();//单位其它情况
         String companyid1 = companyid.getText().toString();//公司编码
-
+        String qitatext1 = qitatext.getText().toString();
         String facility1 = "";
         for (int i = 0; i < autofire.length; i++) {
             if (autofire[i].isChecked()) {
-                facility1 += App.getApplication().getResources().getStringArray(R.array.autofire)[i] + "#";
+                if (i == 8) {
+                    if (Utils.isVaild(qitatext1))
+                        facility1 += qitatext1;
+                } else {
+                    facility1 += App.getApplication().getResources().getStringArray(R.array.autofire)[i] + "#";
+                }
             }
         }
-
-
+        if (dangerlevels.equals("1") || dangerlevels.equals("2")) {
+            incharge1 = dadui_id_path;
+        } else if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
+            incharge1 = paichusuo_id_path;
+        }
         if (addr1 == null || addr1.equals("")) {
             UiUtils.showToast("公司地址不不能为空!");
             return;
@@ -1251,13 +1281,8 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             return;
         }
 
-        System.out.println("单位主属性id=" + mainAttrId);
-//        if (!dangerlevels.equals("4")) {
-//            if (!Utils.isVaild(mainAttrId)) {
-//                UiUtils.showToast("单位属性不能为空");
-//                return;
-//            }
-//        }
+        LogUtil.i("单位主属性id=" + mainAttrId);
+
 
         if (!Utils.isVaild(buildarea1)) {
             UiUtils.showToast("请输入建筑面积");
@@ -1294,14 +1319,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         if (!Utils.isVaild(artiphone1)) {
             UiUtils.showToast("请输入法定人电话");
             return;
-        }
-
-
-        if (dangerlevels.equals("1") || dangerlevels.equals("4")) {
-
-            incharge1 = dadui_id_path;
-        } else if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
-            incharge1 = paichusuo_id_path;
         }
 
 
@@ -1342,8 +1359,8 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 //        builder.put("cmystate", "0");
 
 
-
-        if (Utils.isVaild(incharge1)){
+        LogUtil.i("incharge=" + incharge1);
+        if (Utils.isVaild(incharge1)) {
             builder.put("incharge", incharge1);
         }
         if (Utils.isVaild(buildarea1)) {
@@ -1359,7 +1376,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         if (stairnum1 != null) {
             stairnum1 = stairnum1.replace(" ", "");
             if (!TextUtils.equals("", stairnum1))
-                builder.put("stairnum", stairnum.getText().toString());
+                builder.put("stairnum", stairnum1);
         }
 
 

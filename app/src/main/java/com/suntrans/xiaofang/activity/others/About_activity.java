@@ -124,7 +124,7 @@ public class About_activity extends BasedActivity {
                 return true;
             case R.id.share:
                 Uri uri = Uri.parse("https://www.pgyer.com/zjwX");
-                share(uri,"分享",this);
+                share(uri,"分享",About_activity.this);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -177,10 +177,13 @@ public class About_activity extends BasedActivity {
     public  void share(Uri uri, String desc, Context context)
     {
 
-        Intent shareIntent = new Intent();
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT,"https://www.pgyer.com/zjwX");
-        shareIntent.putExtra(Intent.EXTRA_TEXT,  "HI 推荐您使用一款软件:"+"武汉消防信息");
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT,"");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,  "HI 推荐您使用一款软件:"+"下载地址:https://www.pgyer.com/zjwX");
         shareIntent.setType("text/plain");
         context.startActivity(Intent.createChooser(shareIntent, desc));
     }
+
+
+   
 }
