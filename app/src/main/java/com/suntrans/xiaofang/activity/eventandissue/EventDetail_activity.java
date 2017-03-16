@@ -23,8 +23,12 @@ import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.suntrans.xiaofang.R;
@@ -44,6 +48,7 @@ import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -88,6 +93,17 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
     TextView contactphone;
     @BindView(R.id.finishtime)
     TextView finishtime;
+    @BindView(R.id.vedio_root)
+    RelativeLayout vedioRoot;
+
+    @BindView(R.id.tx_vedio)
+    TextView txVedio;
+    @BindView(R.id.bt_reload)
+    Button btReload;
+    @BindView(R.id.recycleview_before)
+    RecyclerView recycleviewBefore;
+    @BindView(R.id.scroll)
+    ScrollView scroll;
     private Toolbar toolbar;
     private String id;
     private RecyclerView recyclerView_before;
@@ -98,7 +114,9 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
     private PicAdapter adapter_after;
 
     private ArrayList<String> url_before;
+    private ArrayList<String> url_beforeR;
     private ArrayList<String> url_after;
+    private ArrayList<String> url_afterR;
     private ArrayList<String> vedio_url;
     private ArrayList<SparseArray<String>> datas;
 
@@ -108,6 +126,7 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
     private SurfaceHolder holder;
 
     private MyVideoView videoView;
+    private ProgressBar progressbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -115,8 +134,8 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         setContentView(R.layout.acticity_eventdetail);
         ButterKnife.bind(this);
         setupToolBar();
-        initData();
         initView();
+        initData();
     }
 
     private void initData() {
@@ -168,7 +187,9 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
 
     private void initView() {
         url_before = new ArrayList<>();
+        url_beforeR = new ArrayList<>();
         url_after = new ArrayList<>();
+        url_afterR = new ArrayList<>();
         vedio_url = new ArrayList<>();
 
         videoView = (MyVideoView) findViewById(R.id.vedioview);
@@ -191,6 +212,7 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         recyclerView_after.setAdapter(adapter_after);
 
         start = (ImageView) findViewById(R.id.start);
+        progressbar = (ProgressBar) findViewById(R.id.progressbar);
 
         adapter_after.setOnitemClickListener(new PicAdapter.onItemClickListener() {
             @Override
@@ -200,12 +222,12 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
                 }
                 if (Build.VERSION.SDK_INT < 21) {
                     Intent intent = new Intent();
-                    intent.putExtra("url", url_after.get(position));
+                    intent.putExtra("url", url_afterR.get(position));
                     intent.setClass(EventDetail_activity.this, DetailPic_Activity.class);
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(EventDetail_activity.this, DetailPic_Activity.class);
-                    intent.putExtra("url", url_after.get(position));
+                    intent.putExtra("url", url_afterR.get(position));
                     ActivityOptionsCompat options = ActivityOptionsCompat.
                             makeSceneTransitionAnimation(EventDetail_activity.this, view, getString(R.string.transition_test));
                     startActivity(intent, options.toBundle());
@@ -215,23 +237,27 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         adapter_before.setOnitemClickListener(new PicAdapter.onItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (url_before == null || url_before.size() == 0) {
+                if (url_beforeR == null || url_beforeR.size() == 0) {
                     return;
                 }
                 if (Build.VERSION.SDK_INT < 21) {
                     Intent intent = new Intent();
-                    intent.putExtra("url", url_before.get(position));
+                    intent.putExtra("url", url_beforeR.get(position));
                     intent.setClass(EventDetail_activity.this, DetailPic_Activity.class);
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(EventDetail_activity.this, DetailPic_Activity.class);
-                    intent.putExtra("url", url_before.get(position));
+                    intent.putExtra("url", url_beforeR.get(position));
                     ActivityOptionsCompat options = ActivityOptionsCompat.
                             makeSceneTransitionAnimation(EventDetail_activity.this, view, getString(R.string.transition_test));
                     startActivity(intent, options.toBundle());
                 }
             }
         });
+
+        progressbar.setVisibility(View.VISIBLE);
+        btReload.setVisibility(View.GONE);
+        scroll.setVisibility(View.INVISIBLE);
 
     }
 
@@ -264,6 +290,9 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
     }
 
     private void getData() {
+        progressbar.setVisibility(View.VISIBLE);
+        btReload.setVisibility(View.GONE);
+        scroll.setVisibility(View.INVISIBLE);
         RetrofitHelper.getApi().getEventDetail(id)
                 .compose(this.<EventDetailResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -278,11 +307,20 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         UiUtils.showToast(UiUtils.getContext(), "获取事件详情失败");
+                        progressbar.setVisibility(View.INVISIBLE);
+                        btReload.setVisibility(View.VISIBLE);
+                        scroll.setVisibility(View.INVISIBLE);
                     }
 
                     @Override
                     public void onNext(EventDetailResult result) {
-                        refreshView(result);
+
+                        if (result!=null){
+                            refreshView(result);
+                        }
+                        progressbar.setVisibility(View.GONE);
+                        btReload.setVisibility(View.GONE);
+                        scroll.setVisibility(View.VISIBLE);
                     }
 
 
@@ -303,8 +341,8 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         datas.get(2).put(1, event.user_id);
         datas.get(3).put(1, event.created_at);
         datas.get(4).put(1, event.type_ids);
-        datas.get(7).put(1,event.company_leader);
-        datas.get(8).put(1,event.company_phone);
+        datas.get(7).put(1, event.company_leader);
+        datas.get(8).put(1, event.company_phone);
 
         String str = "";
         if (event.is_done.equals("1")) {
@@ -337,7 +375,7 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
 
         for (String s :
                 data.img_beforeR) {
-            url_before.add(s);
+            url_beforeR.add(s);
         }
         for (String s :
                 data.img_after) {
@@ -346,12 +384,23 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
 
         for (String s :
                 data.img_afterR) {
-            url_after.add(s);
+            url_afterR.add(s);
         }
         adapter_before.notifyDataSetChanged();
         adapter_after.notifyDataSetChanged();
-        if (vedio_url != null && vedio_url.size() != 0) {
-            createVideoThumbnail(vedio_url.get(0));
+
+        if (vedio_url != null) {
+            if (vedio_url.size() != 0) {
+                vedioRoot.setVisibility(View.VISIBLE);
+                txVedio.setVisibility(View.GONE);
+                createVideoThumbnail(vedio_url.get(0));
+            } else {
+                txVedio.setVisibility(View.VISIBLE);
+                vedioRoot.setVisibility(View.GONE);
+            }
+        } else {
+            txVedio.setVisibility(View.VISIBLE);
+            vedioRoot.setVisibility(View.GONE);
         }
     }
 
@@ -365,8 +414,8 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
         type.setText(datas.get(4).get(0) + datas.get(4).get(1));
         status.setText(datas.get(5).get(0) + datas.get(5).get(1));
         companyaddr.setText(datas.get(6).get(0) + datas.get(6).get(1));
-        contactname.setText(datas.get(7).get(0)+datas.get(7).get(1));
-        contactphone.setText(datas.get(8).get(0)+datas.get(8).get(1));
+        contactname.setText(datas.get(7).get(0) + datas.get(7).get(1));
+        contactphone.setText(datas.get(8).get(0) + datas.get(8).get(1));
 
     }
 
@@ -445,4 +494,8 @@ public class EventDetail_activity extends BasedActivity implements MediaPlayer.O
     }
 
 
+    @OnClick(R.id.bt_reload)
+    public void onClick() {
+        getData();
+    }
 }

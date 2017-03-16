@@ -8,7 +8,7 @@ buildscript {
 //        maven { url "https://raw.githubusercontent.com/Pgyer/mvn_repo_pgyer/master" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.0'
         classpath 'com.github.JakeWharton:sdk-manager-plugin:220bf7a88a7072df3ed16dc8466fb144f2817070'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
         classpath 'com.android.tools.build:gradle:2.2.3'

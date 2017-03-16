@@ -49,6 +49,7 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
                 <TextView
+                    android:visibility="gone"
                     android:textColor="@color/balck"
                     android:gravity="center"
                     android:textSize="@dimen/text_size"

@@ -26,6 +26,7 @@ public class CompanyDetailnfo implements Serializable{
     public  String facility;
 
     public  String mainattribute;
+    public  String mainattribute_small;
     public  String subattribute;
 
     public  String companyid;

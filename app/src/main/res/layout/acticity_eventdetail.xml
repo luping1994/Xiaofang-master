@@ -20,12 +20,26 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bg_color">
-
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:text="重试"
+            android:id="@+id/bt_reload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <ScrollView
+            android:id="@+id/scroll"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -37,6 +51,7 @@
 
                 >
                 <TextView
+                    android:textColor="@color/colorPrimary"
                     android:paddingLeft="@dimen/activity_horizontal_margin"
                     android:background="#dddddd"
                     android:layout_width="match_parent"
@@ -109,6 +124,7 @@
 
 
                 <TextView
+                    android:textColor="@color/colorPrimary"
                     android:paddingLeft="@dimen/activity_horizontal_margin"
                     android:background="#dddddd"
                     android:layout_width="match_parent"
@@ -194,9 +210,17 @@
                         android:layout_height="35dp"
                         android:gravity="center_vertical"
                         android:text="事件录像:" />
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tx_vedio"
+                        android:text="无录像"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp" />
                     <RelativeLayout
+                        android:id="@+id/vedio_root"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
+
                         <com.suntrans.xiaofang.views.MyVideoView
                             android:id="@+id/vedioview"
                             android:layout_width="match_parent"
@@ -220,6 +244,7 @@
 
 
                 <TextView
+                    android:textColor="@color/colorPrimary"
                     android:paddingLeft="@dimen/activity_horizontal_margin"
                     android:background="#dddddd"
                     android:layout_width="match_parent"
@@ -277,5 +302,5 @@
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

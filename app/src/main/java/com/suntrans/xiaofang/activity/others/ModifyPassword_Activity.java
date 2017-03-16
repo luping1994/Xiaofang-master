@@ -53,7 +53,7 @@ public class ModifyPassword_Activity extends BasedActivity {
         newPasswordEdit_re = (EditText) findViewById(R.id.re_password_edit);
     }
     private void setupToolBar() {
-        StatusBarCompat.compat(this, Color.rgb(0x2f,0x9d,0xce));
+//        StatusBarCompat.compat(this, Color.rgb(0x2f,0x9d,0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setTitle("修改密码");

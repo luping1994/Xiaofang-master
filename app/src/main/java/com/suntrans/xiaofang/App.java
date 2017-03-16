@@ -8,6 +8,7 @@ import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.tencent.bugly.Bugly;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,6 +29,7 @@ public class App extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        Bugly.init(getApplicationContext(), "7d01f61d8c", false);
 
 ////        PgyCrashManager.register(this);
 //        if (LeakCanary.isInAnalyzerProcess(this)) {

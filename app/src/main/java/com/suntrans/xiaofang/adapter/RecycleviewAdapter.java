@@ -83,9 +83,9 @@ public class RecycleviewAdapter extends RecyclerView.Adapter {
 
         public void setData(int position) {
             if (type == 0)
-                textView.setText("单位无事件记录");
+                textView.setText("无事件记录");
             else
-                textView.setText("单位无监督记录");
+                textView.setText("无监督记录");
 
         }
     }
@@ -115,13 +115,19 @@ public class RecycleviewAdapter extends RecyclerView.Adapter {
             });
             content.setText("事件内容:" + datas.get(position).get(0));
             name.setText("录入人:" + datas.get(position).get(1));
-            if (datas.get(position).get(2).equals("1")) {
-                state.setText("已处理");
-                state.setTextColor(Color.BLUE);
-            } else {
-                state.setText("未处理");
-                state.setTextColor(Color.RED);
+            if (type==0){
+                state.setVisibility(View.VISIBLE);
+                if (datas.get(position).get(2).equals("1")) {
+                    state.setText("已处理");
+                    state.setTextColor(Color.BLUE);
+                } else {
+                    state.setText("未处理");
+                    state.setTextColor(Color.RED);
+                }
+            }else {
+                state.setVisibility(View.INVISIBLE);
             }
+
             time.setText("录入时间:" + datas.get(position).get(3));
         }
     }

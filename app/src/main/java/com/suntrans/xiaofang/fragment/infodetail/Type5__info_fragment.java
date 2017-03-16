@@ -28,7 +28,6 @@ import android.widget.TextView;
 
 import com.amap.api.maps.model.LatLng;
 import com.google.common.collect.ImmutableMap;
-import com.journeyapps.barcodescanner.Util;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.edit.EditLicense_activity;
@@ -42,6 +41,7 @@ import com.suntrans.xiaofang.model.license.LicenseDetailResult;
 import com.suntrans.xiaofang.model.license.LicenseItemInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -60,7 +60,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static com.suntrans.xiaofang.R.id.type1;
 import static com.suntrans.xiaofang.utils.Utils.pad;
 
 /**
@@ -131,11 +130,10 @@ public class Type5__info_fragment extends BasedFragment {
                 v = LayoutInflater.from(getActivity()).inflate(R.layout.item_cominfo, parent, false);
                 return new ViewHolder1(v);
             } else if (viewType == 1) {
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhengxuke2, parent, false);
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_editlicense, parent, false);
                 return new ViewHolder2(view);
             } else if (viewType == 2) {
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzheng_button, parent, false);
-                return new ViewHolder3(view);
+                return null;
             } else {
                 return null;
             }
@@ -188,14 +186,7 @@ public class Type5__info_fragment extends BasedFragment {
 
             public ViewHolder3(View itemView) {
                 super(itemView);
-                button = (Button) itemView.findViewById(R.id.button);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
-
-                    }
-                });
             }
 
             public void setData(int position) {
@@ -209,16 +200,22 @@ public class Type5__info_fragment extends BasedFragment {
             TextView isq;
             TextView number;
             TextView time;
-
+            TextView header;
             public ViewHolder2(View itemView) {
                 super(itemView);
                 title = (TextView) itemView.findViewById(R.id.title);
                 isq = (TextView) itemView.findViewById(R.id.isqualified);
                 number = (TextView) itemView.findViewById(R.id.number);
                 time = (TextView) itemView.findViewById(R.id.time);
+                header = (TextView) itemView.findViewById(R.id.header);
             }
 
             public void setData(int position) {
+                if (position==5){
+                    header.setVisibility(View.VISIBLE);
+                }else {
+                    header.setVisibility(View.GONE);
+                }
                 title.setText(datas.get(position).get(0));
                 number.setText(datas.get(position).get(1));
                 time.setText(datas.get(position).get(2));
@@ -269,9 +266,10 @@ public class Type5__info_fragment extends BasedFragment {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        throwable.printStackTrace();
                         progressBar.setVisibility(View.INVISIBLE);
                         error.setVisibility(View.VISIBLE);
-                        UiUtils.showToast(App.getApplication(), "连接服务器失败!");
+                        UiUtils.showToast(App.getApplication(), "服务器数据错误!");
                     }
                 });
     }
@@ -324,7 +322,7 @@ public class Type5__info_fragment extends BasedFragment {
             }
             array.put(1, item.number);
             array.put(2, item.time);
-            array.put(3, item.isqualified.equals("1") ? "合格" : "不合格");
+            array.put(3, item.isqualified==null?"":item.isqualified.equals("1") ? "合格" : "不合格");
             datas.add(array);
         }
         myAdapter = null;
@@ -356,6 +354,7 @@ public class Type5__info_fragment extends BasedFragment {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         if (result != null) {
                             if (result.status.equals("1")) {
+                                sendBroadcast();
                                 builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -609,5 +608,10 @@ public class Type5__info_fragment extends BasedFragment {
 
     }
 
-
+    private void sendBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction("net.suntrans.xiaofang.lp");
+        intent.putExtra("type", MarkerHelper.LICENSE);
+        getActivity().sendBroadcast(intent);
+    }
 }

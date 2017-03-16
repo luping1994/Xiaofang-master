@@ -50,6 +50,7 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/daduihhouzhui"
                     android:textColor="@color/balck"
                     android:layout_toRightOf="@+id/name"
@@ -136,13 +137,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1px"
                 android:background="@color/white"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading">
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="45dp"
+                    android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="*联系电话"
                     android:textColor="@color/balck"

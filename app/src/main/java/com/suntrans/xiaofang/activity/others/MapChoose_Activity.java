@@ -357,6 +357,7 @@ public class MapChoose_Activity extends AppCompatActivity implements LocationSou
         if (searchLatlonPoint != null) {
             poiSearch = new PoiSearch(this, query);
             poiSearch.setOnPoiSearchListener(this);
+            //poiSearch.not
 //            poiSearch.setBound(new PoiSearch.SearchBound(searchLatlonPoint, 1000000, true));//
             poiSearch.searchPOIAsyn();
         }

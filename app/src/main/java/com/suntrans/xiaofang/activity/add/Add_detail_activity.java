@@ -38,7 +38,7 @@ public class Add_detail_activity extends BasedActivity {
     int type;
     private FrameLayout content;
     private Fragment[] fragments;
-    private String[] title = {"添加社会单位", "添加社区消防室", "添加乡村专职消防队", "添加消防中队", "添加行政审批项目","添加消防大队","添加政府专职小型站"};
+    private String[] title = {"添加社会单位", "添加社区消防室", "添加乡镇专职消防队", "添加消防中队", "添加行政审批项目","添加消防大队","添加政府专职小型站"};
     public LatLng latLng;
     private Type1_fragment type1_fragment;
     private Type2_fragment type2_fragment;
@@ -59,7 +59,6 @@ public class Add_detail_activity extends BasedActivity {
     private void setupToolBar() {
         type = getIntent().getIntExtra("type", 1);
         latLng = getIntent().getParcelableExtra("location");
-        StatusBarCompat.compat(this, Color.rgb(0x2f, 0x9d, 0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setTitle(title[type]);

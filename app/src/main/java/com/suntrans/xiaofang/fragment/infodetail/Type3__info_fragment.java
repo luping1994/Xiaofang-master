@@ -115,8 +115,7 @@ public class Type3__info_fragment extends BasedFragment  {
 
     @Override
     public void reLoadData(View view) {
-        progressBar.setVisibility(View.VISIBLE);
-        error.setVisibility(View.INVISIBLE);
+
         getData();
     }
 
@@ -251,6 +250,9 @@ public class Type3__info_fragment extends BasedFragment  {
     public FireStationDetailInfo myInfo;
 
     private void getData() {
+        progressBar.setVisibility(View.VISIBLE);
+        error.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
         if (type== MarkerHelper.FIRESTATION){
             RetrofitHelper.getApi().getFireStationDetailInfo(((InfoDetail_activity) getActivity()).companyId)
                     .compose(this.<FireStationDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
@@ -418,6 +420,7 @@ public class Type3__info_fragment extends BasedFragment  {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             if (result != null) {
                                 if (result.status.equals("1")) {
+                                    sendBroadcast();
                                     builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -461,6 +464,7 @@ public class Type3__info_fragment extends BasedFragment  {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             if (result != null) {
                                 if (result.status.equals("1")) {
+                                    sendBroadcast();
                                     builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -583,5 +587,12 @@ public class Type3__info_fragment extends BasedFragment  {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_detailinfo,menu);
+    }
+
+    private void sendBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction("net.suntrans.xiaofang.lp");
+        intent.putExtra("type", type);
+        getActivity().sendBroadcast(intent);
     }
 }

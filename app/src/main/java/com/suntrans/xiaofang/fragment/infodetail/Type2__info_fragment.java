@@ -31,6 +31,7 @@ import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailInfo;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.trello.rxlifecycle.android.FragmentEvent;
 
@@ -354,6 +355,7 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         if (result != null) {
                             if (result.status.equals("1")) {
+                                sendBroadcast();
                                 builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -475,5 +477,13 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_detailinfo,menu);
+    }
+
+
+    private void sendBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction("net.suntrans.xiaofang.lp");
+        intent.putExtra("type", MarkerHelper.FIREROOM);
+        getActivity().sendBroadcast(intent);
     }
 }

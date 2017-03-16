@@ -41,7 +41,8 @@
     <!--</LinearLayout>-->
   <include layout="@layout/toolbar"/>
     <RelativeLayout
-        android:background="#dddddd"
+        android:visibility="gone"
+        android:background="#eeeeee"
         android:layout_width="match_parent"
         android:layout_height="50dp">
         <LinearLayout
@@ -110,7 +111,7 @@
         android:id="@+id/recycleview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_color">
+        android:background="#eeeeee">
 
     </android.support.v7.widget.RecyclerView>
 

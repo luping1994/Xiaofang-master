@@ -87,9 +87,10 @@ public class WelcomeActivity extends BasedActivity {
             msg.what = 1;
             handler.sendMessageDelayed(msg, 1800);
         }else {
-            Message msg = new Message();
-            msg.what = 0;
-            handler.sendMessageDelayed(msg, 1800);
+//            Message msg = new Message();
+//            msg.what = 0;
+//            handler.sendMessageDelayed(msg, 1800);
+            getUserinfo();
         }
     }
 

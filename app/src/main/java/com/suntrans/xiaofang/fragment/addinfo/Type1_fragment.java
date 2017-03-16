@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.amap.api.services.core.PoiItem;
 import com.google.common.collect.ImmutableMap;
+import com.journeyapps.barcodescanner.Util;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
@@ -64,12 +65,17 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.suntrans.xiaofang.R.id.login;
+import static com.suntrans.xiaofang.R.id.map;
+import static com.suntrans.xiaofang.R.id.type;
+
 /**
  * Created by Looney on 2016/12/13.
  * 增加社会单位fragment
  */
 
 public class Type1_fragment extends RxFragment implements View.OnClickListener {
+    private static final java.lang.String TAG = "Type1_fragment";
     @BindView(R.id.name)
     EditText name;
     @BindView(R.id.addr)
@@ -154,9 +160,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
     @BindView(R.id.lat)
     EditText lat;
 
-
-    //    private ArrayList<HashMap<String, String>> datas = new ArrayList<>();
-    ProgressDialog progressDialog = new ProgressDialog(UiUtils.getContext());
     @BindView(R.id.one)
     CheckBox one;
     @BindView(R.id.two)
@@ -241,6 +244,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
     private String dadui_id_path;
     private String paichusuo_id_path;
+    private String level = "";//默认的level
 
     @Nullable
     @Override
@@ -256,7 +260,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         dialog = new ProgressDialog(UiUtils.getContext());
         dialog.setMessage("添加中");
-        progressDialog.setMessage("获取中");
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
@@ -289,12 +292,21 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                 mainAttrId = "";
                 subAttrId = "";
                 if (checkedId == R.id.dangerlevel1) {
+
+
                     attributeLl.setVisibility(View.VISIBLE);
 
                     inchargeDadui.setVisibility(View.VISIBLE);
                     inchargePaichusuo.setVisibility(View.GONE);
 
                     dangerlevels = "1";
+                    if (!level.equals(dangerlevels)) {
+                        dadui_id_path = "";
+                        paichusuo_id_path = "";
+                        mainAttrId = "";
+                        subAttrId = "";
+
+                    }
 
                 } else if (checkedId == R.id.dangerlevel2) {
 
@@ -304,6 +316,14 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                     inchargePaichusuo.setVisibility(View.GONE);
                     dangerlevels = "2";
 
+                    if (!level.equals(dangerlevels)) {
+                        dadui_id_path = "";
+                        paichusuo_id_path = "";
+                        mainAttrId = "";
+                        subAttrId = "";
+
+                    }
+
                 } else if (checkedId == R.id.dangerlevel3) {
 
 
@@ -312,15 +332,31 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                     inchargePaichusuo.setVisibility(View.VISIBLE);
                     dangerlevels = "3";
 
+                    if (!level.equals(dangerlevels)) {
+                        dadui_id_path = "";
+                        paichusuo_id_path = "";
+                        mainAttrId = "";
+                        subAttrId = "";
+
+                    }
+
+
                 } else if (checkedId == R.id.dangerlevel4) {
 
 
-                    mainAttrId = null;
-                    subAttrId = null;
                     dangerlevels = "4";
                     attributeLl.setVisibility(View.GONE);
                     inchargeDadui.setVisibility(View.VISIBLE);
                     inchargePaichusuo.setVisibility(View.VISIBLE);
+
+
+                    if (!level.equals(dangerlevels)) {
+                        dadui_id_path = "";
+                        paichusuo_id_path = "";
+                        mainAttrId = "";
+                        subAttrId = "";
+
+                    }
 
                 }
             }
@@ -442,7 +478,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         mainAttrId = mainid;
                         subAttrId = subid;
                         attribute.setText(mainAttr.name);
-                        System.out.println(mainAttr.name + "fushixing->" + subidname);
+//                        System.out.println(mainAttr.name + "fushixing->" + subidname);
                     }
                     bottomDialog.dismiss();
                 }
@@ -577,11 +613,26 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             return;
         }
 
-        System.out.println("单位主属性id=" + mainAttrId);
         if (!dangerlevels.equals("4")) {
             if (!Utils.isVaild(mainAttrId)) {
                 UiUtils.showToast("单位属性不能为空");
                 return;
+            }
+        }
+
+        if (dangerlevels.equals("1") || dangerlevels.equals("2")) {
+            if (!Utils.isVaild(dadui_id_path)) {
+                UiUtils.showToast("请选择消防管辖");
+                return;
+            } else {
+                incharge1 = dadui_id_path;
+            }
+        } else if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
+            if (!Utils.isVaild(paichusuo_id_path)) {
+                UiUtils.showToast("请选择消防管辖");
+                return;
+            } else {
+                incharge1 = paichusuo_id_path;
             }
         }
 
@@ -612,33 +663,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             return;
         }
 
-        if (!Utils.isVaild(artiname1)) {
-            UiUtils.showToast("请输入法定人姓名");
-            return;
-        }
-
-        if (!Utils.isVaild(artiphone1)) {
-            UiUtils.showToast("请输入法定人电话");
-            return;
-        }
-
-
-        if (dangerlevels.equals("1") || dangerlevels.equals("4")) {
-            if (!Utils.isVaild(dadui_id_path)) {
-                UiUtils.showToast("请选择消防管辖");
-                return;
-            } else {
-                incharge1 = dadui_id_path;
-            }
-        } else if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
-            if (!Utils.isVaild(paichusuo_id_path)) {
-                UiUtils.showToast("请选择消防管辖");
-                return;
-            } else {
-                incharge1 = paichusuo_id_path;
-            }
-        }
-
 
 //        if (name1 != null) {
 //            name1 = name1.replace(" ", "");
@@ -663,18 +687,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         if (Utils.isVaild(companyid1)) {
             builder.put("companyid", companyid1);
         }
-//        if (name1 != null) {
-//            name1 = name1.replace(" ", "");
-//            if (!TextUtils.equals(" ", name1))
-//                builder.put("name", name1);
-//        }
-//        if (addr1 != null) {
-//            addr1 = addr1.replace(" ", "");
-//            if (!TextUtils.equals(" ", addr1))
-//                builder.put("addr", addr1);
-//        }
-
-//        builder.put("cmystate", "0");
 
 
         if (Utils.isVaild(incharge1)) {
@@ -825,32 +837,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
         }
 
-//        if (east1 != null) {
-//            east1 = east1.replace(" ", "");
-//            if (!TextUtils.equals("", east1))
-//                builder.put("east", east1);
-//
-//        }
-//
-//        if (south1 != null) {
-//            south1 = south1.replace(" ", "");
-//            if (!TextUtils.equals("", south1))
-//                builder.put("south", south1);
-//
-//        }
-//
-//        if (west1 != null) {
-//            west1 = west1.replace(" ", "");
-//            if (!TextUtils.equals("", west1))
-//                builder.put("west", west1);
-//
-//        }
-//        if (north1 != null) {
-//            north1 = north1.replace(" ", "");
-//            if (!TextUtils.equals("", north1))
-//                builder.put("north", north1);
-//
-//        }
 
         if (Utils.isVaild(nearby1)) {
             builder.put("nearby", nearby1);
@@ -876,8 +862,14 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         }
 
 
-        if (Utils.isVaild(mainAttrId)) {
-            builder.put("mainattribute", mainAttrId);
+        if (dangerlevels.equals("1") || dangerlevels.equals("2")) {
+            if (Utils.isVaild(mainAttrId)) {
+                builder.put("mainattribute", mainAttrId);
+            }
+        } else if (dangerlevels.equals("3")) {
+            if (Utils.isVaild(mainAttrId)) {
+                builder.put("mainattribute_small", mainAttrId);
+            }
         }
 
         if (Utils.isVaild(subAttrId)) {
@@ -887,9 +879,13 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
+            LogUtil.i(TAG, key + "," + value);
         }
 
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setCancelable(false);
+        dialog.setMessage("请稍后..");
+        dialog.show();
         if (dangerlevels.equals("1") || dangerlevels.equals("2")) {
             RetrofitHelper.getApi().createCompany(map)
                     .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
@@ -905,13 +901,16 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         public void onError(Throwable e) {
                             e.printStackTrace();
                             UiUtils.showToast("添加失败");
+                            dialog.dismiss();
                         }
 
                         @Override
                         public void onNext(AddCompanyResult result) {
+                            dialog.dismiss();
                             try {
                                 if (result != null) {
                                     if (result.status.equals("1")) {
+                                        sendBroadcast(MarkerHelper.S0CIETY);
                                         final AlertDialog dialog1;
                                         dialog1 = new AlertDialog.Builder(getActivity())
                                                 .setMessage(result.result)
@@ -938,6 +937,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+
                         }
                     });
         } else if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
@@ -955,13 +955,16 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         public void onError(Throwable e) {
                             e.printStackTrace();
                             UiUtils.showToast("添加失败");
+                            dialog.dismiss();
                         }
 
                         @Override
                         public void onNext(AddCompanyResult result) {
+                            dialog.dismiss();
                             try {
                                 if (result != null) {
                                     if (result.status.equals("1")) {
+                                        sendBroadcast(MarkerHelper.COMMONCOMPANY);
                                         final AlertDialog dialog1;
                                         dialog1 = new AlertDialog.Builder(getActivity())
                                                 .setMessage(result.result)
@@ -1095,7 +1098,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         lng.setText(info.lng);
 
         if (info.dangerlevel != null) {
-            String level = info.dangerlevel;
+            level = info.dangerlevel;
             dangerlevels = level.replace(" ", "");
             if (level.equals("1"))
                 dangerlevel1.setChecked(true);
@@ -1165,30 +1168,70 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
 
         String mainId = info.mainattribute;
+
+//        if (mainId != null) {
+//            if (info.special != null) {
+//                if (info.special.equals("1")) {
+//                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
+//                    SQLiteDatabase db = helper.getReadableDatabase();
+//                    db.beginTransaction();
+//                    Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
+//                    if (cursor.getCount() > 0) {
+//                        while (cursor.moveToNext()) {
+//                            attribute.setText(cursor.getString(0));
+//                        }
+//                    }
+//                    cursor.close();
+//                    db.setTransactionSuccessful();
+//                    db.endTransaction();
+//                } else if (info.special.equals("0")) {
+//                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
+//                    SQLiteDatabase db = helper.getReadableDatabase();
+//                    db.beginTransaction();
+//                    Cursor cursor = db.rawQuery("select Name from attr_general where Id=?", new String[]{mainId});
+//                    if (cursor.getCount() > 0) {
+//                        while (cursor.moveToNext()) {
+//                            attribute.setText(cursor.getString(0));
+//                        }
+//                    }
+//                    cursor.close();
+//                    db.setTransactionSuccessful();
+//                    db.endTransaction();
+//                }
+//            }
+//
+//        }
+
+        String mainId_small = info.mainattribute_small;
         if (mainId != null) {
             if (info.special != null) {
                 if (info.special.equals("1")) {
+                    StringBuilder sb = new StringBuilder();
                     DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
                     SQLiteDatabase db = helper.getReadableDatabase();
                     db.beginTransaction();
                     Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
                     if (cursor.getCount() > 0) {
                         while (cursor.moveToNext()) {
-                            attribute.setText(cursor.getString(0));
+                            sb.append(cursor.getString(0));
                         }
                     }
-                    cursor.close();
-                    db.setTransactionSuccessful();
-                    db.endTransaction();
-                } else if (info.special.equals("0")) {
-                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
-                    SQLiteDatabase db = helper.getReadableDatabase();
-                    db.beginTransaction();
-                    Cursor cursor = db.rawQuery("select Name from attr_general where Id=?", new String[]{mainId});
-                    if (cursor.getCount() > 0) {
-                        while (cursor.moveToNext()) {
-                            attribute.setText(cursor.getString(0));
+                    if (info.subattribute != null) {
+                        Cursor cursor2 = db.rawQuery("select Name from attr_sub where Id=?", new String[]{info.subattribute});
+                        if (cursor2.getCount() > 0) {
+                            while (cursor2.moveToNext()) {
+                                sb.append("(")
+                                        .append(cursor2.getString(0))
+                                        .append(")");
+                            }
                         }
+                        cursor2.close();
+                    }
+                    String attr = sb.toString();
+                    if (Utils.isVaild(attr)) {
+                        mainAttrId = info.mainattribute;
+                        subAttrId = info.subattribute;
+                        attribute.setText(attr);
                     }
                     cursor.close();
                     db.setTransactionSuccessful();
@@ -1197,6 +1240,37 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             }
 
         }
+
+        if (mainId_small != null) {
+            String[] ids = mainId_small.split("#");
+            String attr = "";
+            for (int i = 0; i < ids.length; i++) {
+                if (info.special.equals("0")) {
+                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
+                    SQLiteDatabase db = helper.getReadableDatabase();
+                    db.beginTransaction();
+                    Cursor cursor = db.rawQuery("select Name from attr_general where Id=?", new String[]{ids[i]});
+                    if (cursor.getCount() > 0) {
+                        while (cursor.moveToNext()) {
+                            attr += cursor.getString(0);
+                        }
+                    }
+                    cursor.close();
+                    db.setTransactionSuccessful();
+                    db.endTransaction();
+                }
+            }
+            if (Utils.isVaild(attr)) {
+                attribute.setText(attr);
+                mainAttrId = info.mainattribute_small;
+            }
+
+        }
+
+        marker.setText(info.remark);
+        firemannum.setText(info.firemannum);
+        otherdisp.setText(info.otherdisp);
+        companyid.setText(info.companyid);
     }
 
 
@@ -1205,6 +1279,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         super.onResume();
         getIncharge("0", 0, "0");
     }
+
 
     public void updateCompany(int companyType) {
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
@@ -1271,18 +1346,36 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         } else if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
             incharge1 = paichusuo_id_path;
         }
-        if (addr1 == null || addr1.equals("")) {
-            UiUtils.showToast("公司地址不不能为空!");
-            return;
-        }
-
         if (!Utils.isVaild(name1)) {
             UiUtils.showToast("单位名称不能为空");
             return;
         }
 
-        LogUtil.i("单位主属性id=" + mainAttrId);
+        if (!Utils.isVaild(addr1)) {
+            UiUtils.showToast("公司地址不不能为空!");
+            return;
+        }
 
+
+        if (!Utils.isVaild(dangerlevels)) {
+            UiUtils.showToast("请选择火灾危险性!");
+            return;
+        }
+
+        if (!dangerlevels.equals("4")) {
+            if (!Utils.isVaild(mainAttrId)) {
+                UiUtils.showToast("请重新选择单位属性！");
+                return;
+            }
+        }
+
+        LogUtil.i("type1fragment", "mainattrid = " + mainAttrId);
+        if (!level.equals(dangerlevels)) {
+            if (!Utils.isVaild(incharge1)) {
+                UiUtils.showToast("请重新选择消防管辖");
+                return;
+            }
+        }
 
         if (!Utils.isVaild(buildarea1)) {
             UiUtils.showToast("请输入建筑面积");
@@ -1296,12 +1389,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
         if (!Utils.isVaild(stairnum1)) {
             UiUtils.showToast("请消防楼梯数");
-            return;
-        }
-
-
-        if (!Utils.isVaild(dangerlevels)) {
-            UiUtils.showToast("请选择火灾危险性!");
             return;
         }
 
@@ -1359,7 +1446,6 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 //        builder.put("cmystate", "0");
 
 
-        LogUtil.i("incharge=" + incharge1);
         if (Utils.isVaild(incharge1)) {
             builder.put("incharge", incharge1);
         }
@@ -1532,12 +1618,22 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         }
 
 
-        if (Utils.isVaild(mainAttrId)) {
-            builder.put("mainattribute", mainAttrId);
-        }
+        if (dangerlevels.equals("4")) {
+            builder.put("mainattribute", "");
+            builder.put("subattribute", "");
+        } else if (dangerlevels.equals("3")) {
+            if (Utils.isVaild(mainAttrId)) {
+                builder.put("mainattribute_small", mainAttrId);
+            }
 
-        if (Utils.isVaild(subAttrId)) {
-            builder.put("subattribute", subAttrId);
+        } else {
+            if (Utils.isVaild(mainAttrId)) {
+                builder.put("mainattribute", mainAttrId);
+            }
+
+            if (Utils.isVaild(subAttrId)) {
+                builder.put("subattribute", subAttrId);
+            }
         }
 
         builder.put("id", info.id);
@@ -1547,6 +1643,10 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             String value = entry.getValue().toString();
             System.out.println(key + "," + value);
         }
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setCancelable(false);
+        dialog.setMessage("请稍后...");
+        dialog.show();
         if (companyType == MarkerHelper.S0CIETY) {
             RetrofitHelper.getApi().updateCompany(map)
                     .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
@@ -1555,20 +1655,22 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                     .subscribe(new Subscriber<AddCompanyResult>() {
                         @Override
                         public void onCompleted() {
-
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
+                            dialog.dismiss();
                             UiUtils.showToast("服务器错误,更新单位信息失败!");
                         }
 
                         @Override
                         public void onNext(AddCompanyResult result) {
+                            dialog.dismiss();
                             try {
                                 if (result != null) {
                                     if (result.status.equals("1")) {
+                                        sendBroadcast(MarkerHelper.S0CIETY);
                                         final AlertDialog dialog1;
                                         dialog1 = new AlertDialog.Builder(getActivity())
                                                 .setMessage(result.result)
@@ -1595,6 +1697,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+
                         }
                     });
         } else if (companyType == MarkerHelper.COMMONCOMPANY) {
@@ -1612,13 +1715,17 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         public void onError(Throwable e) {
                             e.printStackTrace();
                             UiUtils.showToast("服务器错误,更新单位信息失败!");
+                            dialog.dismiss();
                         }
 
                         @Override
                         public void onNext(AddCompanyResult result) {
+                            dialog.dismiss();
+
                             try {
                                 if (result != null) {
                                     if (result.status.equals("1")) {
+                                        sendBroadcast(MarkerHelper.COMMONCOMPANY);
                                         final AlertDialog dialog1;
                                         dialog1 = new AlertDialog.Builder(getActivity())
                                                 .setMessage(result.result)
@@ -1649,5 +1756,16 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                     });
         }
 
+    }
+
+    private void sendBroadcast(int companyType) {
+        if (!dangerlevels.equals(info.dangerlevel) || !info.lng.equals(lng.getText().toString())
+                || !info.lat.equals(lat.getText().toString())) {
+
+            Intent intent = new Intent();
+            intent.putExtra("type",companyType);
+            intent.setAction("net.suntrans.xiaofang.lp");
+            getActivity().sendBroadcast(intent);
+        }
     }
 }

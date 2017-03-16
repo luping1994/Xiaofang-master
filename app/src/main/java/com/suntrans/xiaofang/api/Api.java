@@ -140,7 +140,7 @@ public interface Api {
      * @return
      */
     @FormUrlEncoded
-    @POST("/api/v1/commcmy/detail")
+    @POST("/api/v1/company/detail")
     Observable<CompanyDetailnfoResult> getCommcmyDetail(@Field("id") String id);
 
 
@@ -450,6 +450,16 @@ public interface Api {
     Observable<AddLicenseResult> deleteLicense(@Field("id") String id);
 
     /**
+     * 删除行政许可tiaomu
+     *
+     * @param detail_id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/delete")
+    Observable<AddLicenseResult> deleteLicenseItem(@Field("detail_id") String detail_id);
+
+    /**
      * 一定范围内的行政许可建筑
      *
      * @param lng
@@ -482,6 +492,16 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/license/update")
     Observable<AddLicenseResult> updateLicense(@FieldMap Map<String, String> map);
+
+    /**
+     * 更新license
+     *
+     * @param map
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/license/updateDetail")
+    Observable<AddLicenseResult> updateLicenseDetail(@FieldMap Map<String, String> map);
 
 
     /**
@@ -723,9 +743,9 @@ public interface Api {
      * @return
      */
     @FormUrlEncoded
-    @POST("/api/v1/company/attachlicense")
+    @POST("/api/v1/company/attachLicense")
     Observable<AddCompanyResult> attachLicense(@Field("company_id") String company_id,
-                                               @Field("license_detail_id") String license_detail_id);
+                                               @Field("license_id") String license_id);
 
     /**
      *
@@ -733,8 +753,81 @@ public interface Api {
      * @return
      */
     @FormUrlEncoded
-    @POST("/api/v1/commcmy/attachlicense")
+    @POST("/api/v1/commcmy/attachLicense")
     Observable<AddCompanyResult> attachCommLicense(@Field("company_id") String company_id,
-                                               @Field("license_detail_id") String license_detail_id);
+                                               @Field("license_id") String license_id);
+    /**
+     *
+     *删除重点单位审批信息
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/company/deleteLicense")
+    Observable<AddCompanyResult> deleteCompanyLicnese(@Field("license_id") String id);
+
+    /**
+     *
+     *删除一般单位行政审批信息
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/deleteLicense")
+    Observable<AddCompanyResult> deleteCommcmyLicnese(@Field("license_id") String id);
+
+    /**
+     *
+     *增加重点单位行政审批信息
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/company/addLicense")
+    Observable<AddCompanyResult> addCompanyLicnese(@Field("id") String id,@Field("info") String info) ;
+
+    /**
+     *
+     *增加重点单位行政审批信息
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/addLicense")
+    Observable<AddCompanyResult> addCommcmyLicnese(@Field("id") String id,@Field("info") String info) ;
+
+    /**
+     *
+     *解绑重点单位行政审批
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/company/detachLicense")
+    Observable<AddCompanyResult> detachCompanyLicense(@Field("company_id") String id,@Field("license_id") String info) ;
+
+
+    /**
+     *
+     *解绑一般单位行政审批
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/detachLicense")
+    Observable<AddCompanyResult> detachCommcmyLicense(@Field("company_id") String id,@Field("license_id") String info) ;
+
+
+    /**
+     *
+     *跟新重点单位行政审批
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/company/updateLicense")
+    Observable<AddCompanyResult> updateCompanyLicense(@FieldMap Map<String,String> map) ;
+
+    /**
+     *
+     *跟新一般单位行政审批
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/commcmy/updateLicense")
+    Observable<AddCompanyResult> updateCommcmyLicense(@FieldMap Map<String,String> map) ;
 }
 

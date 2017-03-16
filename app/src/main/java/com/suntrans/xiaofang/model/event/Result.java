@@ -9,7 +9,7 @@ import java.util.List;
 public class Result {
 
     public Event item;
-    public List<String> type_ids;
+    public String type_ids;
     public List<String> img_before;
     public List<String> img_after;
 
@@ -24,7 +24,7 @@ public class Result {
     public String toString() {
         return "Result{" +
                 "item=" + item +
-                ", type_ids=" + type_ids.get(0) +
+                ", type_ids=" + type_ids +
                 ", img_before=" + img_before.get(0) +
                 ", img_after=" + img_after.get(0) +
                 ", img_beforeR=" + img_beforeR.get(0) +

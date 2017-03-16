@@ -1,56 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/bg_color"
+
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <android.support.v7.widget.CardView
-        android:id="@+id/ll"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:elevation="3dp"
+    android:background="#fafafa"
+    android:layout_marginTop="8dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardElevation="3dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
+
+        <TextView
+            android:id="@+id/name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center|left"
+            android:paddingBottom="5dp"
+            android:text="广州三川有限公司"
+            android:textColor="@color/secondtextcolor"
+            android:textSize="16sp" />
 
-            <TextView
-                android:paddingBottom="5dp"
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center|left"
-                android:text="广州三川有限公司"
-                android:textColor="@color/balck"
-                android:textSize="17sp" />
+        <TextView
+            android:id="@+id/cmyname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|left"
+            android:paddingBottom="5dp"
+            android:text="广州三川有限公司"
+            android:textColor="@color/secondtextcolor"
+            android:textSize="16sp" />
 
-            <TextView
-                android:paddingBottom="5dp"
-                android:id="@+id/cmyname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center|left"
-                android:text="广州三川有限公司"
-                android:textColor="@color/secondtextcolor"
-                android:textSize="16sp" />
-            <TextView
-                android:id="@+id/addr"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center|left"
-                android:text="广州三川有限公司"
-                android:textColor="@color/secondtextcolor"
-                android:textSize="16sp" />
+        <TextView
+            android:id="@+id/addr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|left"
+            android:text="广州三川有限公司"
+            android:textColor="@color/secondtextcolor"
+            android:textSize="16sp" />
 
-        </LinearLayout>
 
-    </android.support.v7.widget.CardView>
 
-</RelativeLayout>
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

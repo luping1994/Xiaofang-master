@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.widget.Spinner;
 
 import com.amap.api.services.core.PoiItem;
 import com.google.common.collect.ImmutableMap;
+import com.iflytek.msc.MSC;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
@@ -27,6 +29,7 @@ import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.model.firegroup.FireGroupDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -49,7 +52,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.suntrans.xiaofang.R.id.incharge_dadui;
+import static com.suntrans.xiaofang.R.id.lng;
 import static com.suntrans.xiaofang.R.id.map;
+import static com.suntrans.xiaofang.R.id.membernum;
+import static com.suntrans.xiaofang.R.id.number;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -180,9 +186,9 @@ public class Type4_fragment extends RxFragment {
                 if (flag == 1) {
                     if (position == 0) {
                         pid = null;
-                        return;
+                    } else {
+                        pid = daduiId.get(position - 1);
                     }
-                    pid = daduiId.get(position - 1);
                 }
             }
 
@@ -225,32 +231,32 @@ public class Type4_fragment extends RxFragment {
         String soapweight1 = soapweight.getText().toString();
         String cardisp1 = "";
         if (!Utils.isVaild(name1)) {
-            UiUtils.showToast("名称不不能为空!");
+            UiUtils.showToast("名称不能为空!");
             return;
         }
         if (!Utils.isVaild(addr1)) {
-            UiUtils.showToast("地址不不能为空!");
+            UiUtils.showToast("地址不能为空!");
             return;
         }
 
-        if (!Utils.isVaild(pid)) {
-            UiUtils.showToast("请选择消防大队!");
+        if (!Utils.isVaild(phone1)) {
+            UiUtils.showToast("联系电话不能为空");
             return;
         }
-        if (!Utils.isVaild(ganbunum)) {
-            UiUtils.showToast("请输入干部消防员人数");
-            return;
-        }
-
-        if (!Utils.isVaild(shibingnum)) {
-            UiUtils.showToast("请输入士兵人数");
-            return;
-        }
-        if (!Utils.isVaild(zhuanzhinum)) {
-            UiUtils.showToast("请输入专职消防员人数");
+        if (!Utils.isVaild(area1)) {
+            UiUtils.showToast("辖区面积不能为空");
             return;
         }
 
+        if (!Utils.isVaild(ganbunum) || !Utils.isVaild(shibingnum) || !Utils.isVaild(zhuanzhinum)) {
+            UiUtils.showToast("请输入人员组成");
+            return;
+        }
+
+        if (!Utils.isVaild(carnum1)) {
+            UiUtils.showToast("请输入消防车总数");
+            return;
+        }
         if (!Utils.isVaild(waterweight1)) {
             UiUtils.showToast("请输入车载水总量");
             return;
@@ -260,8 +266,9 @@ public class Type4_fragment extends RxFragment {
             UiUtils.showToast("请输入车载泡沫总量");
             return;
         }
-        if (!Utils.isVaild(carnum1)) {
-            UiUtils.showToast("请输入消防车辆总数");
+
+        if (!Utils.isVaild(pid)) {
+            UiUtils.showToast("请选择所属大队!");
             return;
         }
         JSONObject jsonObject = new JSONObject();
@@ -272,6 +279,7 @@ public class Type4_fragment extends RxFragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         membernum1 = jsonObject.toString();
 
         JSONObject jsonObject2 = new JSONObject();
@@ -284,7 +292,8 @@ public class Type4_fragment extends RxFragment {
             String type = conType.getText().toString();
             String detail = conDetail.getText().toString();
             try {
-                jsonObject2.put(type, detail);
+                if (Utils.isVaild(type) && Utils.isVaild(detail))
+                    jsonObject2.put(type, detail);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -293,7 +302,7 @@ public class Type4_fragment extends RxFragment {
         cardisp1 = jsonObject2.toString();
 
 
-        builder.put("name", name1 + "中队".replace(" ", ""));
+        builder.put("name", name1.replace(" ", ""));
         builder.put("addr", addr1.replace(" ", ""));
         if (Utils.isVaild(lng1)) {
             builder.put("lng", lng1.replace(" ", ""));
@@ -330,9 +339,11 @@ public class Type4_fragment extends RxFragment {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
+           LogUtil.i(key + "," + value);
         }
-
+        final ProgressDialog dialog1 = new ProgressDialog(getActivity());
+        dialog1.setMessage("正在添加,请稍后...");
+        dialog1.show();
         RetrofitHelper.getApi().createGroup(map)
                 .compose(this.<AddFireGroupResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -346,14 +357,16 @@ public class Type4_fragment extends RxFragment {
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         UiUtils.showToast(App.getApplication(), "服务器内部错误");
+                        dialog1.dismiss();
                     }
 
                     @Override
                     public void onNext(AddFireGroupResult result) {
+                        dialog1.dismiss();
                         if (result != null) {
                             if (result.status.equals("1")) {
+                                sendBroadcast(CREATE);
                                 String result1 = result.result;
-
                                 dialog = new AlertDialog.Builder(getActivity())
                                         .setMessage(result1)
                                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -364,7 +377,7 @@ public class Type4_fragment extends RxFragment {
                                         })
                                         .create();
                                 dialog.show();
-                            } else {
+                            } else if (result.status.equals("0")){
                                 UiUtils.showToast(result.msg);
                             }
                         } else {
@@ -394,32 +407,50 @@ public class Type4_fragment extends RxFragment {
         String shibingnum = shibing.getText().toString();
         String zhuanzhinum = zhuanzhi.getText().toString();
 
+        String waterweight1 = waterweight.getText().toString();
+        String soapweight1 = soapweight.getText().toString();
 
         String cardisp1 = "";
         if (!Utils.isVaild(name1)) {
-            UiUtils.showToast("公司名称不不能为空!");
+            UiUtils.showToast("名称不能为空!");
             return;
         }
         if (!Utils.isVaild(addr1)) {
-            UiUtils.showToast("公司地址不不能为空!");
+            UiUtils.showToast("地址不能为空!");
             return;
         }
 
-//        if (!Utils.isVaild(pid)) {
-//            UiUtils.showToast("请选择消防中队!");
-//            return;
-//        }
-        if (!Utils.isVaild(ganbunum)) {
-            UiUtils.showToast("请输入干部消防员人数");
+        if (!Utils.isVaild(phone1)) {
+            UiUtils.showToast("联系电话不能为空");
+        }
+        if (!Utils.isVaild(area1)) {
+            UiUtils.showToast("辖区面积不能为空");
+        }
+
+        if (!Utils.isVaild(ganbunum) || !Utils.isVaild(shibingnum) || !Utils.isVaild(zhuanzhinum)) {
+            UiUtils.showToast("请输入人员组成");
             return;
         }
 
-        if (!Utils.isVaild(shibingnum)) {
-            UiUtils.showToast("请输入士兵人数");
+        if (!Utils.isVaild(carnum1)) {
+            UiUtils.showToast("请输入消防车总数");
+        }
+        if (!Utils.isVaild(waterweight1)) {
+            UiUtils.showToast("请输入车载水总量");
             return;
         }
-        if (!Utils.isVaild(zhuanzhinum)) {
-            UiUtils.showToast("请输入专职消防员人数");
+
+        if (!Utils.isVaild(soapweight1)) {
+            UiUtils.showToast("请输入车载泡沫总量");
+            return;
+        }
+        if (!Utils.isVaild(carnum1)) {
+            UiUtils.showToast("请输入消防车辆总数");
+            return;
+        }
+
+        if (daduiId.get(0).equals("请选择")) {
+            UiUtils.showToast("请选择消防大队!");
             return;
         }
 
@@ -443,48 +474,31 @@ public class Type4_fragment extends RxFragment {
             String type = conType.getText().toString();
             String detail = conDetail.getText().toString();
             try {
-                jsonObject2.put(type, detail);
+                if (Utils.isVaild(type) && Utils.isVaild(detail))
+                    jsonObject2.put(type, detail);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         cardisp1 = jsonObject2.toString();
-        String waterweight1 = waterweight.getText().toString();
-        String soapweight1 = soapweight.getText().toString();
 
 
         builder.put("name", name1.replace(" ", ""));
         builder.put("addr", addr1.replace(" ", ""));
-        if (Utils.isVaild(lng1)) {
-            builder.put("lng", lng1.replace(" ", ""));
-        }
-        if (Utils.isVaild(lat1)) {
-            builder.put("lat", lat1.replace(" ", ""));
-        }
-        if (Utils.isVaild(area1)) {
-            builder.put("area", area1.replace(" ", ""));
-        }
+        builder.put("lng", lng1.replace(" ", ""));
+        builder.put("lat", lat1.replace(" ", ""));
+        builder.put("area", area1.replace(" ", ""));
 
-        if (Utils.isVaild(phone1)) {
-            builder.put("phone", phone1.replace(" ", ""));
-        }
+        builder.put("phone", phone1.replace(" ", ""));
         builder.put("membernum", membernum1);
 
-        if (Utils.isVaild(carnum1)) {
-            builder.put("carnum", carnum1.replace(" ", ""));
-        }
+        builder.put("carnum", carnum1.replace(" ", ""));
 
-        if (Utils.isVaild(cardisp1)) {
-            builder.put("cardisp", cardisp1);
-        }
-        if (Utils.isVaild(waterweight1)) {
-            builder.put("waterweight", waterweight1.replace(" ", ""));
-        }
+        builder.put("cardisp", cardisp1);
+        builder.put("waterweight", waterweight1.replace(" ", ""));
 
-        if (Utils.isVaild(soapweight1)) {
-            builder.put("soapweight", soapweight1.replace(" ", ""));
-        }
+        builder.put("soapweight", soapweight1.replace(" ", ""));
         if (Utils.isVaild(pid)) {
             builder.put("pid", pid.replace(" ", ""));
         }
@@ -521,13 +535,40 @@ public class Type4_fragment extends RxFragment {
 
                     @Override
                     public void onNext(AddFireGroupResult result) {
-                        if (dialog.isShowing())
-                            dialog.dismiss();
                         try {
                             if (result == null) {
+                                dialog.dismiss();
                                 UiUtils.showToast("修改单位信息失败!");
                             } else {
-                                UiUtils.showToast("提示:" + result.result);
+                                if (result.status.equals("1")){
+                                    sendBroadcast(UPDATE);
+                                    final AlertDialog dialog1;
+                                    dialog1 = new AlertDialog.Builder(getActivity())
+                                            .setMessage(result.result)
+                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getActivity().finish();
+                                                }
+                                            })
+                                            .create();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            dialog.dismiss();
+                                            dialog1.show();
+                                        }
+                                    }, 500);
+                                }else if (result.status.equals("0")){
+                                    dialog.dismiss();
+                                    UiUtils.showToast(result.msg);
+                                }else if (result.status.equals("-1")){
+                                    dialog.dismiss();
+                                    UiUtils.showToast(result.msg);
+                                }else {
+                                    dialog.dismiss();
+                                }
+
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -587,15 +628,15 @@ public class Type4_fragment extends RxFragment {
     }
 
     boolean isAdd = true;
-    private FireGroupDetailInfo info;
+    private FireGroupDetailInfo info = null;
 
     public void setData(FireGroupDetailInfo info) {
         this.info = info;
         isAdd = false;
         name.setText(info.name == null ? "--" : info.name);
         addr.setText(info.addr == null ? "--" : info.addr);
-        lng.setText(info.lng == null ? "--" : info.lng);
-        lat.setText(info.lat == null ? "--" : info.lat);
+        lng.setText(info.lng == null ? "" : info.lng);
+        lat.setText(info.lat == null ? "" : info.lat);
 
         area.setText(info.area == null ? "--" : info.area);
         phone.setText(info.phone == null ? "--" : info.phone);
@@ -603,7 +644,6 @@ public class Type4_fragment extends RxFragment {
         carnum.setText(info.carnum == null ? "--" : info.carnum);
         waterweight.setText(info.waterweight == null ? "--" : info.waterweight);
         soapweight.setText(info.soapweight == null ? "--" : info.soapweight);
-
         String membernum = info.membernum;
         if (membernum != null) {
             try {
@@ -657,5 +697,33 @@ public class Type4_fragment extends RxFragment {
         }
     }
 
+    private final int UPDATE = 2;
+    private final int CREATE = 1;
+    private void sendBroadcast(int type) {
+        if (type==CREATE){
+            Intent intent = new Intent();
+            intent.setAction("net.suntrans.xiaofang.lp");
+            intent.putExtra("type", MarkerHelper.FIREGROUP);
+            getActivity().sendBroadcast(intent);
+        }else if (type == UPDATE){
+            if (info!=null){
+                if (!info.lat.equals(lat.getText().toString())||!info.lng.equals(lng.getText().toString())){
+                    Intent intent = new Intent();
+                    intent.setAction("net.suntrans.xiaofang.lp");
+                    intent.putExtra("type", MarkerHelper.FIREGROUP);
+                    getActivity().sendBroadcast(intent);
+                }
+            }
+        }
 
+    }
+
+
+    Handler handler = new Handler();
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacksAndMessages(null);
+    }
 }

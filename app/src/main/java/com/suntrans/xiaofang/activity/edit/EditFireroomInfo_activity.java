@@ -32,6 +32,8 @@ import com.suntrans.xiaofang.model.company.InchargeInfo;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.model.fireroom.FireRoomDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
@@ -318,7 +320,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
     }
 
     private void setupToolBar() {
-        StatusBarCompat.compat(this, Color.rgb(0x2f, 0x9d, 0xce));
+//        StatusBarCompat.compat(this, Color.rgb(0x2f, 0x9d, 0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setTitle("修改社区消防室信息");
@@ -326,8 +328,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
-        dialog = new ProgressDialog(this);
-        dialog.setMessage("正在修改请稍候");
+
     }
 
     @Override
@@ -352,7 +353,6 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
 
 
     Map<String, String> map1;
-    ProgressDialog dialog;
 
     public void commit() {
         AlertDialog dialog = new AlertDialog.Builder(EditFireroomInfo_activity.this)
@@ -385,16 +385,35 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
         String lat1 = lat.getText().toString();
         String lng1 =lng.getText().toString();
 
-        if (!Utils.isVaild(name1)) {
-            UiUtils.showToast("名称不能为空");
+        if (name1.equals("") || name1 == null) {
+            UiUtils.showToast("名称不能为空!");
+            return;
+        }
+        if (addr1 == null || addr1.equals("")) {
+            UiUtils.showToast("地址不能为空!");
+            return;
+        }
+        if (!Utils.isVaild(contact1)) {
+            UiUtils.showToast("联系人不能为空!");
+            return;
+        }
+        if (!Utils.isVaild(phone1)) {
+            UiUtils.showToast("联系电话不能为空!");
             return;
         }
 
-        if (!Utils.isVaild(addr1)) {
-            UiUtils.showToast("地址不能为空");
+        if (!Utils.isVaild(zhongdui_id_path)&&Utils.isVaild(dadui_id_path)){
+            UiUtils.showToast("请选择联动中队");
             return;
         }
-        dialog.show();
+        if (Utils.isVaild(zhongdui_id_path)&&!Utils.isVaild(dadui_id_path)){
+            UiUtils.showToast("请选择所属大队");
+            return;
+        }
+
+
+
+
         String cardisp1 = "";
         JSONObject jsonObject1 = new JSONObject();
 
@@ -407,7 +426,8 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
             String type = conType.getText().toString();
             String detail = conDetail.getText().toString();
             try {
-                jsonObject1.put(type, detail);
+                if (Utils.isVaild(type) && Utils.isVaild(detail))
+                    jsonObject1.put(type, detail);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -437,9 +457,6 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
         equipdisp1 = jsonObject2.toString();
 
 
-//
-//        String district1 = district.getText().toString();
-//        String group1 = group.getText().toString();
         builder.put("name", name1.replace(" ", ""));
         builder.put("addr", addr1.replace(" ", ""));
 
@@ -466,13 +483,6 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
             builder.put("equipdisp", equipdisp1.replace(" ", ""));
         }
 
-//        if (Utils.isVaild(district1)) {
-//            builder.put("district", district1.replace(" ", ""));
-//        }
-//
-//        if (Utils.isVaild(group1)) {
-//            builder.put("group", group1.replace(" ", ""));
-//        }
 
         if (Utils.isVaild(zhongdui_id_path) && Utils.isVaild(dadui_id_path)) {
             builder.put("group_path", zhongdui_id_path);
@@ -492,8 +502,12 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
         for (Map.Entry<String, String> entry : map1.entrySet()) {
             String key = entry.getKey().toString();
             String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
+            LogUtil.i(key + "," + value);
         }
+
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage("正在修改请稍候");
+        dialog.show();
         RetrofitHelper.getApi().updateFireRoom(map1)
                 .compose(this.<AddFireRoomResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribeOn(Schedulers.io())
@@ -518,8 +532,18 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
                         try {
                             if (result == null) {
                                 UiUtils.showToast("修改单位信息失败!");
-                            } else {
-                                UiUtils.showToast("提示:" + result.result);
+                            } else if (result.status.equals("1")){
+                                sendBroadCast();
+                               new AlertDialog.Builder(EditFireroomInfo_activity.this)
+                                       .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                           @Override
+                                           public void onClick(DialogInterface dialog, int which) {
+                                               finish();
+                                           }
+                                       }).setMessage(result.result)
+                                       .create().show();
+                            }else {
+                                UiUtils.showToast(result.msg);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -541,11 +565,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
                 });
                 llCondition.addView(item);
                 break;
-//            case R.id.sub:
-//                if (llCondition.getChildCount() == 1)
-//                    break;
-//                llCondition.removeViewAt(llCondition.getChildCount() - 1);
-//                break;
+
             case R.id.add_eq:
                 final View item1 = LayoutInflater.from(this).inflate(R.layout.item_adddis, null, false);
                 item1.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
@@ -556,11 +576,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
                 });
                 llConditionEq.addView(item1);
                 break;
-//            case R.id.sub_eq:
-//                if (llConditionEq.getChildCount() == 1)
-//                    break;
-//                llConditionEq.removeViewAt(llConditionEq.getChildCount() - 1);
-//                break;
+
             case R.id.getposition:
                 Intent intent = new Intent(this, MapChoose_Activity.class);
                 startActivityForResult(intent, 601);
@@ -578,7 +594,7 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
 //                name.setText(poiItem.getTitle());
                 lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
                 lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
-                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
+                addr.setText(poiItem.getSnippet());
             }
         }
 
@@ -635,6 +651,19 @@ public class EditFireroomInfo_activity extends BasedActivity implements View.OnC
                         }
                     }
                 });
+    }
+
+
+
+    private void sendBroadCast() {
+            if (info != null) {
+                if (!info.lat.equals(lat.getText().toString()) || !info.lng.equals(lng.getText().toString())) {
+                    Intent intent = new Intent();
+                    intent.setAction("net.suntrans.xiaofang.lp");
+                    intent.putExtra("type", MarkerHelper.FIREROOM);
+                    sendBroadcast(intent);
+                }
+            }
 
     }
 }

@@ -4,46 +4,33 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.amap.api.maps.model.LatLng;
 import com.github.clans.fab.FloatingActionButton;
-import com.google.common.collect.ImmutableMap;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.activity.edit.EditLicense_activity;
-import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
-import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
-import com.suntrans.xiaofang.activity.others.Search_license_activity;
-import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
+import com.suntrans.xiaofang.activity.edit.EditCompanyLicense_activity;
 import com.suntrans.xiaofang.fragment.BasedFragment;
+import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyLicenseInfo;
 import com.suntrans.xiaofang.model.company.CompanyLicenseResult;
-import com.suntrans.xiaofang.model.license.AddLicenseResult;
-import com.suntrans.xiaofang.model.license.LicenseDetailInfo;
-import com.suntrans.xiaofang.model.license.LicenseDetailResult;
-import com.suntrans.xiaofang.model.license.LicenseItemInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.MarkerHelper;
@@ -57,15 +44,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static com.suntrans.xiaofang.R.id.fab3;
+import static com.suntrans.xiaofang.R.id.cmyname;
 import static com.suntrans.xiaofang.utils.Utils.pad;
 
 /**
@@ -94,6 +79,7 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
         fragment.setArguments(bundle);
         return fragment;
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -109,7 +95,7 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
         manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
 
-        recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.VERTICAL));
+//        recyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.VERTICAL));
         recyclerView.setVisibility(View.INVISIBLE);
         fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
         fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
@@ -143,23 +129,23 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
 
 
     private boolean hasBinding = false;
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.fab1:
                 addCompanyLicense();
                 break;
             case R.id.fab2:
-                if (hasBinding){
-                    //若已经绑定项目 可以绑定或者解绑 或者更改
-                }else {
-                    Intent intent2 = new Intent();
-                    intent2.putExtra("companyID", id);
-                    intent2.putExtra("type", MarkerHelper.S0CIETY);
-                    intent2.setClass(getActivity(), Search_license_activity.class);
-                    startActivity(intent2);
-                    getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                }
+
+                Intent intent2 = new Intent();
+                intent2.putExtra("companyID", id);
+                intent2.putExtra("type", companyType);
+                intent2.putParcelableArrayListExtra("companyLicenseItems", comLicenseLists);
+                intent2.putExtra("projectInfo", projectInfo);
+                intent2.setClass(getActivity(), EditCompanyLicense_activity.class);
+                startActivity(intent2);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
         }
     }
@@ -223,8 +209,106 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
         builder2.create().show();
     }
 
-    private void addCompantLicenseDetail(String type, String number1, String time1, String isq) {
+    private void addCompantLicenseDetail(String type1, String number1, String time1, String isqualified1) {
 
+        if (!Utils.isVaild(number1)) {
+            UiUtils.showToast("请输入文号");
+            return;
+        }
+        if (!Utils.isVaild(time1)) {
+            UiUtils.showToast("请选择时间");
+            return;
+        }
+        String info1 = "";
+        JSONArray array = new JSONArray();
+        JSONObject object = new JSONObject();
+        try {
+            object.put("number", number1);
+            object.put("time", time1);
+            object.put("isqualified", isqualified1);
+            object.put("type", type1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        array.put(object);
+        info1 = array.toString();
+
+        LogUtil.i("id=" + id + "info=" + info1);
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("正在添加,请稍后..");
+        progressDialog.show();
+        if (companyType == MarkerHelper.S0CIETY) {
+            RetrofitHelper.getApi().addCompanyLicnese(id, info1)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            if (progressDialog.isShowing())
+                                progressDialog.dismiss();
+                        }
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            if (progressDialog.isShowing())
+                                progressDialog.dismiss();
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    UiUtils.showToast(result.result);
+                                    getData(id);
+                                } else {
+                                    UiUtils.showToast(result.msg);
+                                }
+                            } else {
+                                UiUtils.showToast("失败");
+                            }
+
+                        }
+                    });
+        } else if (companyType == MarkerHelper.COMMONCOMPANY) {
+            RetrofitHelper.getApi().addCommcmyLicnese(id, info1)
+                    .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<AddCompanyResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            if (progressDialog.isShowing())
+                                progressDialog.dismiss();
+                        }
+
+                        @Override
+                        public void onNext(AddCompanyResult result) {
+                            if (progressDialog.isShowing())
+                                progressDialog.dismiss();
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    UiUtils.showToast(result.result);
+                                    getData(id);
+                                } else {
+                                    UiUtils.showToast(result.msg);
+                                }
+                            } else {
+                                UiUtils.showToast("失败");
+                            }
+
+                        }
+                    });
+        }
     }
 
 
@@ -234,7 +318,7 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (viewType == 0) {
                 View v;
-                v = LayoutInflater.from(getActivity()).inflate(R.layout.item_cominfo, parent, false);
+                v = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhengxuke_project, parent, false);
                 return new GovApproal_fragment.MyAdapter.ViewHolder1(v);
             } else if (viewType == 1) {
                 View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhengxuke2, parent, false);
@@ -262,32 +346,35 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
 
         @Override
         public int getItemCount() {
-            return datas.size() == 0 ? 1 : datas.size();
+            return datas.size()==0?1:datas.size();
         }
 
         @Override
         public int getItemViewType(int position) {
-            if (position == datas.size())
+            if (datas.size()==0)
                 return 2;
-            if (position < 5)
-                return 0;
             return 1;
         }
 
 
         class ViewHolder1 extends RecyclerView.ViewHolder {
-            TextView name;
-            TextView value;
+            TextView title;
+            TextView isq;
+            TextView number;
+            TextView time;
+            TextView header;
+            CardView cardview;
+            LinearLayout ll_wu;
+            LinearLayout ll_you;
 
             public ViewHolder1(View itemView) {
                 super(itemView);
-                value = (TextView) itemView.findViewById(R.id.value);
-                name = (TextView) itemView.findViewById(R.id.name);
+
             }
 
             public void setData(int position) {
-                name.setText(datas.get(position).get(0));
-                value.setText(datas.get(position).get(1));
+
+
             }
         }
 
@@ -300,7 +387,7 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
             }
 
             public void setData(int position) {
-                textView.setText("单位无绑定行政审批项目");
+                textView.setText("无行政审批数据");
             }
         }
 
@@ -310,6 +397,8 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
             TextView isq;
             TextView number;
             TextView time;
+            TextView header;
+            CardView cardview;
 
             public ViewHolder2(View itemView) {
                 super(itemView);
@@ -317,22 +406,52 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
                 isq = (TextView) itemView.findViewById(R.id.isqualified);
                 number = (TextView) itemView.findViewById(R.id.number);
                 time = (TextView) itemView.findViewById(R.id.time);
+                header = (TextView) itemView.findViewById(R.id.header);
+                cardview = (CardView) itemView.findViewById(R.id.cardview);
+                cardview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
             }
 
             public void setData(int position) {
-                title.setText(datas.get(position).get(0));
-                number.setText(datas.get(position).get(1));
-                time.setText(datas.get(position).get(2));
-                isq.setText(datas.get(position).get(3));
+                if (datas.get(position).get(5).equals("company")) {
+                    title.setText(datas.get(position).get(0));
+                    number.setText(datas.get(position).get(1));
+                    time.setText(datas.get(position).get(2));
+                    isq.setText(datas.get(position).get(3));
+                    int pos = projectInfo==null?0:projectInfo.detail==null?0:projectInfo.detail.size();
+                    if (position == pos) {
+                        header.setVisibility(View.VISIBLE);
+                        header.setText("添加的审批信息");
+
+                    } else {
+                        header.setVisibility(View.GONE);
+                    }
+                } else if (datas.get(position).get(5).equals("project")){
+                    title.setText(datas.get(position).get(0));
+                    number.setText(datas.get(position).get(1));
+                    time.setText(datas.get(position).get(2));
+                    isq.setText(datas.get(position).get(3));
+                    if (position == 0) {
+                        header.setText("绑定的项目名称:"+datas.get(position).get(4));
+                        header.setVisibility(View.VISIBLE);
+                    } else {
+                        header.setVisibility(View.GONE);
+                    }
+                }
+
             }
         }
     }
 
-    public List<CompanyLicenseInfo> infos;
+    public CompanyLicenseInfo infos;
     LatLng to;
 
     private void getData(String id) {
-        if (companyType == MarkerHelper.S0CIETY){
+        if (companyType == MarkerHelper.S0CIETY) {
             RetrofitHelper.getApi().getCompanyLicense(id)
                     .compose(this.<CompanyLicenseResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                     .observeOn(AndroidSchedulers.mainThread())
@@ -368,7 +487,7 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
                             UiUtils.showToast(App.getApplication(), "请求失败");
                         }
                     });
-        }else {
+        } else {
             RetrofitHelper.getApi().getCommcmyLicense(id)
                     .compose(this.<CompanyLicenseResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                     .observeOn(AndroidSchedulers.mainThread())
@@ -409,49 +528,60 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
     }
 
     Handler handler = new Handler();
-    List<String> licenseId = new ArrayList<>();
+    private CompanyLicenseInfo.License projectInfo = null;
+    private ArrayList<CompanyLicenseInfo.CompanyLicenseItem> comLicenseLists = null;
 
-    private void refreshView(List<CompanyLicenseInfo> infos) {
+    private void refreshView(CompanyLicenseInfo infos) {
         datas.clear();
-        licenseId.clear();
+        projectInfo = null;
+        comLicenseLists = null;
         if (infos != null) {
-            if (infos.size() != 0) {
+            if (infos.project != null) {
+                if (infos.project.size() != 0) {
+                    this.projectInfo = infos.project.get(0);
+                    CompanyLicenseInfo.License item = infos.project.get(0);
+                    if (item.detail != null) {
+                        for (CompanyLicenseInfo.CompanyLicenseItem ci : item.detail) {
+                            SparseArray<String> array = new SparseArray<>();
 
-                SparseArray<String> array0 = new SparseArray<>();
-                array0.put(0, "建设单位");
-                array0.put(1, infos.get(0).license.cmyname == null ? "--" : infos.get(0).license.cmyname);
-                array0.put(2, "cmyname");
-                datas.add(array0);
+                            if (ci.type.equals("1")) {
+                                array.put(0, "建审");
+                            } else if (ci.type.equals("2")) {
+                                array.put(0, "验收");
+                            } else if (ci.type.equals("3")) {
+                                array.put(0, "开业前");
+                            }
+                            if (ci.number != null)
+                                array.put(1, ci.number);
+                            if (ci.time != null)
+                                array.put(2, ci.time);
+                            if (ci.isqualified != null)
+                                array.put(3, ci.isqualified.equals("1") ? "合格" : "不合格");
 
-                SparseArray<String> array4 = new SparseArray<>();
-                array4.put(0, "名称");
-                array4.put(1, infos.get(0).license.name == null ? "--" : infos.get(0).license.name);
-                array4.put(2, "name");
-                datas.add(array4);
+                            array.put(4, item.name == null ? "" : item.name);
+                            array.put(5, "project");
+                            datas.add(array);
+                        }
+                    }
 
-                SparseArray<String> array1 = new SparseArray<>();
-                array1.put(0, "地址");
-                array1.put(1, infos.get(0).license.addr == null ? "--" : infos.get(0).license.addr);
-                array1.put(2, "addr");
-                datas.add(array1);
+                } else {
+//                    SparseArray<String> array3 = new SparseArray<>();
+//                    array3.put(5, "0");
+//                    datas.add(array3);
+                }
 
-                SparseArray<String> array2 = new SparseArray<>();
-                array2.put(0, "联系人");
-                array2.put(1, infos.get(0).license.contact == null ? "--" : infos.get(0).license.contact);
-                array2.put(2, "contact");
-                datas.add(array2);
+            } else {
+//                SparseArray<String> array3 = new SparseArray<>();
+//                array3.put(5, "0");
+//                datas.add(array3);
+            }
 
-                SparseArray<String> array3 = new SparseArray<>();
-                array3.put(0, "联系电话");
-                array3.put(1, infos.get(0).license.phone == null ? "--" : infos.get(0).license.phone);
-                array3.put(2, "phone");
-                datas.add(array3);
 
-                for (CompanyLicenseInfo item :
-                        infos) {
-                    String id = item.id;
-                    licenseId.add(id);
-                    LogUtil.i(TAG, item.toString());
+            if (infos.company != null) {
+                comLicenseLists = (ArrayList<CompanyLicenseInfo.CompanyLicenseItem>) infos.company;
+                for (CompanyLicenseInfo.CompanyLicenseItem item :
+                        infos.company) {
+
                     SparseArray<String> array = new SparseArray<>();
                     if (item.type.equals("1")) {
                         array.put(0, "建审");
@@ -466,10 +596,16 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
                         array.put(2, item.time);
                     if (item.isqualified != null)
                         array.put(3, item.isqualified.equals("1") ? "合格" : "不合格");
+                    array.put(5, "company");
                     datas.add(array);
                 }
+
             }
 
+        } else {
+//            SparseArray<String> array3 = new SparseArray<>();
+//            array3.put(5, "0");
+//            datas.add(array3);
         }
         myAdapter = null;
         myAdapter = new GovApproal_fragment.MyAdapter();
@@ -498,37 +634,15 @@ public class GovApproal_fragment extends BasedFragment implements View.OnClickLi
      * 获取绑定行政审批的id
      */
     public String getLicenseId() {
-        if (infos == null) {
-            return null;
-        } else if (infos.size() == 0) {
-            return null;
-        } else {
-            return infos.get(0).license.id;
-        }
+        return null;
     }
 
 
     /**
-     * 获取绑定行政审批条目的所有
+     * 获取公司绑定行政审批条目的所有id
      */
     public String getLicenseItemId() {
-        if (infos == null) {
-            return null;
-        } else if (infos.size() == 0) {
-            return null;
-        } else {
-            if (licenseId.size() != 0) {
-                JSONArray array = new JSONArray();
-                for (String id :
-                        licenseId) {
-                    array.put(id);
-                }
-                return array.toString();
-            } else {
-                return null;
-            }
-
-        }
+        return null;
     }
 
 }

@@ -33,6 +33,7 @@ import com.suntrans.xiaofang.model.firegroup.FireGroupDetailInfo;
 import com.suntrans.xiaofang.model.firegroup.FireGroupDetailResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -95,8 +96,7 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
 
     @Override
     public void reLoadData(View view) {
-        progressBar.setVisibility(View.VISIBLE);
-        error.setVisibility(View.INVISIBLE);
+
         getData();
     }
 
@@ -123,7 +123,7 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
         datas.add(array3);
 
         SparseArray<String> array4 = new SparseArray<>();
-        array4.put(0, "消防队员人数");
+        array4.put(0, "消防队员组成");
         array4.put(1, "");
         datas.add(array4);
 
@@ -219,6 +219,9 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
     public FireGroupDetailInfo myInfo;
     LatLng to ;//导航的目的地
     private void getData() {
+        progressBar.setVisibility(View.VISIBLE);
+        error.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
         RetrofitHelper.getApi().getFireGroupDetailInfo(((InfoDetail_activity)getActivity()).companyId)
                 .compose(this.<FireGroupDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -377,6 +380,7 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
                         AlertDialog.Builder builder= new AlertDialog.Builder(getActivity());
                         if (result!=null){
                             if (result.status.equals("1")){
+                                sendBroadcast();
                                 builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -496,5 +500,12 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_detailinfo,menu);
+    }
+
+    private void sendBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction("net.suntrans.xiaofang.lp");
+        intent.putExtra("type", MarkerHelper.FIREGROUP);
+        getActivity().sendBroadcast(intent);
     }
 }

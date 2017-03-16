@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout
+    android:background="@color/bg_color"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -30,7 +31,6 @@
 
 
         <com.github.clans.fab.FloatingActionMenu
-            app:menu_fab_size="mini"
             android:id="@+id/menu_red"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -49,7 +49,7 @@
                 android:id="@+id/fab1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_delete"
+                android:src="@drawable/ic_add_black_36dp"
                 app:fab_label="添加"
                 app:fab_size="mini" />
 

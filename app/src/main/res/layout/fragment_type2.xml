@@ -138,7 +138,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="志愿消防队联系人"
+                    android:text="*志愿消防队联系人"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -169,7 +169,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="联系电话"
+                    android:text="*联系电话"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -448,7 +448,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="所属大队"
+                    android:text="*所属大队"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -479,7 +479,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="联动中队"
+                    android:text="*联动中队"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 

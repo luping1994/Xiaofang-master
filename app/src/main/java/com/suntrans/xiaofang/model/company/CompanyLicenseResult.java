@@ -10,6 +10,6 @@ public class CompanyLicenseResult {
 
     public String status;
     public String msg;
-    public List<CompanyLicenseInfo> result;
+    public CompanyLicenseInfo result;
 
 }

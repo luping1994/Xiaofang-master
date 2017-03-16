@@ -311,9 +311,9 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
             String type = conType.getText().toString();
             String detail = conDetail.getText().toString();
-
             try {
-                jsonObject2.put(type, detail);
+                if (Utils.isVaild(type) && Utils.isVaild(detail))
+                    jsonObject2.put(type, detail);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -329,27 +329,44 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
         String ganbunum = ganbu.getText().toString();
         String shibingnum = shibing.getText().toString();
         String zhuanzhinum = zhuanzhi.getText().toString();
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("干部", ganbunum);
-            jsonObject.put("士兵", shibingnum);
-            jsonObject.put("专职", zhuanzhinum);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        membernum1 = jsonObject.toString();
 
 
-        if (name1.equals("") || name1 == null) {
+        if (!Utils.isVaild(name1)) {
             UiUtils.showToast(UiUtils.getContext(), "名称不能为空!");
             return;
         }
-        if (addr1 == null || addr1.equals("")) {
+        if (!Utils.isVaild(addr1)) {
             UiUtils.showToast(UiUtils.getContext(), "地址不能为空!");
             return;
         }
         if (!Utils.isVaild(area1)) {
             UiUtils.showToast("请输入辖区面积!");
+            return;
+        }
+        if (!Utils.isVaild(phone1)) {
+            UiUtils.showToast("请输入联系电话!");
+            return;
+        }
+        if (!Utils.isVaild(ganbunum) || !Utils.isVaild(shibingnum) || !Utils.isVaild(zhuanzhinum)) {
+            UiUtils.showToast("请输入人员组成");
+            return;
+        }
+        if (!Utils.isVaild(carnum1)) {
+            UiUtils.showToast("请输入消防车总数");
+            return;
+        }
+
+        if (jsonObject2.length() == 0) {
+            UiUtils.showToast("请至少添加一条车辆配置情况");
+            return;
+        }
+
+        if (!Utils.isVaild(waterweight1)) {
+            UiUtils.showToast("请输入车载水总量!");
+            return;
+        }
+        if (!Utils.isVaild(soapweight1)) {
+            UiUtils.showToast("请输入车载泡沫总量!");
             return;
         }
 
@@ -363,22 +380,15 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             return;
         }
 
-        if (!Utils.isVaild(membernum1)) {
-            UiUtils.showToast("请输入完整的人员组成!");
-            return;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("干部", ganbunum);
+            jsonObject.put("士兵", shibingnum);
+            jsonObject.put("专职", zhuanzhinum);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        if (!Utils.isVaild(waterweight1)) {
-            UiUtils.showToast("请输入车载水总量!");
-            return;
-        }
-        if (!Utils.isVaild(soapweight1)) {
-            UiUtils.showToast("请输入车载泡沫总量!");
-            return;
-        }
-        if (!Utils.isVaild(phone1)) {
-            UiUtils.showToast("请输入联系电话!");
-            return;
-        }
+        membernum1 = jsonObject.toString();
 
 
         builder.put("name", name1.replace(" ", ""));
@@ -393,40 +403,18 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
         if (Utils.isVaild(lat1)) {
             builder.put("lat", lat1.replace(" ", ""));
         }
-        if (Utils.isVaild(area1)) {
-            builder.put("area", area1.replace(" ", ""));
-        }
+        builder.put("area", area1.replace(" ", ""));
 
-        if (Utils.isVaild(phone1)) {
-            builder.put("phone", phone1.replace(" ", ""));
-        }
+        builder.put("phone", phone1.replace(" ", ""));
 
 
-        if (Utils.isVaild(carnum1)) {
-            builder.put("carnum", carnum1.replace(" ", ""));
-        }
+        builder.put("carnum", carnum1.replace(" ", ""));
 
-        if (Utils.isVaild(cardisp1)) {
-            builder.put("cardisp", cardisp1.replace(" ", ""));
-        }
-        if (Utils.isVaild(waterweight1)) {
-            builder.put("waterweight", waterweight1.replace(" ", ""));
-        }
+        builder.put("cardisp", cardisp1.replace(" ", ""));
+        builder.put("waterweight", waterweight1.replace(" ", ""));
 
-        if (Utils.isVaild(soapweight1)) {
-            builder.put("soapweight", soapweight1.replace(" ", ""));
-        }
-//        builder.put("district", district1);
+        builder.put("soapweight", soapweight1.replace(" ", ""));
 
-//        if (Utils.isVaild(street1)) {
-//            builder.put("street", street1.replace(" ", ""));
-//        }
-//        if (Utils.isVaild(community1)) {
-//            builder.put("community", community1.replace(" ", ""));
-//        }
-//        if (Utils.isVaild(group1)) {
-//            builder.put("group", group1.replace(" ", ""));
-//        }
         builder.put("group_path", zhongdui_id_path);
         builder.put("brigade_path", dadui_id_path);
 
@@ -436,9 +424,12 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
+            LogUtil.i(key + "," + value);
         }
-
+        final ProgressDialog dialog1 = new ProgressDialog(getActivity());
+        dialog1.setCancelable(false);
+        dialog1.setMessage("正在添加,请稍后...");
+        dialog1.show();
         if (type == MarkerHelper.FIRESTATION) {
             RetrofitHelper.getApi().createStation(map)
                     .compose(this.<AddFireStationResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
@@ -448,21 +439,22 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
                     .subscribe(new Subscriber<AddFireStationResult>() {
                         @Override
                         public void onCompleted() {
-//                        dialog.dismiss();
+                            dialog1.dismiss();
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
                             UiUtils.showToast(UiUtils.getContext(), "添加失败!");
-//                        dialog.dismiss();
+                            dialog1.dismiss();
                         }
 
                         @Override
                         public void onNext(AddFireStationResult result) {
                             if (result != null) {
                                 LogUtil.i(result.status);
-                                if (TextUtils.equals("1", result.status)) {
+                                if (result.status.equals("1")) {
+                                    sendBroadcast(CREATE);
                                     String result1 = result.result;
                                     dialog = new AlertDialog.Builder(getActivity())
                                             .setMessage(result1)
@@ -477,13 +469,21 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
+                                            dialog1.dismiss();
                                             dialog.show();
                                         }
                                     }, 500);
+                                } else if (result.status.equals("0")) {
+                                    dialog1.dismiss();
+                                    UiUtils.showToast(result.msg);
+                                } else if (result.status.equals("-1")) {
+                                    UiUtils.showToast("无添加权限");
+                                    dialog1.dismiss();
                                 } else {
-                                    UiUtils.showToast(UiUtils.getContext(), result.msg);
+                                    dialog1.dismiss();
                                 }
                             } else {
+                                dialog1.dismiss();
                                 UiUtils.showToast(UiUtils.getContext(), "添加失败");
                             }
                         }
@@ -497,21 +497,21 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
                     .subscribe(new Subscriber<AddFireStationResult>() {
                         @Override
                         public void onCompleted() {
-//                        dialog.dismiss();
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
                             UiUtils.showToast(UiUtils.getContext(), "添加失败!");
-//                        dialog.dismiss();
+                            dialog1.dismiss();
                         }
 
                         @Override
                         public void onNext(AddFireStationResult result) {
                             if (result != null) {
                                 LogUtil.i(result.status);
-                                if (TextUtils.equals("1", result.status)) {
+                                if (result.status.equals("1")) {
+                                    sendBroadcast(CREATE);
                                     String result1 = result.result;
                                     dialog = new AlertDialog.Builder(getActivity())
                                             .setMessage(result1)
@@ -526,13 +526,21 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
+                                            dialog1.dismiss();
                                             dialog.show();
                                         }
                                     }, 500);
+                                } else if (result.status.equals("0")) {
+                                    dialog1.dismiss();
+                                    UiUtils.showToast(result.msg);
+                                } else if (result.status.equals("-1")) {
+                                    UiUtils.showToast("无添加权限");
+                                    dialog1.dismiss();
                                 } else {
-                                    UiUtils.showToast(UiUtils.getContext(), result.msg);
+                                    dialog1.dismiss();
                                 }
                             } else {
+                                dialog1.dismiss();
                                 UiUtils.showToast(UiUtils.getContext(), "添加失败");
                             }
                         }
@@ -639,7 +647,8 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             String detail = conDetail.getText().toString();
 
             try {
-                jsonObject2.put(type, detail);
+                if (Utils.isVaild(type) && Utils.isVaild(detail))
+                    jsonObject2.put(type, detail);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -666,32 +675,54 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
         membernum1 = jsonObject.toString();
 
 
-        if (name1.equals("") || name1 == null) {
-            UiUtils.showToast(UiUtils.getContext(), "公司名称不不能为空!");
+        if (!Utils.isVaild(name1)) {
+            UiUtils.showToast(UiUtils.getContext(), "名称不能为空!");
             return;
         }
-        if (addr1 == null || addr1.equals("")) {
-            UiUtils.showToast(UiUtils.getContext(), "公司地址不不能为空!");
+        if (!Utils.isVaild(addr1)) {
+            UiUtils.showToast(UiUtils.getContext(), "地址不能为空!");
+            return;
+        }
+        if (!Utils.isVaild(area1)) {
+            UiUtils.showToast("请输入辖区面积!");
+            return;
+        }
+        if (!Utils.isVaild(phone1)) {
+            UiUtils.showToast("请输入联系电话!");
+            return;
+        }
+        if (!Utils.isVaild(ganbunum) || !Utils.isVaild(shibingnum) || !Utils.isVaild(zhuanzhinum)) {
+            UiUtils.showToast("请输入人员组成");
+            return;
+        }
+        if (!Utils.isVaild(carnum1)) {
+            UiUtils.showToast("请输入消防车总数");
             return;
         }
 
+        if (jsonObject2.length() == 0) {
+            UiUtils.showToast("请至少添加一条车辆配置情况");
+            return;
+        }
 
-//        if (!Utils.isVaild(dadui_id_path)) {
-//            UiUtils.showToast("请选择消防大队");
-//            return;
-//        }
-//        if (!Utils.isVaild(zhongdui_id_path)) {
-//            UiUtils.showToast("请选择联动中队");
-//            return;
-//        }
-
-        if (!Utils.isVaild(membernum1)) {
-            UiUtils.showToast("请输入完整的人员组成!");
+        if (!Utils.isVaild(waterweight1)) {
+            UiUtils.showToast("请输入车载水总量!");
+            return;
+        }
+        if (!Utils.isVaild(soapweight1)) {
+            UiUtils.showToast("请输入车载泡沫总量!");
+            return;
+        }
+        if (!Utils.isVaild(zhongdui_id_path)&&Utils.isVaild(dadui_id_path)){
+            UiUtils.showToast("请选择联动中队");
+            return;
+        }
+        if (Utils.isVaild(zhongdui_id_path)&&!Utils.isVaild(dadui_id_path)){
+            UiUtils.showToast("请选择所属大队");
             return;
         }
 
         if (Utils.isVaild(zhongdui_id_path) && Utils.isVaild(dadui_id_path)) {
-
             builder.put("group_path", zhongdui_id_path);
             builder.put("brigade_path", dadui_id_path);
 
@@ -768,19 +799,20 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
 
                         @Override
                         public void onNext(AddFireStationResult result) {
-
+                            progressDialog.dismiss();
                             try {
                                 if (result == null) {
-                                    UiUtils.showToast(getContext(), "修改失败!");
-                                } else {
-                                    progressDialog.setMessage(result.result);
-                                    handler.postDelayed(new Runnable() {
+                                    UiUtils.showToast(getContext(), "修改信息失败!");
+                                } else if (result.status.equals("1")) {
+                                    sendBroadcast(UPDATE);
+                                    new AlertDialog.Builder(getContext()).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
                                         }
-                                    }, 500);
-                                    UiUtils.showToast(getContext(), "提示:" + result.result);
+                                    }).setMessage(result.result).create().show();
+                                } else {
+                                    UiUtils.showToast(result.msg);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -814,19 +846,20 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
 
                         @Override
                         public void onNext(AddFireStationResult result) {
-
+                            progressDialog.dismiss();
                             try {
                                 if (result == null) {
-                                    UiUtils.showToast(getContext(), "修改单位信息失败!");
-                                } else {
-                                    progressDialog.setMessage(result.result);
-                                    handler.postDelayed(new Runnable() {
+                                    UiUtils.showToast(getContext(), "修改信息失败!");
+                                } else if (result.status.equals("1")) {
+                                    sendBroadcast(UPDATE);
+                                    new AlertDialog.Builder(getContext()).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
                                         }
-                                    }, 1000);
-//                                    UiUtils.showToast(getContext(), "提示:" + result.result);
+                                    }).setMessage(result.result).create().show();
+                                } else {
+                                    UiUtils.showToast(result.msg);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -922,4 +955,25 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
         }
     }
 
+    private final int UPDATE = 2;
+    private final int CREATE = 1;
+
+    private void sendBroadcast(int contype) {
+        if (contype == CREATE) {
+            Intent intent = new Intent();
+            intent.setAction("net.suntrans.xiaofang.lp");
+            intent.putExtra("type", type);
+            getActivity().sendBroadcast(intent);
+        } else if (contype == UPDATE) {
+            if (info != null) {
+                if (!info.lat.equals(lat.getText().toString()) || !info.lng.equals(lng.getText().toString())) {
+                    Intent intent = new Intent();
+                    intent.setAction("net.suntrans.xiaofang.lp");
+                    intent.putExtra("type", type);
+                    getActivity().sendBroadcast(intent);
+                }
+            }
+        }
+
+    }
 }

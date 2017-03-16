@@ -4,7 +4,8 @@
     <color name="colorPrimaryDark">#0288d1</color>
     <color name="colorAccent">#FF4081</color>
     <color name="white">#ffffff</color>
-    <color name="bg_color">#efeef4</color>
+    <color name="cardviewbg">#fafafa</color>
+    <color name="bg_color">#eeeeee</color>
     <color name="balck">#000000</color>
     <color name="grey">#666666</color>
     <color name="divider">#55aaaaaa</color>

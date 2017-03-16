@@ -14,7 +14,6 @@
         <TextView
             android:minHeight="45dp"
             android:id="@+id/name"
-            android:focusable="false"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textColor="@color/secondtextcolor"
@@ -27,7 +26,6 @@
             android:layout_alignParentRight="true"
             android:layout_marginLeft="20dp"
             android:minHeight="45dp"
-            android:focusable="false"
             android:layout_width="@dimen/detailinfo_textview_size"
             android:layout_height="wrap_content"
             android:textColor="@color/secondtextcolor"

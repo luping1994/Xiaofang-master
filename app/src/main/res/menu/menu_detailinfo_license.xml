@@ -22,12 +22,12 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/add_item"
-        android:title="添加审批信息"
+        android:title="添加"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/xiugai"
-        android:title="修改审批项目信息"
+        android:title="编辑"
         app:showAsAction="never" />
     <item
         android:id="@+id/gohere"

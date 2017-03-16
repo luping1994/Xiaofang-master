@@ -1,121 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
     android:fitsSystemWindows="true"
-    android:layout_height="match_parent">
+    android:orientation="vertical">
+
     <android.support.v7.widget.Toolbar
-        android:background="@color/colorPrimary"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
         android:elevation="3dp"
         app:layout_collapseMode="pin"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" >
-    </android.support.v7.widget.Toolbar>
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"></android.support.v7.widget.Toolbar>
+
     <LinearLayout
-        android:background="@color/bg_color"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bg_color">
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
-                android:paddingTop="@dimen/activity_horizontal_margin"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingBottom="@dimen/activity_horizontal_margin"
-                android:background="@color/white"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:gravity="center_vertical"
+                    android:text="   单位信息:"
+                    android:textColor="@color/colorPrimary" />
 
                 <LinearLayout
-                    android:background="@color/white"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp">
+                    android:layout_height="35dp"
+                    android:background="@color/cardviewbg"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_horizontal_margin">
+
                     <TextView
-                        android:textSize="15sp"
-                        android:id="@+id/companyname"
-                        android:text="地点:"
-                        android:gravity="center_vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent" />
-                </LinearLayout>
-                <TextView
-                    android:background="@color/border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1px" />
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center|left"
+                        android:text="名称:" />
+
                     <TextView
                         android:gravity="center|left"
-                        android:textSize="15sp"
-                        android:text="监督内容:"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp" />
-                    <TextView
-                        android:id="@+id/contents"
-                        android:gravity="start"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="50dp"/>
-                </LinearLayout>
-                <TextView
-                    android:background="@color/border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1px" />
-                <LinearLayout
-                    android:background="@color/white"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp">
-                    <TextView
-                        android:textSize="15sp"
                         android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/border" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:background="@color/cardviewbg"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp">
+                    <TextView
+                        android:gravity="center|left"
+                        android:text="地址:"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:gravity="center|left"
+                        android:id="@+id/addr"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <TextView
+                    android:background="@color/border"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:background="@color/cardviewbg"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp">
+                    <TextView
+                        android:gravity="center|left"
+                        android:text="联系人:"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:gravity="center|left"
+                        android:id="@+id/contact"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <TextView
+                    android:background="@color/border"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:background="@color/cardviewbg"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp">
+                    <TextView
+                        android:gravity="center|left"
+                        android:text="联系方式:"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:gravity="center|left"
+                        android:id="@+id/contact_way"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <TextView
+                    android:background="@color/border"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:gravity="center_vertical"
+                    android:text="   纪录信息:"
+                    android:textColor="@color/colorPrimary" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:background="@color/cardviewbg"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp">
+                    <TextView
+                        android:gravity="center|left"
                         android:text="录入人:"
-                        android:gravity="center_vertical"
-                        android:layout_width="wrap_content"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:gravity="center|left"
+                        android:id="@+id/username"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent" />
                 </LinearLayout>
                 <TextView
-                    android:background="@color/border"
                     android:layout_width="match_parent"
-                    android:layout_height="1px" />
-
-
+                    android:layout_height="1px"
+                    android:background="@color/border" />
                 <LinearLayout
-                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:background="@color/cardviewbg"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp">
+                    android:layout_height="35dp">
                     <TextView
-                        android:textSize="15sp"
-                        android:id="@+id/creat_at"
+                        android:gravity="center|left"
                         android:text="录入时间:"
-                        android:gravity="center_vertical"
-                        android:layout_width="wrap_content"
+                        android:layout_width="100dp"
                         android:layout_height="match_parent" />
-                </LinearLayout>
-                <TextView
-                    android:background="@color/border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1px" />
-                <LinearLayout
-                    android:background="@color/white"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp">
                     <TextView
-                        android:textSize="15sp"
-                        android:id="@+id/state"
-                        android:text="处理情况:"
-                        android:gravity="center_vertical"
-                        android:layout_width="wrap_content"
+                        android:gravity="center|left"
+                        android:id="@+id/time"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent" />
                 </LinearLayout>
                 <TextView
@@ -123,37 +179,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="1px" />
                 <TextView
-                    android:gravity="center_vertical"
-                    android:text="处置前照片:"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp" />
-
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycleview_before"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp">
-
-                </android.support.v7.widget.RecyclerView>
-                <TextView
                     android:background="@color/border"
                     android:layout_width="match_parent"
                     android:layout_height="1px" />
+
+
                 <TextView
-                    android:gravity="center_vertical"
-                    android:text="处置后照片:"
                     android:layout_width="match_parent"
-                    android:layout_height="35dp" />
+                    android:layout_height="35dp"
+                    android:gravity="center_vertical"
+                    android:text="   现场文书:"
+                    android:textColor="@color/colorPrimary"
+                    android:id="@+id/textView2" />
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycleview_after"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp">
+                    android:layout_height="100dp"
+                    >
 
                 </android.support.v7.widget.RecyclerView>
+
                 <TextView
-                    android:background="@color/border"
                     android:layout_width="match_parent"
-                    android:layout_height="1px" />
+                    android:layout_height="1px"
+                    android:background="@color/border" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

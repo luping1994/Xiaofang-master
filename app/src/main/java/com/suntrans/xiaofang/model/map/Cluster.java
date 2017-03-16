@@ -19,7 +19,7 @@ public class Cluster {
 
 
 
-    Cluster( LatLng latLng) {
+    public Cluster(LatLng latLng) {
 
         mLatLng = latLng;
         mClusterItems = new ArrayList<ClusterItem>();

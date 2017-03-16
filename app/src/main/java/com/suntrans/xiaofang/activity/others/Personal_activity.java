@@ -145,6 +145,8 @@ public class Personal_activity extends BasedActivity {
             case R.id.name:
                 break;
             case R.id.shiyongshuoming:
+                startActivity(new Intent(this, Introduce_Activity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
             case R.id.xiugaimima:
                 Intent intent = new Intent();

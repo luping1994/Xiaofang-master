@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootview"
     android:layout_width="match_parent"
@@ -95,12 +96,29 @@
                 android:layout_height="wrap_content"
                 android:text="社区消防室"
                 android:textColor="@color/white" />
+
             <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/xingzhenshenpi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="行政审批项目"
                 android:textColor="@color/white" />
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/smartxiaofan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="智慧消防"
+                android:textColor="@color/white" />
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/xiaofangshuan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="消防栓"
+                android:textColor="@color/white" />
+
 
             <!--<android.support.v7.widget.AppCompatCheckBox-->
             <!--android:id="@+id/type5"-->
@@ -109,84 +127,28 @@
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="wrap_content" />-->
         </LinearLayout>
-        <!--<Spinner-->
-        <!--android:visibility="gone"-->
-        <!--android:layout_marginRight="10dp"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:background="@color/white"-->
-        <!--android:id="@+id/spinner"-->
-        <!--android:layout_marginTop="5dp"-->
-        <!--android:entries="@array/type"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="30dp">-->
-        <!--</Spinner>-->
-        <android.support.v7.widget.CardView
-            android:id="@+id/search_cardview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="55dp"
-            android:elevation="3dp"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:visibility="gone">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:padding="5dp">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_search_grey_500_36dp" />
 
-                <TextView
-                    android:id="@+id/search1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center|left"
-                    android:hint="@string/search_text"
-                    android:textSize="16sp" />
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_keyboard_voice_grey_500_24dp" />
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
-
-        <ImageButton
-            android:background="@drawable/textview_border"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_above="@+id/bottom_menu"
-            android:layout_marginBottom="50dp"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:onClick="changedViewType"
-            android:scaleType="center"
-            android:src="@drawable/ic_mylocation" />
 
         <RelativeLayout
+            android:background="@color/transparent"
+            android:visibility="invisible"
             android:id="@+id/bottom_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@color/white">
-            <LinearLayout
-                android:background="?android:attr/selectableItemBackground"
+            android:layout_alignParentBottom="true">
+
+            <android.support.v7.widget.CardView
+                android:elevation="4dp"
                 android:id="@+id/ll_bottom2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#ffffff"
+                android:foreground="?attr/selectableItemBackground"
                 android:orientation="vertical"
-                android:visibility="gone">
+                >
 
                 <TextView
                     android:layout_width="match_parent"
@@ -204,7 +166,7 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_marginRight="@dimen/activity_horizontal_margin"
                         android:layout_weight="1"
@@ -217,23 +179,25 @@
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:text="社会单位1"
-                            android:textColor="@color/balck" />
+                            android:textColor="@color/balck"
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/text_company_addr"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
                             android:ellipsize="end"
                             android:maxLines="2"
                             android:text="获取中"
                             android:textColor="@color/secondtextcolor"
-                            android:textSize="12sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <RelativeLayout
                         android:id="@+id/rl_companyinfo"
                         android:layout_width="wrap_content"
-                        android:layout_height="50dp"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center_vertical">
 
                         <LinearLayout
@@ -256,11 +220,38 @@
                         </LinearLayout>
                     </RelativeLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </android.support.v7.widget.CardView>
         </RelativeLayout>
 
 
+        <LinearLayout
+            android:layout_marginBottom="45dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/ll_control"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:orientation="vertical">
 
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/textview_border"
+                android:elevation="3dp"
+                android:onClick="refresh"
+                android:scaleType="center"
+                android:src="@drawable/ic_refresh" />
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/textview_border"
+                android:elevation="3dp"
+                android:onClick="changedViewType"
+                android:scaleType="center"
+                android:src="@drawable/ic_mylocation1" />
+        </LinearLayout>
 
     </RelativeLayout>
 </LinearLayout>

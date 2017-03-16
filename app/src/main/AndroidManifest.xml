@@ -121,6 +121,13 @@
         <activity android:name=".activity.others.About_activity" android:screenOrientation="portrait"/>
         <activity android:name=".activity.edit.EditCommcmyInfo_activity" android:screenOrientation="portrait"/>
 
+
+        <activity android:name=".activity.edit.EditCompanyLicense_activity" android:screenOrientation="portrait"/>
+
+
+        <activity android:name=".activity.others.Introduce_Activity"  android:screenOrientation="portrait"/>
+        <activity android:name=".activity.others.Smarfire_tActivity" android:screenOrientation="portrait"/>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.suntrans.xiaofang.fileProvider"

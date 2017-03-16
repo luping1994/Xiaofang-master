@@ -1,6 +1,7 @@
 package com.suntrans.xiaofang.fragment.addinfo;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
 import com.suntrans.xiaofang.model.license.AddLicenseResult;
 import com.suntrans.xiaofang.model.license.LicenseDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -49,6 +51,7 @@ import static com.suntrans.xiaofang.R.id.buildcompany;
 import static com.suntrans.xiaofang.R.id.lat;
 import static com.suntrans.xiaofang.R.id.lng;
 import static com.suntrans.xiaofang.R.id.map;
+import static com.suntrans.xiaofang.R.id.three;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -73,7 +76,6 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
     EditText phone;
 
 
-    private AlertDialog dialog;
     private Button additem;
 
 
@@ -128,7 +130,7 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                     .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            final View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhenxuke3, null);
+                            final View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhenxuke3, llContent, false);
                             ViewTag tag = new ViewTag();
                             switch (which) {
                                 case 0:
@@ -199,7 +201,7 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
     String lat;
 
     public void addCommit() {
-        Map<String, String> map=null;
+        Map<String, String> map = null;
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
         String name1 = name.getText().toString();
         String addr1 = addr.getText().toString();
@@ -208,6 +210,7 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
         String phone1 = phone.getText().toString();
         String info = "";
         if (llContent.getChildCount() > 5) {
+
             JSONArray array = new JSONArray();
             for (int i = 5; i < llContent.getChildCount(); i++) {
                 View view = llContent.getChildAt(i);
@@ -244,7 +247,7 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
             return;
         }
         if (!Utils.isVaild(name1)) {
-            UiUtils.showToast("名称不能为空");
+            UiUtils.showToast("项目名称不能为空");
             return;
         }
         if (!Utils.isVaild(addr1)) {
@@ -280,8 +283,10 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
             String value = entry.getValue().toString();
             System.out.println(key + "," + value);
         }
-
-
+        final ProgressDialog dialog1 = new ProgressDialog(getContext());
+        dialog1.setMessage("正在添加,请稍后..");
+        dialog1.setCancelable(false);
+        dialog1.show();
         RetrofitHelper.getApi().createLicense(map)
                 .compose(this.<AddLicenseResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -294,6 +299,7 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                     @Override
                     public void onError(Throwable e) {
                         UiUtils.showToast(UiUtils.getContext(), "添加失败");
+                        dialog1.dismiss();
                         e.printStackTrace();
                     }
 
@@ -301,8 +307,9 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                     public void onNext(AddLicenseResult result) {
                         if (result != null) {
                             if (result.status.equals("1")) {
+                                dialog1.dismiss();
                                 String result1 = result.result;
-                                dialog = new AlertDialog.Builder(getActivity())
+                                new AlertDialog.Builder(getActivity())
                                         .setMessage(result1)
                                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                             @Override
@@ -310,13 +317,13 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                                                 getActivity().finish();
                                             }
                                         })
-                                        .create();
-                                dialog.show();
+                                        .create().show();
                             } else {
+                                dialog1.dismiss();
                                 UiUtils.showToast(result.msg);
                             }
                         } else {
-
+                            dialog1.dismiss();
                             UiUtils.showToast(UiUtils.getContext(), "添加失败");
                         }
                     }
@@ -324,9 +331,8 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
     }
 
 
-
-    public void upDateLicense(){
-        Map<String, String> map=null;
+    public void upDateLicense() {
+        Map<String, String> map = null;
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
         String name1 = name.getText().toString();
         String addr1 = addr.getText().toString();
@@ -395,8 +401,9 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                     public void onNext(AddLicenseResult result) {
                         if (result != null) {
                             if (result.status.equals("1")) {
+                                sendBroadCast();
                                 String result1 = result.result;
-                                dialog = new AlertDialog.Builder(getActivity())
+                                new AlertDialog.Builder(getActivity())
                                         .setMessage(result1)
                                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                             @Override
@@ -404,14 +411,14 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                                                 getActivity().finish();
                                             }
                                         })
-                                        .create();
-                                dialog.show();
+                                        .create().show();
+
                             } else {
                                 UiUtils.showToast(result.msg);
                             }
                         } else {
 
-                            UiUtils.showToast( "修改失败");
+                            UiUtils.showToast("修改失败");
                         }
                     }
                 });
@@ -419,13 +426,13 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
 
 
     public void setData(LicenseDetailInfo info) {
-        this.info=info;
+        this.info = info;
         additem.setVisibility(View.GONE);
-        name.setText(info.name==null?"":info.name);
-        buildcompany.setText(info.cmyname==null?"":info.cmyname);
-        contact.setText(info.contact==null?"":info.contact);
-        phone.setText(info.phone==null?"":info.phone);
-        addr.setText(info.addr==null?"":info.addr);
+        name.setText(info.name == null ? "" : info.name);
+        buildcompany.setText(info.cmyname == null ? "" : info.cmyname);
+        contact.setText(info.contact == null ? "" : info.contact);
+        phone.setText(info.phone == null ? "" : info.phone);
+        addr.setText(info.addr == null ? "" : info.addr);
     }
 
     @Override
@@ -435,12 +442,19 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
             if (resultCode == -1) {
                 PoiItem poiItem = data.getParcelableExtra("addrinfo");
 //                name.setText(poiItem.getTitle());
-                lat=poiItem.getLatLonPoint().getLatitude() +"";
-                lng=poiItem.getLatLonPoint().getLongitude() +"";
+                lat = poiItem.getLatLonPoint().getLatitude() + "";
+                lng = poiItem.getLatLonPoint().getLongitude() + "";
                 addr.setText(poiItem.getSnippet());
             }
         }
 
+    }
+
+    private void sendBroadCast() {
+        Intent intent = new Intent();
+        intent.setAction("net.suntrans.xiaofang.lp");
+        intent.putExtra("type", MarkerHelper.LICENSE);
+        getActivity().sendBroadcast(intent);
     }
 }
 

@@ -14,7 +14,6 @@
 
 
     <com.github.clans.fab.FloatingActionMenu
-        app:menu_fab_size="mini"
         android:id="@+id/menu_red"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

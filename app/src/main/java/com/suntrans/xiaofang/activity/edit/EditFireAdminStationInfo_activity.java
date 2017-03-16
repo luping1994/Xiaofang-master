@@ -222,7 +222,7 @@ public class EditFireAdminStationInfo_activity extends BasedActivity implements 
     }
 
     private void setupToolBar() {
-        StatusBarCompat.compat(this, Color.rgb(0x2f, 0x9d, 0xce));
+//        StatusBarCompat.compat(this, Color.rgb(0x2f, 0x9d, 0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setTitle("修改单位信息");

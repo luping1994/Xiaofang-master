@@ -158,7 +158,6 @@ public class Search_activity extends BasedActivity {
     }
 
     private void setupToolbar() {
-        StatusBarCompat.compat(this, Color.rgb(0x2f, 0x9d, 0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();

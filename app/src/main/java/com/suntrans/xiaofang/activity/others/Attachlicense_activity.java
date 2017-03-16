@@ -457,14 +457,7 @@ public class Attachlicense_activity extends BasedActivity {
 
             public ViewHolder3(View itemView) {
                 super(itemView);
-                button = (Button) itemView.findViewById(R.id.button);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
-
-                    }
-                });
             }
 
             public void setData(int position) {

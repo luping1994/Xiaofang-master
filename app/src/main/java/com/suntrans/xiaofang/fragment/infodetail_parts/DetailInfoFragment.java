@@ -42,6 +42,9 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.suntrans.xiaofang.R.id.lat;
+import static com.suntrans.xiaofang.R.id.lng;
+
 /**
  * Created by Looney on 2016/12/22.
  */
@@ -129,23 +132,27 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
         datas.add(array1);
 
 
-        SparseArray<String> array2 = new SparseArray<>();
-        array2.put(0, "消防管辖");
-        array2.put(1, "");
-        datas.add(array2);
-
-
         SparseArray<String> array3 = new SparseArray<>();
         array3.put(0, "火灾危险性");
         array3.put(1, "");
         datas.add(array3);
 
 
+        SparseArray<String> array8 = new SparseArray<>();
+        array8.put(0, "单位属性");
+        array8.put(1, "");
+        datas.add(array8);
+
+        SparseArray<String> array2 = new SparseArray<>();
+        array2.put(0, "消防管辖");
+        array2.put(1, "");
+        datas.add(array2);
+
+
         SparseArray<String> array4 = new SparseArray<>();
         array4.put(0, "建筑面积");
         array4.put(1, "");
         datas.add(array4);
-
 
         SparseArray<String> array5 = new SparseArray<>();
         array5.put(0, "安全出口数");
@@ -162,10 +169,10 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
         array7.put(1, "");
         datas.add(array7);
 
-        SparseArray<String> array8 = new SparseArray<>();
-        array8.put(0, "单位属性");
-        array8.put(1, "");
-        datas.add(array8);
+//        SparseArray<String> array8 = new SparseArray<>();
+//        array8.put(0, "单位属性");
+//        array8.put(1, "");
+//        datas.add(array8);
 
         SparseArray<String> array9 = new SparseArray<>();
         array9.put(0, "法定代表人");
@@ -352,7 +359,6 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
     private void refreshView(CompanyDetailnfo info) {
         datas.get(0).put(1, info.name);//名字
         datas.get(1).put(1, info.addr);//地址
-        datas.get(2).put(1, info.incharge == null ? "" : info.incharge);
         String dangerlevels = "";
         if (info.dangerlevel != null) {
             if (info.dangerlevel.equals("1")) {
@@ -365,61 +371,77 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
                 dangerlevels = "其他非重点单位";
             }
         }
-        datas.get(3).put(1, dangerlevels);
-        datas.get(4).put(1, info.buildarea == null ? "" : info.buildarea + "平方米");
-        datas.get(5).put(1, info.exitnum == null ? "" : info.exitnum + "个");
-        datas.get(6).put(1, info.stairnum == null ? "" : info.stairnum + "个");
-        datas.get(7).put(1, info.facility == null ? "" : info.facility);
+        datas.get(2).put(1, dangerlevels);
+        datas.get(4).put(1, info.incharge == null ? "" : info.incharge);
+
+        datas.get(5).put(1, info.buildarea == null ? "" : info.buildarea + "平方米");
+        datas.get(6).put(1, info.exitnum == null ? "" : info.exitnum + "个");
+        datas.get(7).put(1, info.stairnum == null ? "" : info.stairnum + "个");
+        datas.get(8).put(1, info.facility == null ? "" : info.facility);
 
         String mainId = info.mainattribute;
-
-        if (mainId != null) {
-            if (info.special != null) {
-                if (info.special.equals("1")) {
-                    StringBuilder sb = new StringBuilder();
-                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
-                    SQLiteDatabase db = helper.getReadableDatabase();
-                    db.beginTransaction();
-                    Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
-                    if (cursor.getCount() > 0) {
-                        while (cursor.moveToNext()) {
-                            sb.append(cursor.getString(0));
-                        }
-                    }
-                    if (info.subattribute != null) {
-                        Cursor cursor2 = db.rawQuery("select Name from attr_sub where Id=?", new String[]{info.subattribute});
-                        if (cursor2.getCount() > 0) {
-                            while (cursor2.moveToNext()) {
-                                sb.append("(")
-                                        .append(cursor2.getString(0))
-                                        .append(")");
+        String mainId_small = info.mainattribute_small;
+        if (info.special.equals("1")){
+            if (mainId != null) {
+                if (info.special != null) {
+                    if (info.special.equals("1")) {
+                        StringBuilder sb = new StringBuilder();
+                        DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
+                        SQLiteDatabase db = helper.getReadableDatabase();
+                        db.beginTransaction();
+                        Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
+                        if (cursor.getCount() > 0) {
+                            while (cursor.moveToNext()) {
+                                sb.append(cursor.getString(0));
                             }
                         }
-                        cursor2.close();
-                    }
-                    String attr = sb.toString();
-                    if (Utils.isVaild(attr))
-                        datas.get(8).put(1, attr);
-                    cursor.close();
-                    db.setTransactionSuccessful();
-                    db.endTransaction();
-                } else if (info.special.equals("0")) {
-                    DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
-                    SQLiteDatabase db = helper.getReadableDatabase();
-                    db.beginTransaction();
-                    Cursor cursor = db.rawQuery("select Name from attr_general where Id=?", new String[]{mainId});
-                    if (cursor.getCount() > 0) {
-                        while (cursor.moveToNext()) {
-                            datas.get(8).put(1, cursor.getString(0));
+                        if (info.subattribute != null) {
+                            Cursor cursor2 = db.rawQuery("select Name from attr_sub where Id=?", new String[]{info.subattribute});
+                            if (cursor2.getCount() > 0) {
+                                while (cursor2.moveToNext()) {
+                                    sb.append("(")
+                                            .append(cursor2.getString(0))
+                                            .append(")");
+                                }
+                            }
+                            cursor2.close();
                         }
+                        String attr = sb.toString();
+                        if (Utils.isVaild(attr))
+                            datas.get(3).put(1, attr);
+                        cursor.close();
+                        db.setTransactionSuccessful();
+                        db.endTransaction();
                     }
-                    cursor.close();
-                    db.setTransactionSuccessful();
-                    db.endTransaction();
                 }
-            }
 
+            }
+        }else {
+            if (mainId_small != null) {
+                String[] ids = mainId_small.split("#");
+                String attr = "";
+                for (int i = 0; i < ids.length; i++) {
+                    if (info.special.equals("0")) {
+                        DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
+                        SQLiteDatabase db = helper.getReadableDatabase();
+                        db.beginTransaction();
+                        Cursor cursor = db.rawQuery("select Name from attr_general where Id=?", new String[]{ids[i]});
+                        if (cursor.getCount() > 0) {
+                            while (cursor.moveToNext()) {
+                                attr += cursor.getString(0);
+                            }
+                        }
+                        cursor.close();
+                        db.setTransactionSuccessful();
+                        db.endTransaction();
+                    }
+                }
+                datas.get(3).put(1, attr);
+
+            }
         }
+
+
 
 
         datas.get(9).put(1, info.artiname == null ? "" : info.artiname);
@@ -497,7 +519,7 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
                     UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
                     break;
                 }
-                LatLng to =null;
+                LatLng to = null;
                 if (Utils.isVaild(myInfo.lat) && Utils.isVaild(myInfo.lng))
                     to = new LatLng(Double.valueOf(myInfo.lat), Double.valueOf(myInfo.lng));
 
@@ -525,7 +547,7 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
     }
 
     private void delete() {
-        if (companyType == MarkerHelper.S0CIETY) {
+        if (myInfo.special.equals("1")) {
             RetrofitHelper.getApi().deleteCompany(myInfo.id)
                     .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                     .observeOn(AndroidSchedulers.mainThread())
@@ -547,6 +569,7 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             if (result != null) {
                                 if (result.status.equals("1")) {
+                                    sendBroadcast();
                                     builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -568,7 +591,7 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
                             }
                         }
                     });
-        } else if (companyType == MarkerHelper.COMMONCOMPANY) {
+        } else if(myInfo.special.equals("0")) {
             RetrofitHelper.getApi().deleteCommCompany(myInfo.id)
                     .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                     .observeOn(AndroidSchedulers.mainThread())
@@ -590,6 +613,7 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             if (result != null) {
                                 if (result.status.equals("1")) {
+                                    sendBroadcast();
                                     builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -621,12 +645,15 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
             return;
         }
         Intent intent = new Intent();
-        if (companyType == MarkerHelper.S0CIETY) {
+        if (myInfo.special.equals("1")) {
 
             intent.setClass(getActivity(), EditCompanyInfo_activity.class);
-        } else {
+        } else if (myInfo.special.equals("0")){
             intent.setClass(getActivity(), EditCommcmyInfo_activity.class);
 
+        }else {
+            UiUtils.showToast("单位未添加单位属性");
+            return;
         }
         intent.putExtra("title", myInfo.name);
         intent.putExtra("info", myInfo);
@@ -635,4 +662,11 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
         getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
+
+    private void sendBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction("net.suntrans.xiaofang.lp");
+        intent.putExtra("type",companyType);
+        getActivity().sendBroadcast(intent);
+    }
 }

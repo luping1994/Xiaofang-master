@@ -7,7 +7,6 @@ package com.suntrans.xiaofang.model.license;
 public class LicenseDetailResult {
     public String status;
     public String msg;
-
     public LicenseDetailInfo result;
 
 

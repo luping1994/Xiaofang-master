@@ -38,10 +38,9 @@ public class Add_activity  extends BasedActivity {
     }
 
     private void setupToolBar() {
-        StatusBarCompat.compat(this, Color.rgb(0x2f,0x9d,0xce));
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle("选择你要添加的消防信息类型");
+        toolbar.setTitle("选择添加的消防信息类型");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);

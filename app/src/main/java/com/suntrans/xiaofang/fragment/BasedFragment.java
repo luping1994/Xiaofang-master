@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import com.suntrans.xiaofang.R;
 import com.trello.rxlifecycle.components.support.RxFragment;
@@ -20,7 +20,7 @@ public abstract class BasedFragment extends RxFragment {
 
     protected ProgressBar progressBar;
     protected Button btFailed;
-    protected RelativeLayout error;
+    protected LinearLayout error;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public abstract class BasedFragment extends RxFragment {
         progressBar = (ProgressBar) view.findViewById(R.id.loading_bar);
         btFailed = (Button) view.findViewById(R.id.loading_failed);
         progressBar.setVisibility(View.VISIBLE);
-        error= (RelativeLayout) view.findViewById(R.id.errorll);
+        error= (LinearLayout) view.findViewById(R.id.errorll);
         error.setVisibility(View.GONE);
         btFailed.setOnClickListener(new View.OnClickListener() {
             @Override

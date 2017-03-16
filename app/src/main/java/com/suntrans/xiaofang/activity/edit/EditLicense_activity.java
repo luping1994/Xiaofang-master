@@ -24,6 +24,7 @@ import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.fragment.addinfo.Type4_fragment;
 import com.suntrans.xiaofang.fragment.addinfo.Type5_fragment;
+import com.suntrans.xiaofang.fragment.addinfo.Type5_fragment_edit;
 import com.suntrans.xiaofang.model.license.AddLicenseResult;
 import com.suntrans.xiaofang.model.license.LicenseDetailInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
@@ -52,7 +53,7 @@ public class EditLicense_activity extends BasedActivity {
     private Toolbar toolbar;
     private EditText txName;
     private LicenseDetailInfo info;
-    private Type5_fragment fragment;
+    private Type5_fragment_edit fragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +67,7 @@ public class EditLicense_activity extends BasedActivity {
 
     private void initView() {
         info = (LicenseDetailInfo) getIntent().getSerializableExtra("info");
-        fragment = new Type5_fragment();
+        fragment = new Type5_fragment_edit();
         getSupportFragmentManager().beginTransaction().replace(R.id.content, fragment).commit();
     }
 

@@ -1,114 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:orientation="vertical">
-    <RelativeLayout
-        android:background="#dddddd"
-        android:orientation="horizontal"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_marginLeft="16dp"
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:gravity="center_vertical"
-            android:text="建审信息"
-            android:textSize="@dimen/text_size" />
-
-        <TextView
-            android:visibility="gone"
-            android:layout_marginRight="16dp"
-            android:layout_alignParentRight="true"
-            android:textColor="#ff0000"
-            android:id="@+id/delete"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:text="删除"
-            android:textSize="@dimen/text_size" />
-    </RelativeLayout>
-
-
-    <LinearLayout
+        android:layout_height="35dp"
+        android:gravity="center|left"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:text="添加的审批信息"
+        android:textColor="@color/balck" />
+
+    <android.support.v7.widget.CardView
+        android:foreground="?attr/selectableItemBackground"
+        android:id="@+id/cardview"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
-        <TextView
-            android:textColor="@color/secondtextcolor"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="文号："
-            android:textSize="@dimen/text_size" />
-
-        <TextView
-            android:gravity="center_vertical"
-            android:id="@+id/number"
-            android:background="@null"
-            android:textSize="@dimen/text_size"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-             />
-    </LinearLayout>
-    <TextView
-        android:background="#dddddd"
-        android:layout_width="match_parent"
-        android:layout_height="1px" />
-    <LinearLayout
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical">
 
-        <TextView
-            android:textColor="@color/secondtextcolor"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="时间："
-            android:textSize="@dimen/text_size" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
 
-        <TextView
-            android:gravity="center_vertical"
-            android:textSize="@dimen/text_size"
-            android:id="@+id/time"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-           />
-    </LinearLayout>
-    <TextView
-        android:background="#dddddd"
-        android:layout_width="match_parent"
-        android:layout_height="1px" />
-    <LinearLayout
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tv1"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="类型："
+                    android:textColor="@color/secondtextcolor"
+                    android:textSize="@dimen/text_size" />
 
-        <TextView
-            android:textColor="@color/secondtextcolor"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="是否合格："
-            android:textSize="@dimen/text_size" />
-        <TextView
-            android:gravity="right|center_vertical"
-            android:id="@+id/isqualified"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-    <TextView
-        android:background="#dddddd"
-        android:layout_width="match_parent"
-        android:layout_height="1px" />
-</LinearLayout>
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@+id/tv1"
+                    android:gravity="center_vertical"
+                    android:text="建审信息"
+                    android:textSize="@dimen/text_size" />
+
+                <LinearLayout
+                    android:layout_alignParentRight="true"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/delete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_marginRight="16dp"
+                        android:gravity="center_vertical"
+                        android:text="删除"
+                        android:textColor="#ff0000"
+                        android:textSize="@dimen/text_size"
+                        android:visibility="gone" />
+                    <TextView
+                        android:id="@+id/edit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:gravity="center_vertical"
+                        android:text="修改"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/text_size"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="文号："
+                    android:textColor="@color/secondtextcolor"
+                    android:textSize="@dimen/text_size" />
+
+                <TextView
+                    android:id="@+id/number"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/text_size" />
+            </LinearLayout>
+
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="1px"-->
+                <!--android:background="#dddddd" />-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="时间："
+                    android:textColor="@color/secondtextcolor"
+                    android:textSize="@dimen/text_size" />
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/text_size" />
+            </LinearLayout>
+
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="1px"-->
+                <!--android:background="#dddddd" />-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="是否合格："
+                    android:textColor="@color/secondtextcolor"
+                    android:textSize="@dimen/text_size" />
+
+                <TextView
+                    android:id="@+id/isqualified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="right|center_vertical" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#dddddd" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

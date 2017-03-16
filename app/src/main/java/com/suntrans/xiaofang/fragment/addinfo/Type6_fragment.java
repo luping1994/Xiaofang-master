@@ -23,6 +23,7 @@ import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -98,7 +99,7 @@ public class Type6_fragment extends RxFragment {
 
     private String district1;
     Map<String, String> map;
-    private AlertDialog dialog;
+
 
     @Nullable
     @Override
@@ -238,21 +239,26 @@ public class Type6_fragment extends RxFragment {
         String group1 = group.getText().toString();
 
         if (!Utils.isVaild(name1)) {
-            UiUtils.showToast(UiUtils.getContext(), "名称不不能为空!");
+            UiUtils.showToast(UiUtils.getContext(), "名称不能为空!");
             return;
         }
         if (addr1 == null || addr1.equals("")) {
-            UiUtils.showToast( "地址不不能为空!");
+            UiUtils.showToast("地址不能为空!");
             return;
         }
 
-        if (!Utils.isVaild(phone2)&&!Utils.isVaild(phone2)&&!Utils.isVaild(phone3)) {
-            UiUtils.showToast("请输入联系电话");
+        if (!Utils.isVaild(phone1) && !Utils.isVaild(phone2) && !Utils.isVaild(phone3)) {
+            UiUtils.showToast("请至少输入一个联系电话");
             return;
         }
 
-        if (!Utils.isVaild(area1)){
+        if (!Utils.isVaild(area1)) {
             UiUtils.showToast("请输入辖区面积");
+            return;
+        }
+
+        if (!Utils.isVaild(xianyiganbu1) || !Utils.isVaild(gonganganbu1) || !Utils.isVaild(zhuanzhi1) || !Utils.isVaild(wenyuan1)) {
+            UiUtils.showToast("请输入人员组成");
             return;
         }
 
@@ -265,17 +271,9 @@ public class Type6_fragment extends RxFragment {
         membernum1 = jsonObject.toString();
 
 
-        if (!Utils.isVaild(membernum1)){
-            UiUtils.showToast("请输入人员组成");
-            return;
-        }
-        if (Utils.isVaild(name1)) {
-            builder.put("name", name1.replace(" ", ""));
-        }
+        builder.put("name", name1.replace(" ", ""));
 
-        if (Utils.isVaild(addr1)) {
-            builder.put("addr", addr1.replace(" ", ""));
-        }
+        builder.put("addr", addr1.replace(" ", ""));
         if (Utils.isVaild(lng1)) {
             builder.put("lng", lng1.replace(" ", ""));
         }
@@ -287,10 +285,13 @@ public class Type6_fragment extends RxFragment {
         }
 
         JSONArray array = new JSONArray();
-        array.put(phone1);
-        array.put(phone2);
-        array.put(phone3);
-        builder.put("phone",array.toString());
+        if (Utils.isVaild(phone1))
+            array.put(phone1);
+        if (Utils.isVaild(phone2))
+            array.put(phone2);
+        if (Utils.isVaild(phone3))
+            array.put(phone3);
+        builder.put("phone", array.toString());
 
 
         if (Utils.isVaild(membernum1)) {
@@ -337,15 +338,16 @@ public class Type6_fragment extends RxFragment {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        UiUtils.showToast(App.getApplication(), "服务器内部错误");
+                        UiUtils.showToast(App.getApplication(), "服务器错误,请检查网络");
                     }
 
                     @Override
                     public void onNext(AddFireGroupResult result) {
                         if (result != null) {
                             if (result.status.equals("1")) {
+                                sendBroadcast(MarkerHelper.FIREBRIGADE);
                                 String result1 = result.result;
-
+                                AlertDialog dialog;
                                 dialog = new AlertDialog.Builder(getActivity())
                                         .setMessage(result1)
                                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -367,5 +369,10 @@ public class Type6_fragment extends RxFragment {
 
     }
 
-
+    private void sendBroadcast(int companyType) {
+        Intent intent = new Intent();
+        intent.putExtra("type", companyType);
+        intent.setAction("net.suntrans.xiaofang.lp");
+        getActivity().sendBroadcast(intent);
+    }
 }

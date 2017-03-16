@@ -33,6 +33,7 @@ import com.suntrans.xiaofang.model.firebrigade.FireBrigadeDetailResult;
 import com.suntrans.xiaofang.model.firegroup.AddFireGroupResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -95,8 +96,6 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
 
     @Override
     public void reLoadData(View view) {
-        progressBar.setVisibility(View.VISIBLE);
-        error.setVisibility(View.INVISIBLE);
         getData();
     }
 
@@ -219,6 +218,9 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
     public FireBrigadeDetailInfo myInfo;
     LatLng to ;//导航的目的地
     private void getData() {
+        progressBar.setVisibility(View.VISIBLE);
+        error.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
         RetrofitHelper.getApi().getFirebrigadeDetail(((InfoDetail_activity)getActivity()).companyId)
                 .compose(this.<FireBrigadeDetailResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -260,7 +262,7 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
                         progressBar.setVisibility(View.INVISIBLE);
                         error.setVisibility(View.VISIBLE);
                         LogUtil.i(throwable.toString());
-                        UiUtils.showToast(App.getApplication(),"未知错误");
+                        UiUtils.showToast(App.getApplication(),"连接服务器错误");
                     }
                 });
     }
@@ -335,6 +337,7 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
                         AlertDialog.Builder builder= new AlertDialog.Builder(getActivity());
                         if (result!=null){
                             if (result.status.equals("1")){
+                                sendBroadcast();
                                 builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -453,5 +456,12 @@ public class Type6__info_fragment extends BasedFragment implements View.OnClickL
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_detailinfo,menu);
+    }
+
+    private void sendBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction("net.suntrans.xiaofang.lp");
+        intent.putExtra("type", MarkerHelper.FIREBRIGADE);
+        getActivity().sendBroadcast(intent);
     }
 }

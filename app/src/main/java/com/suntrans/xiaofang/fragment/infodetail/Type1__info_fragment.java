@@ -66,8 +66,6 @@ public class Type1__info_fragment extends BasedFragment {
 //    private CompanyDetailnfo data;
 
 
-
-
     private TabLayout tabLayout;
     private ViewPager pager;
 
@@ -139,8 +137,7 @@ public class Type1__info_fragment extends BasedFragment {
 
     @Override
     public void reLoadData(View view) {
-        progressBar.setVisibility(View.VISIBLE);
-        error.setVisibility(View.INVISIBLE);
+
         getData();
     }
 
@@ -205,6 +202,9 @@ public class Type1__info_fragment extends BasedFragment {
 
     //获取单位详情信息
     private void getData() {
+        progressBar.setVisibility(View.VISIBLE);
+        error.setVisibility(View.INVISIBLE);
+        pager.setVisibility(View.INVISIBLE);
         RetrofitHelper.getApi().getCompanyDetail(((InfoDetail_activity) getActivity()).companyId)
                 .compose(this.<CompanyDetailnfoResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -217,6 +217,9 @@ public class Type1__info_fragment extends BasedFragment {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        UiUtils.showToast(App.getApplication(), "请求失败!");
+                        progressBar.setVisibility(View.INVISIBLE);
+                        error.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -332,53 +335,53 @@ public class Type1__info_fragment extends BasedFragment {
             case android.R.id.home:
                 getActivity().finish();
                 return true;
-            case R.id.delete:
-                if (myInfo == null) {
-                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
-                    break;
-                }
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        delete();
-                    }
-                });
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.setTitle("确定删除该单位?");
-                dialog.show();
-                break;
-            case R.id.gohere:
-                if (myInfo == null) {
-                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
-                    break;
-                }
-                Intent intent1 = new Intent();
-                intent1.setClass(getActivity(), CalculateRoute_Activity.class);
-                if (getActivity().getIntent().getParcelableExtra("from") == null || to == null) {
-                    final AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
-                    builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    AlertDialog dialog1 = builder1.create();
-                    dialog1.setTitle("无法获取当前位置或单位未添加地理坐标,无法导航!");
-                    dialog1.show();
-                    break;
-                }
-                intent1.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
-                intent1.putExtra("to", to);
-                startActivity(intent1);
-                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                break;
+//            case R.id.delete:
+//                if (myInfo == null) {
+//                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+//                    break;
+//                }
+//                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        delete();
+//                    }
+//                });
+//                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//                AlertDialog dialog = builder.create();
+//                dialog.setTitle("确定删除该单位?");
+//                dialog.show();
+//                break;
+//            case R.id.gohere:
+//                if (myInfo == null) {
+//                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
+//                    break;
+//                }
+//                Intent intent1 = new Intent();
+//                intent1.setClass(getActivity(), CalculateRoute_Activity.class);
+//                if (getActivity().getIntent().getParcelableExtra("from") == null || to == null) {
+//                    final AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+//                    builder1.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//
+//                        }
+//                    });
+//                    AlertDialog dialog1 = builder1.create();
+//                    dialog1.setTitle("无法获取当前位置或单位未添加地理坐标,无法导航!");
+//                    dialog1.show();
+//                    break;
+//                }
+//                intent1.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
+//                intent1.putExtra("to", to);
+//                startActivity(intent1);
+//                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//                break;
             case R.id.xiugai:
 //                if (myInfo == null) {
 //                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
@@ -393,30 +396,30 @@ public class Type1__info_fragment extends BasedFragment {
 //                startActivity(intent);
 //                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
-            case R.id.banding:
-                if (govApproal_fragment != null) {
-                    String id = govApproal_fragment.getLicenseId();
-                    if (id == null) {
-                        Intent intent2 = new Intent();
-                        intent2.putExtra("companyID", myInfo.id);
-                        intent2.putExtra("type", MarkerHelper.S0CIETY);
-                        intent2.setClass(getActivity(), Search_license_activity.class);
-                        startActivity(intent2);
-                        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    } else {
-                        String itemIds = govApproal_fragment.getLicenseItemId();
-                        Intent intent2 = new Intent();
-                        intent2.putExtra("companyID", myInfo.id);
-                        intent2.putExtra("licenseID", id);
-                        intent2.putExtra("type", MarkerHelper.S0CIETY);
-                        if (Utils.isVaild(itemIds))
-                            intent2.putExtra("licenseItemIds", itemIds);
-                        intent2.setClass(getActivity(), Attachlicense_activity.class);
-                        startActivity(intent2);
-                        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    }
-                }
-                break;
+//            case R.id.banding:
+//                if (govApproal_fragment != null) {
+//                    String id = govApproal_fragment.getLicenseId();
+//                    if (id == null) {
+//                        Intent intent2 = new Intent();
+//                        intent2.putExtra("companyID", myInfo.id);
+//                        intent2.putExtra("type", MarkerHelper.S0CIETY);
+//                        intent2.setClass(getActivity(), Search_license_activity.class);
+//                        startActivity(intent2);
+//                        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//                    } else {
+//                        String itemIds = govApproal_fragment.getLicenseItemId();
+//                        Intent intent2 = new Intent();
+//                        intent2.putExtra("companyID", myInfo.id);
+//                        intent2.putExtra("licenseID", id);
+//                        intent2.putExtra("type", MarkerHelper.S0CIETY);
+//                        if (Utils.isVaild(itemIds))
+//                            intent2.putExtra("licenseItemIds", itemIds);
+//                        intent2.setClass(getActivity(), Attachlicense_activity.class);
+//                        startActivity(intent2);
+//                        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//                    }
+//                }
+//                break;
 
         }
         return super.onOptionsItemSelected(item);

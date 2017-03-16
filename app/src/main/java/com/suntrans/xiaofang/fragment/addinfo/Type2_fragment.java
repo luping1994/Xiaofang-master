@@ -1,5 +1,6 @@
 package com.suntrans.xiaofang.fragment.addinfo;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 
@@ -27,6 +29,7 @@ import com.suntrans.xiaofang.model.company.InchargeInfo;
 import com.suntrans.xiaofang.model.fireroom.AddFireRoomResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.LogUtil;
+import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -173,14 +176,14 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (flag == 1) {
-                    if (position == 0){
-                        dadui_id_path=null;
+                    if (position == 0) {
+                        dadui_id_path = null;
                         liandongzhongdui.setSelection(0);
                         return;
                     }
                     dadui_id_path = daduiIdPath.get(position - 1);
                     System.out.println("大队" + daduiName.get(position - 1) + "==>" + dadui_id_path);
-                    String nextId = daduiId.get(position-1);
+                    String nextId = daduiId.get(position - 1);
                     getIncharge(nextId, 1, "2");
                 }
             }
@@ -195,8 +198,8 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (flag == 1) {
-                    if (position == 0){
-                        zhongdui_id_path=null;
+                    if (position == 0) {
+                        zhongdui_id_path = null;
                         return;
                     }
                     zhongdui_id_path = zhongduiPath.get(position - 1);
@@ -225,11 +228,7 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
                 });
                 llCondition.addView(item);
                 break;
-//            case R.id.sub:
-//                if (llCondition.getChildCount() == 1)
-//                    break;
-//                llCondition.removeViewAt(llCondition.getChildCount() - 1);
-//                break;
+
             case R.id.add_eq:
                 final View item2 = LayoutInflater.from(getContext()).inflate(R.layout.item_adddis, null, false);
                 item2.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
@@ -240,11 +239,7 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
                 });
                 llConditionEq.addView(item2);
                 break;
-//            case R.id.sub_eq:
-//                if (llConditionEq.getChildCount() == 1)
-//                    break;
-//                llConditionEq.removeViewAt(llConditionEq.getChildCount() - 1);
-//                break;
+
         }
     }
 
@@ -278,11 +273,11 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
             if (resultCode == -1) {
                 PoiItem poiItem = data.getParcelableExtra("addrinfo");
 //                name.setText(poiItem.getTitle());
-                LogUtil.i("lat="+poiItem.getLatLonPoint().getLatitude()+"lng="+poiItem.getLatLonPoint().getLongitude());
+                LogUtil.i("lat=" + poiItem.getLatLonPoint().getLatitude() + "lng=" + poiItem.getLatLonPoint().getLongitude());
                 lat.setText(poiItem.getLatLonPoint().getLatitude() + "");
                 lng.setText(poiItem.getLatLonPoint().getLongitude() + "");
 //                addr.setText(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
-                addr.setText( poiItem.getSnippet());
+                addr.setText(poiItem.getSnippet());
             }
         }
 
@@ -331,7 +326,8 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
             String type = conType.getText().toString();
             String detail = conDetail.getText().toString();
             try {
-                jsonObject1.put(type,detail);
+                if (Utils.isVaild(type) && Utils.isVaild(detail))
+                    jsonObject1.put(type, detail);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -351,7 +347,8 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
             String detail = conDetail.getText().toString();
 
             try {
-                jsonObject2.put(type,detail);
+                if (Utils.isVaild(type) && Utils.isVaild(detail))
+                    jsonObject2.put(type, detail);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -362,11 +359,19 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
         String lat1 = lat.getText().toString();
 
         if (name1.equals("") || name1 == null) {
-            UiUtils.showToast( "名称不能为空!");
+            UiUtils.showToast("名称不能为空!");
             return;
         }
         if (addr1 == null || addr1.equals("")) {
             UiUtils.showToast("地址不能为空!");
+            return;
+        }
+        if (!Utils.isVaild(contact1)) {
+            UiUtils.showToast("联系人不能为空!");
+            return;
+        }
+        if (!Utils.isVaild(phone1)) {
+            UiUtils.showToast("联系电话不能为空!");
             return;
         }
 
@@ -438,8 +443,12 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
+            LogUtil.i(key + "," + value);
         }
+        final ProgressDialog dialog1 = new ProgressDialog(getActivity());
+        dialog1.setMessage("正在添加,请稍后...");
+        dialog1.setCancelable(false);
+        dialog1.show();
         RetrofitHelper.getApi().createFireRoom(map)
                 .compose(this.<AddFireRoomResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -454,7 +463,7 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         UiUtils.showToast(UiUtils.getContext(), "添加失败!");
-//                        dialog.dismiss();
+                        dialog1.dismiss();
                     }
 
                     @Override
@@ -462,7 +471,7 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
                         if (result != null) {
                             if (result.status.equals("1")) {
                                 String result1 = result.result;
-
+                                sendBroadcast();
                                 dialog = new AlertDialog.Builder(getActivity())
                                         .setMessage(result1)
                                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -475,15 +484,17 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
+                                        dialog1.dismiss();
                                         dialog.show();
                                     }
                                 }, 500);
                             } else {
+                                dialog1.dismiss();
                                 UiUtils.showToast(result.msg);
                             }
                         } else {
+                            dialog1.dismiss();
                             UiUtils.showToast("添加失败");
-
                         }
                     }
                 });
@@ -551,4 +562,11 @@ public class Type2_fragment extends RxFragment implements View.OnClickListener {
 
     }
 
+
+    private void sendBroadcast() {
+        Intent intent = new Intent();
+        intent.setAction("net.suntrans.xiaofang.lp");
+        intent.putExtra("type", MarkerHelper.FIREROOM);
+        getActivity().sendBroadcast(intent);
+    }
 }

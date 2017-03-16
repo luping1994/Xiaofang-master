@@ -2,7 +2,6 @@ package com.suntrans.xiaofang.fragment.infodetail;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,16 +26,11 @@ import android.view.ViewGroup;
 import com.amap.api.maps.model.LatLng;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
-import com.suntrans.xiaofang.activity.edit.EditCommcmyInfo_activity;
-import com.suntrans.xiaofang.activity.mapnav.CalculateRoute_Activity;
-import com.suntrans.xiaofang.activity.others.Attachlicense_activity;
 import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
-import com.suntrans.xiaofang.activity.others.Search_license_activity;
 import com.suntrans.xiaofang.fragment.BasedFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.DetailInfoFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.EventFragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.GovApproal_fragment;
-import com.suntrans.xiaofang.fragment.infodetail_parts.GovApproal_yiban_fragment;
 import com.suntrans.xiaofang.fragment.infodetail_parts.SuperviseFragment;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
@@ -44,7 +38,6 @@ import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
-import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
 
 import java.util.ArrayList;
@@ -340,7 +333,7 @@ public class Type1__info_yiban_fragment extends BasedFragment {
             case android.R.id.home:
                 getActivity().finish();
                 return true;
-            case R.id.delete:
+//            case R.id.delete:
 //                if (myInfo == null) {
 //                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
 //                    break;
@@ -361,8 +354,8 @@ public class Type1__info_yiban_fragment extends BasedFragment {
 //                AlertDialog dialog = builder.create();
 //                dialog.setTitle("确定删除该单位?");
 //                dialog.show();
-                break;
-            case R.id.gohere:
+//                break;
+//            case R.id.gohere:
 //                if (myInfo == null) {
 //                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
 //                    break;
@@ -386,8 +379,8 @@ public class Type1__info_yiban_fragment extends BasedFragment {
 //                intent1.putExtra("to", to);
 //                startActivity(intent1);
 //                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                break;
-            case R.id.xiugai:
+//                break;
+//            case R.id.xiugai:
 //                if (myInfo == null) {
 //                    UiUtils.showToast(UiUtils.getContext(), "无法获取单位信息");
 //                    break;
@@ -400,31 +393,31 @@ public class Type1__info_yiban_fragment extends BasedFragment {
 ////                intent.putExtra("from", getActivity().getIntent().getParcelableExtra("from"));
 //                startActivity(intent);
 //                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                break;
-            case R.id.banding:
-                if (govApproal_fragment != null) {
-                    String id = govApproal_fragment.getLicenseId();
-                    if (id == null) {
-                        Intent intent2 = new Intent();
-                        intent2.putExtra("companyID", myInfo.id);
-                        intent2.putExtra("type", MarkerHelper.COMMONCOMPANY);
-                        intent2.setClass(getActivity(), Search_license_activity.class);
-                        startActivity(intent2);
-                        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    } else {
-                        String itemIds = govApproal_fragment.getLicenseItemId();
-                        Intent intent2 = new Intent();
-                        intent2.putExtra("companyID", myInfo.id);
-                        intent2.putExtra("licenseID", id);
-                        intent2.putExtra("type", MarkerHelper.COMMONCOMPANY);
-                        if (Utils.isVaild(itemIds))
-                            intent2.putExtra("licenseItemIds", itemIds);
-                        intent2.setClass(getActivity(), Attachlicense_activity.class);
-                        startActivity(intent2);
-                        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    }
-                }
-                break;
+//                break;
+//            case R.id.banding:
+//                if (govApproal_fragment != null) {
+//                    String id = govApproal_fragment.getLicenseId();
+//                    if (id == null) {
+//                        Intent intent2 = new Intent();
+//                        intent2.putExtra("companyID", myInfo.id);
+//                        intent2.putExtra("type", MarkerHelper.COMMONCOMPANY);
+//                        intent2.setClass(getActivity(), Search_license_activity.class);
+//                        startActivity(intent2);
+//                        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//                    } else {
+//                        String itemIds = govApproal_fragment.getLicenseItemId();
+//                        Intent intent2 = new Intent();
+//                        intent2.putExtra("companyID", myInfo.id);
+//                        intent2.putExtra("licenseID", id);
+//                        intent2.putExtra("type", MarkerHelper.COMMONCOMPANY);
+//                        if (Utils.isVaild(itemIds))
+//                            intent2.putExtra("licenseItemIds", itemIds);
+//                        intent2.setClass(getActivity(), Attachlicense_activity.class);
+//                        startActivity(intent2);
+//                        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//                    }
+//                }
+//                break;
 
         }
         return super.onOptionsItemSelected(item);
