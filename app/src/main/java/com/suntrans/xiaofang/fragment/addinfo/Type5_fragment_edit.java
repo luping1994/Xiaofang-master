@@ -16,7 +16,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.services.core.PoiItem;
@@ -32,10 +31,6 @@ import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +40,6 @@ import butterknife.ButterKnife;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import static com.suntrans.xiaofang.R.id.addItem;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -70,8 +63,8 @@ public class Type5_fragment_edit extends RxFragment implements View.OnClickListe
     @BindView(R.id.phone)
     EditText phone;
 
-    @BindView(R.id.bottom_rl)
-    RelativeLayout bottomrl;
+//    @BindView(R.id.bottom_rl)
+//    RelativeLayout bottomrl;
 
     private Button additem;
 
@@ -88,15 +81,17 @@ public class Type5_fragment_edit extends RxFragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_type5, container, false);
         ButterKnife.bind(this, view);
+        view.findViewById(R.id.fab).setVisibility(View.GONE);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         initData();
-        additem = (Button) view.findViewById(addItem);
-        additem.setOnClickListener(listener);
-        bottomrl.setVisibility(View.GONE);
+//        additem = (Button) view.findViewById(addItem);
+//        additem.setOnClickListener(listener);
+//        bottomrl.setVisibility(View.GONE);
+
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
@@ -132,69 +127,69 @@ public class Type5_fragment_edit extends RxFragment implements View.OnClickListe
         String title;
     }
 
-    final String[] items = new String[]{"建审", "验收", "开业前"};
-    View.OnClickListener listener = new View.OnClickListener() {
-        @Override
-        public void onClick(final View v) {
-
-            new AlertDialog.Builder(getContext())
-                    .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            final View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhenxuke3, null);
-                            ViewTag tag = new ViewTag();
-                            switch (which) {
-                                case 0:
-                                    ((TextView) (view.findViewById(R.id.title))).setText("建审");
-                                    tag.title = "建审";
-                                    tag.type = "1";
-                                    break;
-                                case 1:
-                                    ((TextView) (view.findViewById(R.id.title))).setText("验收");
-                                    tag.title = "验收";
-                                    tag.type = "2";
-                                    break;
-                                case 2:
-                                    ((TextView) (view.findViewById(R.id.title))).setText("开业前");
-                                    tag.title = "开业前";
-                                    tag.type = "3";
-                                    break;
-                            }
-                            view.setTag(tag);
-                            view.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    llContent.removeView(view);
-                                }
-                            });
-                            view.findViewById(R.id.time).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(final View v) {
-                                    DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                                        @Override
-                                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                            mYear = year;
-                                            mMonth = month;
-                                            mDay = dayOfMonth;
-                                            ((TextView) v).setText(
-                                                    new StringBuilder()
-                                                            .append(mYear).append("-")
-                                                            .append(pad(mMonth + 1)).append("-")
-                                                            .append(pad(mDay))
-                                            );
-                                        }
-                                    }, mYear, mMonth, mDay);
-                                    pickerDialog.show();
-                                }
-                            });
-                            llContent.addView(view);
-                            dialog.dismiss();
-                        }
-                    })
-                    .setTitle("请选择添加类型")
-                    .create().show();
-        }
-    };
+//    final String[] items = new String[]{"建审", "验收", "开业前"};
+//    View.OnClickListener listener = new View.OnClickListener() {
+//        @Override
+//        public void onClick(final View v) {
+//
+//            new AlertDialog.Builder(getContext())
+//                    .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            final View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhenxuke3, null);
+//                            ViewTag tag = new ViewTag();
+//                            switch (which) {
+//                                case 0:
+//                                    ((TextView) (view.findViewById(R.id.title))).setText("建审");
+//                                    tag.title = "建审";
+//                                    tag.type = "1";
+//                                    break;
+//                                case 1:
+//                                    ((TextView) (view.findViewById(R.id.title))).setText("验收");
+//                                    tag.title = "验收";
+//                                    tag.type = "2";
+//                                    break;
+//                                case 2:
+//                                    ((TextView) (view.findViewById(R.id.title))).setText("开业前");
+//                                    tag.title = "开业前";
+//                                    tag.type = "3";
+//                                    break;
+//                            }
+//                            view.setTag(tag);
+//                            view.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    llContent.removeView(view);
+//                                }
+//                            });
+//                            view.findViewById(R.id.time).setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(final View v) {
+//                                    DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+//                                        @Override
+//                                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//                                            mYear = year;
+//                                            mMonth = month;
+//                                            mDay = dayOfMonth;
+//                                            ((TextView) v).setText(
+//                                                    new StringBuilder()
+//                                                            .append(mYear).append("-")
+//                                                            .append(pad(mMonth + 1)).append("-")
+//                                                            .append(pad(mDay))
+//                                            );
+//                                        }
+//                                    }, mYear, mMonth, mDay);
+//                                    pickerDialog.show();
+//                                }
+//                            });
+//                            llContent.addView(view);
+//                            dialog.dismiss();
+//                        }
+//                    })
+//                    .setTitle("请选择添加类型")
+//                    .create().show();
+//        }
+//    };
 
     private static String pad(int c) {
         if (c >= 10)
@@ -300,7 +295,7 @@ public class Type5_fragment_edit extends RxFragment implements View.OnClickListe
 
     public void setData(LicenseDetailInfo info) {
         this.info = info;
-        additem.setVisibility(View.GONE);
+//        additem.setVisibility(View.GONE);
         name.setText(info.name == null ? "" : info.name);
         buildcompany.setText(info.cmyname == null ? "" : info.cmyname);
         contact.setText(info.contact == null ? "" : info.contact);
@@ -368,6 +363,7 @@ public class Type5_fragment_edit extends RxFragment implements View.OnClickListe
                                 );
                             }
                         }, mYear, mMonth, mDay);
+                        pickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                         pickerDialog.show();
                     }
                 });
@@ -457,6 +453,7 @@ public class Type5_fragment_edit extends RxFragment implements View.OnClickListe
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        UiUtils.showToast("修改失败");
                         dismissDialog();
                     }
 

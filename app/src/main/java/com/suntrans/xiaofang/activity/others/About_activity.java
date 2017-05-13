@@ -37,8 +37,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.suntrans.xiaofang.App.getApplication;
-import static com.tencent.bugly.crashreport.inner.InnerApi.context;
 
 /**
  * Created by Looney on 2017/2/14.

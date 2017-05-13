@@ -30,9 +30,9 @@ import android.widget.TextView;
 
 import com.amap.api.services.core.PoiItem;
 import com.google.common.collect.ImmutableMap;
-import com.journeyapps.barcodescanner.Util;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
 import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
@@ -64,10 +64,6 @@ import butterknife.OnClick;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import static com.suntrans.xiaofang.R.id.login;
-import static com.suntrans.xiaofang.R.id.map;
-import static com.suntrans.xiaofang.R.id.type;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -281,6 +277,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(), mDateSetListener, mYear, mMonth, mDay);
+                pickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                 pickerDialog.show();
             }
         });
@@ -305,11 +302,13 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         paichusuo_id_path = "";
                         mainAttrId = "";
                         subAttrId = "";
-
+                        if (daduiName != null) {
+                            if (daduiName.size() != 0)
+                                inchargeDadui.setSelection(0);
+                        }
                     }
 
                 } else if (checkedId == R.id.dangerlevel2) {
-
 
                     attributeLl.setVisibility(View.VISIBLE);
                     inchargeDadui.setVisibility(View.VISIBLE);
@@ -321,7 +320,10 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         paichusuo_id_path = "";
                         mainAttrId = "";
                         subAttrId = "";
-
+                        if (daduiName != null) {
+                            if (daduiName.size() != 0)
+                                inchargeDadui.setSelection(0);
+                        }
                     }
 
                 } else if (checkedId == R.id.dangerlevel3) {
@@ -337,6 +339,14 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         paichusuo_id_path = "";
                         mainAttrId = "";
                         subAttrId = "";
+                        if (daduiName != null) {
+                            if (daduiName.size() != 0)
+                                inchargeDadui.setSelection(0);
+                        }
+                        if (paichusuoName != null) {
+                            if (paichusuoName.size() != 0)
+                                inchargePaichusuo.setSelection(0);
+                        }
 
                     }
 
@@ -356,6 +366,14 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         mainAttrId = "";
                         subAttrId = "";
 
+                        if (daduiName != null) {
+                            if (daduiName.size() != 0)
+                                inchargeDadui.setSelection(0);
+                        }
+                        if (paichusuoName != null) {
+                            if (paichusuoName.size() != 0)
+                                inchargePaichusuo.setSelection(0);
+                        }
                     }
 
                 }
@@ -374,7 +392,9 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (flag == 1) {
                     if (position == 0) {
-                        inchargePaichusuo.setSelection(0);
+                        paichusuoName.clear();
+                        paichusuoName.add("请选择");
+                        paichusuoAdapter.notifyDataSetChanged();
                         dadui_id_path = null;
                         return;
                     }
@@ -522,7 +542,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
     @OnClick(R.id.commit)
     public void onClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setMessage("确定添加单位吗")
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setMessage("确认添加单位?")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -596,9 +616,15 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         String companyid1 = companyid.getText().toString();//公司编码
 
         String facility1 = "";
+        String qitatext1 = qitatext.getText().toString();
         for (int i = 0; i < autofire.length; i++) {
             if (autofire[i].isChecked()) {
-                facility1 += App.getApplication().getResources().getStringArray(R.array.autofire)[i] + "#";
+                if (i == 8) {
+                    if (Utils.isVaild(qitatext1))
+                        facility1 += qitatext1;
+                } else {
+                    facility1 += App.getApplication().getResources().getStringArray(R.array.autofire)[i] + "#";
+                }
             }
         }
 
@@ -610,6 +636,11 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
         if (!Utils.isVaild(name1)) {
             UiUtils.showToast("单位名称不能为空");
+            return;
+        }
+
+        if (!Utils.isVaild(dangerlevels)) {
+            UiUtils.showToast("请选择火灾危险性");
             return;
         }
 
@@ -647,7 +678,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         }
 
         if (!Utils.isVaild(stairnum1)) {
-            UiUtils.showToast("请消防楼梯数");
+            UiUtils.showToast("请输入消防楼梯数");
             return;
         }
 
@@ -662,8 +693,15 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             UiUtils.showToast("请选择自动消防设施");
             return;
         }
+        if (autofire[8].isChecked()){
+            if (!Utils.isVaild(qitatext1)){
+                UiUtils.showToast("请输入其它自动消防设施");
+                return;
+            }
+        }
 
 
+//        if (name1 != null) {
 //        if (name1 != null) {
 //            name1 = name1.replace(" ", "");
 //            if (!TextUtils.equals(" ", name1))
@@ -875,6 +913,9 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         if (Utils.isVaild(subAttrId)) {
             builder.put("subattribute", subAttrId);
         }
+
+//        builder.put("status", "0");
+
         map = builder.build();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey().toString();
@@ -905,28 +946,35 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         }
 
                         @Override
-                        public void onNext(AddCompanyResult result) {
+                        public void onNext(final AddCompanyResult result) {
                             dialog.dismiss();
                             try {
                                 if (result != null) {
                                     if (result.status.equals("1")) {
                                         sendBroadcast(MarkerHelper.S0CIETY);
-                                        final AlertDialog dialog1;
-                                        dialog1 = new AlertDialog.Builder(getActivity())
+                                        new AlertDialog.Builder(getActivity())
                                                 .setMessage(result.result)
-                                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                .setPositiveButton("添加行政审批信息", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                       String companyId = result.company_id;
+                                                        if (companyId!=null){
+                                                            Intent intent = new Intent(getActivity(), InfoDetail_activity.class);
+                                                            intent.putExtra("companyID",companyId+"#"+MarkerHelper.S0CIETY);
+                                                            intent.putExtra("isFristShowLicense",true);
+                                                            startActivity(intent);
+                                                            getActivity().overridePendingTransition(android.support.v7.appcompat.R.anim.abc_slide_in_bottom,0);
+                                                            getActivity().finish();
+                                                        }
+                                                    }
+                                                })
+                                                .setNegativeButton("关闭", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         getActivity().finish();
                                                     }
                                                 })
-                                                .create();
-                                        handler.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                dialog1.show();
-                                            }
-                                        }, 500);
+                                                .create().show();
                                     } else {
 
                                         UiUtils.showToast(UiUtils.getContext(), result.msg);
@@ -959,30 +1007,38 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                         }
 
                         @Override
-                        public void onNext(AddCompanyResult result) {
+                        public void onNext(final AddCompanyResult result) {
                             dialog.dismiss();
                             try {
                                 if (result != null) {
                                     if (result.status.equals("1")) {
                                         sendBroadcast(MarkerHelper.COMMONCOMPANY);
-                                        final AlertDialog dialog1;
-                                        dialog1 = new AlertDialog.Builder(getActivity())
+                                        new AlertDialog.Builder(getActivity())
                                                 .setMessage(result.result)
-                                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                .setPositiveButton("添加行政审批信息", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        String companyId = result.company_id;
+                                                        if (companyId!=null){
+                                                            Intent intent = new Intent(getActivity(), InfoDetail_activity.class);
+                                                            intent.putExtra("companyID",companyId+"#"+MarkerHelper.COMMONCOMPANY);
+                                                            intent.putExtra("isFristShowLicense",true);
+                                                            startActivity(intent);
+                                                            getActivity().overridePendingTransition(android.support.v7.appcompat.R.anim.abc_slide_in_bottom,0);
+                                                            getActivity().finish();
+                                                        }
+                                                    }
+                                                })
+                                                .setNegativeButton("关闭", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         getActivity().finish();
                                                     }
                                                 })
-                                                .create();
-                                        handler.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                dialog1.show();
-                                            }
-                                        }, 500);
-                                    } else {
+                                                .create().show();
 
+
+                                    } else {
                                         UiUtils.showToast(UiUtils.getContext(), result.msg);
                                     }
                                 } else {
@@ -1066,6 +1122,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                                     paichusuoId.add(info.id);
                                 }
                                 paichusuoAdapter.notifyDataSetChanged();
+                                inchargePaichusuo.setSelection(0);
                             }
                         }
                     }
@@ -1122,9 +1179,16 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         if (info.facility != null) {
             String[] fire = info.facility.split("#");
             for (int i = 0; i < fire.length; i++) {
+                int s = 0;
                 for (int j = 0; j < hasFire.length; j++) {
-                    if (fire[i].equals(hasFire[j]))
+                    if (fire[i].equals(hasFire[j])) {
                         autofire[j].setChecked(true);
+                        s++;
+                    }
+                }
+                if (s ==0) {
+                    qitatext.setText(fire[i]);
+                    autofire[8].setChecked(true);
                 }
             }
         }
@@ -1372,9 +1436,31 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         LogUtil.i("type1fragment", "mainattrid = " + mainAttrId);
         if (!level.equals(dangerlevels)) {
             if (!Utils.isVaild(incharge1)) {
-                UiUtils.showToast("请重新选择消防管辖");
+                UiUtils.showToast("请选择消防管辖");
                 return;
             }
+        } else {
+            if (dangerlevels.equals("3") || dangerlevels.equals("4")) {
+                if (!Utils.isVaild(dadui_id_path) && !Utils.isVaild(paichusuo_id_path)) {
+                    if (!Utils.isVaild(info.incharge)) {
+                        UiUtils.showToast("请选择消防管辖");
+                        return;
+                    }
+                } else if (Utils.isVaild(dadui_id_path) && Utils.isVaild(paichusuo_id_path)) {
+
+                } else {
+                    UiUtils.showToast("请无效的消防管辖组合,请重先选择");
+                    return;
+                }
+            } else if (dangerlevels.equals("1") || dangerlevels.equals("2")) {
+                if (!Utils.isVaild(dadui_id_path)) {
+                    if (!Utils.isVaild(info.incharge)) {
+                        UiUtils.showToast("请选择消防管辖");
+                        return;
+                    }
+                }
+            }
+
         }
 
         if (!Utils.isVaild(buildarea1)) {
@@ -1388,7 +1474,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
         }
 
         if (!Utils.isVaild(stairnum1)) {
-            UiUtils.showToast("请消防楼梯数");
+            UiUtils.showToast("请输入消防楼梯数");
             return;
         }
 
@@ -1398,17 +1484,12 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
             return;
         }
 
-        if (!Utils.isVaild(artiname1)) {
-            UiUtils.showToast("请输入法定人姓名");
-            return;
+        if (autofire[8].isChecked()){
+            if (!Utils.isVaild(qitatext1)){
+                UiUtils.showToast("请输入其它自动消防设施");
+                return;
+            }
         }
-
-        if (!Utils.isVaild(artiphone1)) {
-            UiUtils.showToast("请输入法定人电话");
-            return;
-        }
-
-
 //        if (name1 != null) {
 //            name1 = name1.replace(" ", "");
 //            if (!TextUtils.equals(" ", name1))
@@ -1759,11 +1840,19 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
     }
 
     private void sendBroadcast(int companyType) {
-        if (!dangerlevels.equals(info.dangerlevel) || !info.lng.equals(lng.getText().toString())
-                || !info.lat.equals(lat.getText().toString())) {
 
+        if (info != null) {
+            if (!dangerlevels.equals(info.dangerlevel) || !info.lng.equals(lng.getText().toString())
+                    || !info.lat.equals(lat.getText().toString())) {
+
+                Intent intent = new Intent();
+                intent.putExtra("type", companyType);
+                intent.setAction("net.suntrans.xiaofang.lp");
+                getActivity().sendBroadcast(intent);
+            }
+        } else {
             Intent intent = new Intent();
-            intent.putExtra("type",companyType);
+            intent.putExtra("type", companyType);
             intent.setAction("net.suntrans.xiaofang.lp");
             getActivity().sendBroadcast(intent);
         }

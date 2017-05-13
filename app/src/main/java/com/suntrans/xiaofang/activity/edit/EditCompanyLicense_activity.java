@@ -107,11 +107,11 @@ public class EditCompanyLicense_activity extends BasedActivity {
         LogUtil.i("EditCompanyLicenseActivity","社会单位类型:"+companyType);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (companyType == MarkerHelper.S0CIETY)
-            toolbar.setTitle("修改重点单位审批信息");
+            toolbar.setTitle(R.string.title_modify_company_license);
         else if (companyType == MarkerHelper.COMMONCOMPANY)
-            toolbar.setTitle("修改一般单位审批信息");
+            toolbar.setTitle(R.string.title_modify_commcmy_license);
         else
-            toolbar.setTitle("错误");
+            toolbar.setTitle(R.string.title_error);
         toolbar.setTitleTextColor(Color.WHITE);
 
 
@@ -141,8 +141,8 @@ public class EditCompanyLicense_activity extends BasedActivity {
             llProjectinfo.setVisibility(View.GONE);
             banding.setVisibility(View.VISIBLE);
         } else {
-            cmyname.setText("建设单位：" + projectInfo.cmyname);
-            name.setText("名称：" + projectInfo.name);
+            cmyname.setText(getString(R.string.license_builder) + projectInfo.cmyname);
+            name.setText("项目名称：" + projectInfo.name);
             addr.setText("地址：" + projectInfo.addr);
             contact.setText("联系人：" + projectInfo.contact);
             phone.setText("电话：" + projectInfo.phone);
@@ -370,7 +370,7 @@ public class EditCompanyLicense_activity extends BasedActivity {
     private void delete(String id, final View view) {
         progressDialog.show();
         if (companyType == MarkerHelper.S0CIETY) {
-            RetrofitHelper.getApi().deleteCompanyLicnese(id)
+            RetrofitHelper.getApi().deleteCompanyLicnese(id,companyId)
                     .compose(EditCompanyLicense_activity.this.<AddCompanyResult>bindUntilEvent(ActivityEvent.DESTROY))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -396,7 +396,7 @@ public class EditCompanyLicense_activity extends BasedActivity {
                         }
                     });
         } else {
-            RetrofitHelper.getApi().deleteCommcmyLicnese(id)
+            RetrofitHelper.getApi().deleteCommcmyLicnese(id,companyId)
                     .compose(EditCompanyLicense_activity.this.<AddCompanyResult>bindUntilEvent(ActivityEvent.DESTROY))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

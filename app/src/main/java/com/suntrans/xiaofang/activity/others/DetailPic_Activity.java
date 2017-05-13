@@ -39,13 +39,9 @@ public class DetailPic_Activity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= 21)
-                    finishAfterTransition();
-                else
-                    finish();
+                supportFinishAfterTransition();
             }
         });
-        LinearLayout linearLayout = new LinearLayout(this);
     }
 
 }

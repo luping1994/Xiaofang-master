@@ -62,7 +62,6 @@ public class EditFirestationnfo_activity extends BasedActivity {
         super.onResume();
         if (info != null) {
             if (!isInitData) {
-
                 fragment.setData(info);
                 isInitData = true;
             }

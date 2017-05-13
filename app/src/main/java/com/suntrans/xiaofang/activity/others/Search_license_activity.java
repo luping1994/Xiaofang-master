@@ -304,12 +304,20 @@ public class Search_license_activity extends BasedActivity {
                             dismissDialog();
                             if (result != null) {
                                 if (result.status.equals("1")) {
-                                    UiUtils.showToast(result.result);
+                                    new AlertDialog.Builder(Search_license_activity.this)
+                                            .setMessage(result.result)
+                                            .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    finish();
+                                                }
+                                            }).create().show();
                                 } else {
                                     UiUtils.showToast(result.msg);
                                 }
                             } else {
-                                UiUtils.showToast("失败");
+                                UiUtils
+                                        .showToast("失败");
                             }
                         }
                     });
@@ -363,7 +371,7 @@ public class Search_license_activity extends BasedActivity {
                                         SparseArray<String> map = new SparseArray<String>();
                                         map.put(0, info.id);
                                         map.put(1, "建设单位:" + info.cmyname);
-                                        map.put(2, "名称:" + info.name);
+                                        map.put(2, "项目名称:" + info.name);
                                         map.put(3, "地址:" + info.addr);
                                         map.put(4, "联系人" + info.contact);
                                         map.put(5, "电话" + info.phone);
@@ -411,19 +419,17 @@ public class Search_license_activity extends BasedActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_mapchoose, menu);
+        inflater.inflate(R.menu.menu_search, menu);
         //在菜单中找到对应控件的item
         menuItem = menu.findItem(R.id.search);
-
-        tijiaoItem = menu.findItem(R.id.tijiao);
-        tijiaoItem.setTitle("");
 //        SearchManager searchManager = (SearchManager) this.getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) menuItem.getActionView();
 //        if (searchView != null) {
 //            searchView.setSearchableInfo(searchManager.getSearchableInfo(this.getComponentName()));
 //        }
-        searchView.setSubmitButtonEnabled(false);//设置是否显示搜索按钮
-        searchView.setQueryHint("查找行政审批项目");//设置提示信息
+
+        searchView.setSubmitButtonEnabled(true);//设置是否显示搜索按钮
+        searchView.setQueryHint("请输入行政审批项目名称");//设置提示信息
         searchView.setIconifiedByDefault(true);//设置搜索默认为图标
 //        searchView.setBackgroundColor(Color.parseColor("#FF4081"));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -442,21 +448,16 @@ public class Search_license_activity extends BasedActivity {
         MenuItemCompat.setOnActionExpandListener(menuItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
-                isSearching = true;
-                tijiaoItem.setTitle("搜索");
-
-                LogUtil.i("MapChooseActivity", "listView.setVisibility(View.VISIBLE)");
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 isSearching = false;
-                tijiaoItem.setTitle("");
                 return true;
             }
         });
-        return true; // false
+        return true;
     }
 
 }

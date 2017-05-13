@@ -284,14 +284,16 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
                     }
                     datas.get(5).put(1, sb.toString());
                 }else {
-                    datas.get(5).put(1, info.cardisp);
+                    datas.get(5).put(1, "");
 
                 }
 
             } catch (Exception e) {
-                datas.get(5).put(1, info.cardisp);
+                datas.get(5).put(1, "");
                 e.printStackTrace();
             }
+        }else {
+            datas.get(5).put(1, "");
         }
 
 
@@ -301,7 +303,7 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
                 JSONObject jsonObject = new JSONObject(info.equipdisp);
                 JSONArray names = jsonObject.names();
                 if (names.length()==0){
-                    datas.get(6).put(1, info.equipdisp);
+                    datas.get(6).put(1, "");
                 }else {
                     for (int i=0;i<names.length();i++){
                         sb1.append(names.getString(i))
@@ -313,9 +315,11 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
                 }
 
             } catch (Exception e) {
-                datas.get(6).put(1, info.equipdisp);
+                datas.get(6).put(1, "");
                 e.printStackTrace();
             }
+        }else {
+            datas.get(6).put(1, "");
         }
 
 
@@ -337,7 +341,6 @@ public class Type2__info_fragment extends BasedFragment implements View.OnClickL
                 .compose(this.<AddFireRoomResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-
                 .subscribe(new Subscriber<AddFireRoomResult>() {
                     @Override
                     public void onCompleted() {

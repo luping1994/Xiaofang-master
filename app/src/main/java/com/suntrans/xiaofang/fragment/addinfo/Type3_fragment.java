@@ -179,12 +179,19 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (flag == 1) {
                     if (position == 0) {
-                        liandongzhongdui.setSelection(0);
                         dadui_id_path = null;
+                        zhongduiName.clear();
+                        zhongduiName.add("请选择");
+                        zhongduiAdapter.notifyDataSetChanged();
+                        liandongzhongdui.setSelection(0);
                         return;
                     }
                     dadui_id_path = daduiIdPath.get(position - 1);
                     String nextId = daduiId.get(position - 1);
+                    zhongduiName.clear();
+                    zhongduiName.add("请选择");
+                    zhongduiAdapter.notifyDataSetChanged();
+                    liandongzhongdui.setSelection(0);
                     getIncharge(nextId, 1, "2");
                 }
             }
@@ -231,7 +238,19 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
                 item.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        llCondition.removeView(item);
+                        new AlertDialog.Builder(getActivity()).setMessage("是否删除")
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        llCondition.removeView(item);
+                                        dialog.dismiss();
+                                    }
+                                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        }).create().show();
                     }
                 });
                 llCondition.addView(item);
@@ -375,10 +394,14 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             UiUtils.showToast("请选择消防大队");
             return;
         }
-        if (!Utils.isVaild(zhongdui_id_path)) {
-            UiUtils.showToast("请选择联动中队");
-            return;
+
+        if (zhongduiName.size() >1) {
+            if (!Utils.isVaild(zhongdui_id_path)) {
+                UiUtils.showToast("请选择联动中队");
+                return;
+            }
         }
+
 
         JSONObject jsonObject = new JSONObject();
         try {
@@ -415,8 +438,15 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
 
         builder.put("soapweight", soapweight1.replace(" ", ""));
 
-        builder.put("group_path", zhongdui_id_path);
+
         builder.put("brigade_path", dadui_id_path);
+
+        if (Utils.isVaild(zhongdui_id_path)) {
+            builder.put("group_path", zhongdui_id_path);
+        }else {
+            builder.put("group_path", dadui_id_path+"-0");
+
+        }
 
 
         map = builder.build();
@@ -551,6 +581,8 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
     }
 
     Handler handler = new Handler();
+    int pos = -1;
+    int pos_zhongdui = -1;
 
     private void getIncharge(String pid, final int type, String vtype) {
         RetrofitHelper.getApi().getFireChargeArea(pid, vtype)
@@ -573,17 +605,12 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
 
                         if (inchargeInfos != null) {
                             if (type == 0) {
+                                pos = -1;
                                 daduiName.clear();
                                 daduiId.clear();
                                 daduiIdPath.clear();
-                                if (info != null) {
-                                    if (Utils.isVaild(info.brigade_name))
-                                        daduiName.add("已选择(" + info.brigade_name + ")");
-                                    else
-                                        daduiName.add("请选择");
-                                } else {
-                                    daduiName.add("请选择");
-                                }
+
+                                daduiName.add("请选择");
                                 for (InchargeInfo info :
                                         inchargeInfos) {
                                     daduiName.add(info.name);
@@ -591,8 +618,25 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
                                     daduiIdPath.add(info.parent_id_path);
                                 }
                                 adduiAdapter.notifyDataSetChanged();
+                                if (info != null) {
+                                    for (int i = 0; i < daduiName.size(); i++) {
+                                        if (daduiName.get(i).equals(info.brigade_name)) {
+                                            pos = i;
+                                            break;
+                                        }
+                                    }
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (pos != -1) {
+                                                dadui.setSelection(pos);
+                                            }
+                                        }
+                                    }, 300);
+                                }
                                 flag = 1;
                             } else if (type == 1) {
+                                pos_zhongdui = -1;
                                 zhongduiName.clear();
                                 zhongduiId.clear();
                                 zhongduiPath.clear();
@@ -604,6 +648,24 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
                                     zhongduiId.add(info.id);
                                 }
                                 zhongduiAdapter.notifyDataSetChanged();
+                                if (info != null) {
+                                    for (int i = 0; i < zhongduiName.size(); i++) {
+                                        if (zhongduiName.get(i).equals(info.group_name)) {
+                                            pos_zhongdui = i;
+                                            break;
+                                        }
+                                    }
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (pos_zhongdui != -1)
+                                                liandongzhongdui.setSelection(pos_zhongdui);
+                                            else {
+                                                liandongzhongdui.setSelection(0);
+                                            }
+                                        }
+                                    }, 300);
+                                }
                             }
 
                         }
@@ -713,21 +775,28 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             UiUtils.showToast("请输入车载泡沫总量!");
             return;
         }
-        if (!Utils.isVaild(zhongdui_id_path)&&Utils.isVaild(dadui_id_path)){
-            UiUtils.showToast("请选择联动中队");
-            return;
-        }
-        if (Utils.isVaild(zhongdui_id_path)&&!Utils.isVaild(dadui_id_path)){
+
+        if (!Utils.isVaild(dadui_id_path)) {
             UiUtils.showToast("请选择所属大队");
             return;
         }
 
-        if (Utils.isVaild(zhongdui_id_path) && Utils.isVaild(dadui_id_path)) {
-            builder.put("group_path", zhongdui_id_path);
-            builder.put("brigade_path", dadui_id_path);
-
-        } else {
+        if (zhongduiName.size() >1) {
+            if (!Utils.isVaild(zhongdui_id_path)) {
+                UiUtils.showToast("请选择联动中队");
+                return;
+            }
         }
+
+        builder.put("brigade_path", dadui_id_path);
+
+        if (Utils.isVaild(zhongdui_id_path)) {
+            builder.put("group_path", zhongdui_id_path);
+        }else {
+            builder.put("group_path", dadui_id_path+"-0");
+
+        }
+
         builder.put("name", name1.replace(" ", ""));
 
         builder.put("addr", addr1.replace(" ", ""));
@@ -878,10 +947,10 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
     public void setData(FireStationDetailInfo info) {
         if (info == null)
             return;
-
+        getIncharge("0", 0, "0");
 //        daduiName.add(info.brigade_path == null ? "请选择" : info.brigade_path+"(当前)");
-        zhongduiName.add(info.group_name == null ? "请选择" : "已选择(" + info.group_name + ")");
-        zhongduiAdapter.notifyDataSetChanged();
+//        zhongduiName.add(info.group_name == null ? "请选择" : "已选择(" + info.group_name + ")");
+//        zhongduiAdapter.notifyDataSetChanged();
         this.info = info;
 
 
@@ -930,7 +999,20 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             item.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    llCondition.removeView(item);
+                    new AlertDialog.Builder(getActivity()).setMessage("是否删除")
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    llCondition.removeView(item);
+
+                                    dialog.dismiss();
+                                }
+                            }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    }).create().show();
                 }
             });
             llCondition.addView(item);
@@ -975,5 +1057,12 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             }
         }
 
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        handler.removeCallbacksAndMessages(null);
+        super.onDestroyView();
     }
 }

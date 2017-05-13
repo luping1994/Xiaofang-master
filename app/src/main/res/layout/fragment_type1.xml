@@ -89,13 +89,13 @@
             </LinearLayout>
 
             <LinearLayout
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
-                android:paddingRight="@dimen/infoitem_pading">
+                android:paddingRight="@dimen/infoitem_pading"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -124,7 +124,6 @@
                     android:textColor="@color/border"
                     android:textSize="14sp" />
             </LinearLayout>
-
 
 
             <RelativeLayout
@@ -199,16 +198,16 @@
                     android:textSize="@dimen/text_size" />
 
                 <TextView
-                    android:maxLines="1"
-                    android:ellipsize="end"
                     android:id="@+id/attribute"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_weight="1"
                     android:background="@null"
+                    android:ellipsize="end"
                     android:gravity="center"
                     android:hint="请选择单位属性"
+                    android:maxLines="1"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
 
@@ -230,19 +229,21 @@
                 android:paddingRight="@dimen/infoitem_pading">
 
                 <TextView
-                    android:layout_centerVertical="true"
                     android:id="@+id/incharge_tv"
-                    android:gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
                     android:text="*消防管辖"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
+
                 <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_toRightOf="@+id/incharge_tv"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/incharge_tv"
+                    android:orientation="vertical">
+
                     <Spinner
                         android:id="@+id/incharge_dadui"
                         android:layout_width="match_parent"
@@ -255,7 +256,6 @@
                         android:textSize="@dimen/text_size1" />
 
                     <TextView
-                        android:visibility="gone"
                         android:id="@+id/incharge_qvyu"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -265,10 +265,10 @@
                         android:hint="请选择区域"
                         android:inputType="number"
                         android:textColor="@color/balck"
-                        android:textSize="@dimen/text_size1" />
+                        android:textSize="@dimen/text_size1"
+                        android:visibility="gone" />
 
                     <TextView
-                        android:visibility="gone"
                         android:id="@+id/incharge_jiedao"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
@@ -278,19 +278,21 @@
                         android:hint="请选择街道"
                         android:inputType="number"
                         android:textColor="@color/balck"
-                        android:textSize="@dimen/text_size1" />
+                        android:textSize="@dimen/text_size1"
+                        android:visibility="gone" />
+
                     <Spinner
-                        android:entries="@array/paichusuo"
-                        android:visibility="gone"
                         android:id="@+id/incharge_paichusuo"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:layout_marginLeft="16dp"
+                        android:entries="@array/paichusuo"
                         android:gravity="left|center"
                         android:hint="请选择派出所"
                         android:inputType="number"
                         android:textColor="@color/balck"
-                        android:textSize="@dimen/text_size1" />
+                        android:textSize="@dimen/text_size1"
+                        android:visibility="gone" />
                 </LinearLayout>
 
             </RelativeLayout>
@@ -420,13 +422,13 @@
                 android:paddingRight="@dimen/infoitem_pading">
 
                 <TextView
+                    android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center|left"
                     android:text="*自动消防设施"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size"
-                    android:id="@+id/textView8" />
+                    android:textSize="@dimen/text_size" />
 
                 <LinearLayout
                     android:id="@+id/facility"
@@ -485,27 +487,29 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="干粉灭火器" />
+
                     <LinearLayout
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp">
+                        android:layout_height="50dp"
+                        android:orientation="horizontal">
+
                         <CheckBox
                             android:id="@+id/nine"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="其他" />
+
                         <EditText
-                            android:textSize="@dimen/text_size"
-                            android:minWidth="100dp"
                             android:id="@+id/qitatext"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent" />
+                            android:layout_height="match_parent"
+                            android:minWidth="100dp"
+                            android:textSize="@dimen/text_size" />
                     </LinearLayout>
 
                 </LinearLayout>
 
             </LinearLayout>
-
 
 
             <LinearLayout
@@ -518,13 +522,13 @@
                 android:paddingRight="@dimen/infoitem_pading">
 
                 <TextView
+                    android:id="@+id/textView10"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="法定人姓名"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size"
-                    android:id="@+id/textView10" />
+                    android:textSize="@dimen/text_size" />
 
                 <EditText
                     android:id="@+id/artiname"
@@ -542,14 +546,14 @@
             </LinearLayout>
 
             <LinearLayout
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
-                android:paddingRight="@dimen/infoitem_pading">
+                android:paddingRight="@dimen/infoitem_pading"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -636,14 +640,14 @@
             </LinearLayout>
 
             <LinearLayout
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
-                android:paddingRight="@dimen/infoitem_pading">
+                android:paddingRight="@dimen/infoitem_pading"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -730,23 +734,23 @@
             </LinearLayout>
 
             <LinearLayout
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="1px"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
-                android:paddingRight="@dimen/infoitem_pading">
+                android:paddingRight="@dimen/infoitem_pading"
+                android:visibility="gone">
 
                 <TextView
+                    android:id="@+id/textView11"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="责任人身份证"
                     android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size"
-                    android:id="@+id/textView11" />
+                    android:textSize="@dimen/text_size" />
 
                 <EditText
                     android:id="@+id/responid"
@@ -791,6 +795,7 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -851,6 +856,7 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -881,6 +887,7 @@
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size1" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -1090,6 +1097,7 @@
                     android:text="人"
                     android:textSize="@dimen/text_size" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -1128,6 +1136,58 @@
                     android:textSize="@dimen/text_size" />
             </LinearLayout>
 
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1px"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/infoitem_pading"
+                android:paddingRight="@dimen/infoitem_pading">
+
+                <TextView
+                    android:id="@+id/fire_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="消防车道类型"
+                    android:textColor="@color/balck"
+                    android:textSize="@dimen/text_size" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/fire_type"
+                    android:orientation="vertical">
+
+                    <CheckBox
+                        android:id="@+id/lan_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="穿过建筑物的消防车道" />
+
+                    <CheckBox
+                        android:id="@+id/lan_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="进入内院或天井的消防车道" />
+
+                    <CheckBox
+                        android:id="@+id/lan_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="环形消防车道" />
+
+                    <CheckBox
+                        android:id="@+id/lan_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="尽头式消防车道" />
+                </LinearLayout>
+            </RelativeLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -1165,58 +1225,6 @@
                     android:text="个"
                     android:textSize="@dimen/text_size" />
             </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1px"
-                android:background="@color/white"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/infoitem_pading"
-                android:paddingRight="@dimen/infoitem_pading">
-
-                <TextView
-                    android:id="@+id/fire_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_centerVertical="true"
-                    android:gravity="center"
-                    android:text="消防车道类型"
-                    android:textColor="@color/balck"
-                    android:textSize="@dimen/text_size" />
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/fire_type">
-
-                    <CheckBox
-                        android:id="@+id/lan_1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="穿过建筑物的消防车道" />
-
-                    <CheckBox
-                        android:id="@+id/lan_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="进入内院或天井的消防车道" />
-
-                    <CheckBox
-                        android:id="@+id/lan_3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="环形消防车道" />
-
-                    <CheckBox
-                        android:id="@+id/lan_4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="尽头式消防车道" />
-                </LinearLayout>
-            </RelativeLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -1302,30 +1310,32 @@
                     android:text="单位毗邻情况"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
+
                 <EditText
                     android:id="@+id/nearby"
-                    android:background="@drawable/layout_border2"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:background="@drawable/layout_border2"
                     android:gravity="center|start"
                     android:hint="请输入单位毗邻情况"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
+
                 <LinearLayout
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginLeft="30dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <TextView
+                        android:id="@+id/textView9"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:gravity="center"
                         android:text="毗邻单位东"
                         android:textColor="@color/balck"
-                        android:textSize="@dimen/text_size"
-                        android:id="@+id/textView9" />
+                        android:textSize="@dimen/text_size" />
 
                     <EditText
                         android:id="@+id/east"
@@ -1342,12 +1352,12 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:visibility="gone"
-
                     android:layout_width="match_parent"
+
                     android:layout_height="50dp"
                     android:layout_marginLeft="30dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -1373,11 +1383,11 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginLeft="30dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -1402,11 +1412,11 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginLeft="30dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"

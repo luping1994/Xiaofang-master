@@ -6,8 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,23 +35,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import static com.suntrans.xiaofang.R.id.addItem;
-import static com.suntrans.xiaofang.R.id.buildcompany;
-import static com.suntrans.xiaofang.R.id.lat;
-import static com.suntrans.xiaofang.R.id.lng;
-import static com.suntrans.xiaofang.R.id.map;
-import static com.suntrans.xiaofang.R.id.three;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -95,9 +86,10 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         initData();
-        additem = (Button) view.findViewById(addItem);
-        additem.setOnClickListener(listener);
-
+//        additem = (Button) view.findViewById(addItem);
+//        additem.setOnClickListener(listener);
+        FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.fab);
+        button.setOnClickListener(listener);
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
@@ -127,29 +119,32 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
         public void onClick(final View v) {
 
             new AlertDialog.Builder(getContext())
-                    .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+                    .setTitle("是否添加审批信息?")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            final View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhenxuke3, llContent, false);
-                            ViewTag tag = new ViewTag();
-                            switch (which) {
-                                case 0:
-                                    ((TextView) (view.findViewById(R.id.title))).setText("建审");
-                                    tag.title = "建审";
-                                    tag.type = "1";
-                                    break;
-                                case 1:
-                                    ((TextView) (view.findViewById(R.id.title))).setText("验收");
-                                    tag.title = "验收";
-                                    tag.type = "2";
-                                    break;
-                                case 2:
-                                    ((TextView) (view.findViewById(R.id.title))).setText("开业前");
-                                    tag.title = "开业前";
-                                    tag.type = "3";
-                                    break;
-                            }
-                            view.setTag(tag);
+                            final View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_xingzhenxuke_edit, llContent, false);
+//                            ViewTag tag = new ViewTag();
+//                            switch (which) {
+//                                case 0:
+//                                    ((TextView) (view.findViewById(R.id.title))).setText("建审");
+//                                    tag.title = "建审";
+//                                    tag.type = "1";
+//                                    break;
+//                                case 1:
+//                                    ((TextView) (view.findViewById(R.id.title))).setText("验收");
+//                                    tag.title = "验收";
+//                                    tag.type = "2";
+//                                    break;
+//                                case 2:
+//                                    ((TextView) (view.findViewById(R.id.title))).setText("开业前");
+//                                    tag.title = "开业前";
+//                                    tag.type = "3";
+//                                    break;
+//                            }
+//                            view.setTag(tag);
+                            view.findViewById(R.id.header).setVisibility(View.GONE);
+                            view.findViewById(R.id.edit).setVisibility(View.INVISIBLE);
                             view.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -173,6 +168,7 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                                             );
                                         }
                                     }, mYear, mMonth, mDay);
+                                    pickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                                     pickerDialog.show();
                                 }
                             });
@@ -180,7 +176,7 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                             dialog.dismiss();
                         }
                     })
-                    .setTitle("请选择添加类型")
+                    .setNegativeButton("取消",null)
                     .create().show();
         }
     };
@@ -215,9 +211,10 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
             for (int i = 5; i < llContent.getChildCount(); i++) {
                 View view = llContent.getChildAt(i);
                 RadioGroup group = (RadioGroup) view.findViewById(R.id.radioGroup);
+                RadioGroup group_type = (RadioGroup) view.findViewById(R.id.group_type);
                 String number1 = ((EditText) view.findViewById(R.id.number)).getText().toString();
                 String time1 = ((TextView) view.findViewById(R.id.time)).getText().toString();
-                String type1 = ((ViewTag) view.getTag()).type;
+                String type1 ="";
                 String isqualified1 = "";
                 int id = group.getCheckedRadioButtonId();
                 if (id == R.id.radio_hege)
@@ -225,7 +222,17 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                 else if (id == R.id.radio_buhege)
                     isqualified1 = "0";
 
-                if (!Utils.isVaild(number1) || !Utils.isVaild(time1)) {
+                int typeid=group_type.getCheckedRadioButtonId();
+                if (typeid==R.id.radio_jianshen){
+                    type1="1";
+                }
+                if (typeid==R.id.radio_yanshou){
+                    type1="2";
+                }
+                if (typeid==R.id.radio_kaiyeqian){
+                    type1="3";
+                }
+                if (!Utils.isVaild(number1) || !Utils.isVaild(time1)||!Utils.isVaild(type1)) {
                     UiUtils.showToast("请输入完整的信息");
                     return;
                 }
@@ -265,7 +272,7 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
 
         builder.put("name", name1);
         builder.put("addr", addr1);
-        builder.put("cmpname", buildcompany1);
+        builder.put("cmyname", buildcompany1);
         builder.put("contact", contact1);
         builder.put("phone", phone1);
         if (Utils.isVaild(info))
@@ -295,7 +302,6 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                     @Override
                     public void onCompleted() {
                     }
-
                     @Override
                     public void onError(Throwable e) {
                         UiUtils.showToast(UiUtils.getContext(), "添加失败");
@@ -309,6 +315,7 @@ public class Type5_fragment extends RxFragment implements View.OnClickListener {
                             if (result.status.equals("1")) {
                                 dialog1.dismiss();
                                 String result1 = result.result;
+                                sendBroadCast();
                                 new AlertDialog.Builder(getActivity())
                                         .setMessage(result1)
                                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {

@@ -20,287 +20,305 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bg_color">
         <ProgressBar
             android:id="@+id/progressbar"
-            android:visibility="gone"
-            android:layout_centerInParent="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
-            android:visibility="gone"
-            android:layout_centerInParent="true"
-            android:text="重试"
-            android:id="@+id/bt_reload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <ScrollView
-            android:id="@+id/scroll"
-            android:visibility="visible"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="5dp" />
+        <LinearLayout
+            android:background="@color/bg_color"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <LinearLayout
+            <WebView
+                android:id="@+id/webview"
+                android:background="@color/bg_color"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                android:orientation="vertical"
+                android:layout_height="match_parent">
 
-                >
-                <TextView
-                    android:textColor="@color/colorPrimary"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:background="#dddddd"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:gravity="center|left"
-                    android:text="事件对象"/>
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:paddingBottom="@dimen/activity_horizontal_margin"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white">
+            </WebView>
+        </LinearLayout>
+        <!--<ProgressBar-->
+            <!--android:id="@+id/progressbar"-->
+            <!--android:visibility="gone"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+        <!--<Button-->
+            <!--android:visibility="gone"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:text="重试"-->
+            <!--android:id="@+id/bt_reload"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+        <!--<ScrollView-->
+            <!--android:id="@+id/scroll"-->
+            <!--android:visibility="visible"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
 
-                    <TextView
-                        android:id="@+id/companyname"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/textview_height"
-                        android:gravity="center_vertical"
-                        android:text="地点:"
-                        android:textSize="@dimen/textview_fontsize" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:id="@+id/companyaddr"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/textview_height"
-                        android:gravity="center_vertical"
-                        android:text="单位地址:"
-                        android:textSize="@dimen/textview_fontsize" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:id="@+id/contactname"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/textview_height"
-                        android:gravity="center_vertical"
-                        android:text="联系人姓名:"
-                        android:textSize="@dimen/textview_fontsize" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:id="@+id/contactphone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/textview_height"
-                        android:gravity="center_vertical"
-                        android:text="联系人电话:"
-                        android:textSize="@dimen/textview_fontsize" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                </LinearLayout>
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:background="@color/white"-->
+                <!--android:orientation="vertical"-->
 
+                <!--&gt;-->
+                <!--<TextView-->
+                    <!--android:textColor="@color/colorPrimary"-->
+                    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+                    <!--android:background="#dddddd"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:gravity="center|left"-->
+                    <!--android:text="事件对象"/>-->
+                <!--<LinearLayout-->
+                    <!--android:orientation="vertical"-->
+                    <!--android:paddingBottom="@dimen/activity_horizontal_margin"-->
+                    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+                    <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:background="@color/white">-->
 
-
-
-
-                <TextView
-                    android:background="@color/border"
-                    android:layout_width="match_parent"
-                    android:layout_height="1px" />
-
-
-                <TextView
-                    android:textColor="@color/colorPrimary"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:background="#dddddd"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:gravity="center|left"
-                    android:text="事件详情"/>
-
-                <LinearLayout
-                    android:paddingBottom="@dimen/activity_horizontal_margin"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/creat_at"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/textview_height"
-                        android:gravity="center_vertical"
-                        android:text="录入时间:"
-                        android:textSize="15sp" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:id="@+id/name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/textview_height"
-                        android:gravity="center_vertical"
-                        android:text="录入人:"
-                        android:textSize="15sp" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:id="@+id/type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/textview_height"
-                        android:gravity="center_vertical"
-                        android:text="事件类型:"
-                        android:textSize="15sp" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/textview_height"
-                        android:gravity="center|left"
-                        android:text="详细描述:"
-                        android:textSize="@dimen/textview_fontsize" />
-
-                    <TextView
-                        android:id="@+id/contents"
-                        android:layout_width="match_parent"
-                        android:minHeight="50dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="start" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:text="处置前照片:" />
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recycleview_before"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp">
-
-                    </android.support.v7.widget.RecyclerView>
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:text="事件录像:" />
-                    <TextView
-                        android:visibility="gone"
-                        android:id="@+id/tx_vedio"
-                        android:text="无录像"
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp" />
-                    <RelativeLayout
-                        android:id="@+id/vedio_root"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <com.suntrans.xiaofang.views.MyVideoView
-                            android:id="@+id/vedioview"
-                            android:layout_width="match_parent"
-                            android:layout_height="200dp" />
-                        <ImageView
-                            android:id="@+id/start"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:onClick="onClick"
-                            android:scaleType="fitXY"
-                            android:src="@drawable/ez_leave_message_play_selector"
-                            android:visibility="visible" />
-                    </RelativeLayout>
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                </LinearLayout>
+                    <!--<TextView-->
+                        <!--android:id="@+id/companyname"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="@dimen/textview_height"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="地点:"-->
+                        <!--android:textSize="@dimen/textview_fontsize" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:id="@+id/companyaddr"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="@dimen/textview_height"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="单位地址:"-->
+                        <!--android:textSize="@dimen/textview_fontsize" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:id="@+id/contactname"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="@dimen/textview_height"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="联系人姓名:"-->
+                        <!--android:textSize="@dimen/textview_fontsize" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:id="@+id/contactphone"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="@dimen/textview_height"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="联系人电话:"-->
+                        <!--android:textSize="@dimen/textview_fontsize" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                <!--</LinearLayout>-->
 
 
 
-                <TextView
-                    android:textColor="@color/colorPrimary"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:background="#dddddd"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:gravity="center|left"
-                    android:text="事件处理"/>
 
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white">
+                <!--<TextView-->
+                    <!--android:background="@color/border"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="1px" />-->
 
-                    <TextView
-                        android:id="@+id/status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/textview_height"
-                        android:gravity="center_vertical"
-                        android:text="处理情况:"
-                        android:textSize="15sp" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:id="@+id/finishtime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="完成时间:"
-                        android:textSize="15sp" />
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:gravity="center_vertical"
-                        android:text="处置后照片:" />
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recycleview_after"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp">
+                <!--<TextView-->
+                    <!--android:textColor="@color/colorPrimary"-->
+                    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+                    <!--android:background="#dddddd"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:gravity="center|left"-->
+                    <!--android:text="事件详情"/>-->
 
-                    </android.support.v7.widget.RecyclerView>
-                    <TextView
-                        android:background="@color/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="1px" />
-                </LinearLayout>
-            </LinearLayout>
-        </ScrollView>
-    </RelativeLayout>
+                <!--<LinearLayout-->
+                    <!--android:paddingBottom="@dimen/activity_horizontal_margin"-->
+                    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+                    <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="vertical">-->
+                    <!--<TextView-->
+                        <!--android:id="@+id/creat_at"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="@dimen/textview_height"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="录入时间:"-->
+                        <!--android:textSize="15sp" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:id="@+id/name"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="@dimen/textview_height"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="录入人:"-->
+                        <!--android:textSize="15sp" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:id="@+id/type"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="@dimen/textview_height"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="事件类型:"-->
+                        <!--android:textSize="15sp" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="@dimen/textview_height"-->
+                        <!--android:gravity="center|left"-->
+                        <!--android:text="详细描述:"-->
+                        <!--android:textSize="@dimen/textview_fontsize" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/contents"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:minHeight="50dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:gravity="start" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="35dp"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="处置前照片:" />-->
+
+                    <!--<android.support.v7.widget.RecyclerView-->
+                        <!--android:id="@+id/recycleview_before"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="100dp">-->
+
+                    <!--</android.support.v7.widget.RecyclerView>-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="35dp"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="事件录像:" />-->
+                    <!--<TextView-->
+                        <!--android:visibility="gone"-->
+                        <!--android:id="@+id/tx_vedio"-->
+                        <!--android:text="无录像"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="35dp" />-->
+                    <!--<RelativeLayout-->
+                        <!--android:id="@+id/vedio_root"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content">-->
+
+                        <!--<com.suntrans.xiaofang.views.MyVideoView-->
+                            <!--android:id="@+id/vedioview"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="200dp" />-->
+                        <!--<ImageView-->
+                            <!--android:id="@+id/start"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_centerInParent="true"-->
+                            <!--android:onClick="onClick"-->
+                            <!--android:scaleType="fitXY"-->
+                            <!--android:src="@drawable/ez_leave_message_play_selector"-->
+                            <!--android:visibility="visible" />-->
+                    <!--</RelativeLayout>-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                <!--</LinearLayout>-->
+
+
+
+                <!--<TextView-->
+                    <!--android:textColor="@color/colorPrimary"-->
+                    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+                    <!--android:background="#dddddd"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:gravity="center|left"-->
+                    <!--android:text="事件处理"/>-->
+
+
+                <!--<LinearLayout-->
+                    <!--android:orientation="vertical"-->
+                    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+                    <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:background="@color/white">-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/status"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="@dimen/textview_height"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="处理情况:"-->
+                        <!--android:textSize="15sp" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:id="@+id/finishtime"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="完成时间:"-->
+                        <!--android:textSize="15sp" />-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                    <!--<TextView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="35dp"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:text="处置后照片:" />-->
+
+                    <!--<android.support.v7.widget.RecyclerView-->
+                        <!--android:id="@+id/recycleview_after"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="100dp">-->
+
+                    <!--</android.support.v7.widget.RecyclerView>-->
+                    <!--<TextView-->
+                        <!--android:background="@color/border"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1px" />-->
+                <!--</LinearLayout>-->
+            <!--</LinearLayout>-->
+        <!--</ScrollView>-->
+    </LinearLayout>
 </LinearLayout>

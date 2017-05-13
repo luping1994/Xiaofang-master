@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -55,5 +56,18 @@ public class Introduce_Activity extends BasedActivity {
         webview.loadUrl("http://api.91yunpan.com/help/help.html");
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId()==android.R.id.home){
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    @Override
+    protected void onDestroy() {
+        webview.destroy();
+        super.onDestroy();
+    }
 }

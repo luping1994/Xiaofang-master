@@ -113,9 +113,10 @@ public class RecycleviewAdapter extends RecyclerView.Adapter {
                     onItemClickListener.onItemClick(position);
                 }
             });
-            content.setText("事件内容:" + datas.get(position).get(0));
-            name.setText("录入人:" + datas.get(position).get(1));
+
             if (type==0){
+                content.setText("事件内容:" + datas.get(position).get(0));
+                name.setText("录入人:" + datas.get(position).get(1));
                 state.setVisibility(View.VISIBLE);
                 if (datas.get(position).get(2).equals("1")) {
                     state.setText("已处理");
@@ -125,9 +126,11 @@ public class RecycleviewAdapter extends RecyclerView.Adapter {
                     state.setTextColor(Color.RED);
                 }
             }else {
+                content.setVisibility(View.GONE);
                 state.setVisibility(View.INVISIBLE);
+                content.setText("事件内容:" + datas.get(position).get(0));
+                name.setText("检查人:" + datas.get(position).get(1));
             }
-
             time.setText("录入时间:" + datas.get(position).get(3));
         }
     }

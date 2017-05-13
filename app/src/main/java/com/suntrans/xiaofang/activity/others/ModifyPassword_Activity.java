@@ -63,7 +63,7 @@ public class ModifyPassword_Activity extends BasedActivity {
         actionBar.setDisplayShowTitleEnabled(true);
     }
     public void modify(View view){
-        String oldPassword = App.getSharedPreferences().getString("password","-1");
+        String oldPassword =oldPasswordEdit.getText().toString().replace(" ","");
         if (oldPassword.equals("-1")){
             UiUtils.showToast("修改失败");
             return;
@@ -71,10 +71,6 @@ public class ModifyPassword_Activity extends BasedActivity {
 
 
 
-        if (!oldPassword.equals(oldPasswordEdit.getText().toString())){
-            UiUtils.showToast("旧密码错误");
-            return;
-        }
 
         String newPassword = newPasswordEdit.getText().toString();
         String newPassword2 = newPasswordEdit_re.getText().toString();
@@ -86,7 +82,7 @@ public class ModifyPassword_Activity extends BasedActivity {
             UiUtils.showToast("两次输入的密码不一致");
             return;
         }
-        RetrofitHelper.getApi().changedPassword(newPassword)
+        RetrofitHelper.getApi().changedPassword(newPassword,oldPassword)
                 .compose(this.<CPasswordResult>bindUntilEvent(ActivityEvent.DESTROY))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -123,7 +119,7 @@ public class ModifyPassword_Activity extends BasedActivity {
                                         }
                                     }).create().show();
                         }else {
-                            UiUtils.showToast("修改失败");
+                            UiUtils.showToast(cPasswordResult.msg);
                         }
                     }
                 });

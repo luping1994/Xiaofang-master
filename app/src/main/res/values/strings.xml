@@ -13,10 +13,17 @@
     <string name="login_account">请输入账号</string>
     <string name="turn_on_flashlight">打开闪光灯</string>
     <string name="turn_off_flashlight">关闭闪光灯</string>
-    <string name="menu_check">审核信息</string>
+    <string name="menu_check">审核</string>
     <string name="menu_add">新增</string>
     <string name="loading">加载中</string>
     <string name="desc_check_mark">check mark</string>
     <string name="transition_test">test</string>
     <string name="chooseAddr">选择坐标</string>
+    <string name="commcmy">普通单位</string>
+    <string name="title_modify_commcmy">修改普通单位信息</string>
+    <string name="title_modify_company">修改重点单位信息</string>
+    <string name="title_error">错误</string>
+    <string name="title_modify_commcmy_license">修改普通单位审批信息</string>
+    <string name="title_modify_company_license">修改重点单位审批信息</string>
+    <string name="license_builder">建设单位：</string>
 </resources>

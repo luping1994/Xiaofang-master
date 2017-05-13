@@ -6,10 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/toolbar"/>
-    <android.support.v7.widget.RecyclerView
-        android:background="@color/bg_color"
-        android:id="@+id/recycleview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v7.widget.RecyclerView>
+   <FrameLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+        <include layout="@layout/fragment_loading"/>
+       <android.support.v7.widget.RecyclerView
+           android:background="@color/bg_color"
+           android:id="@+id/recycleview"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
+       </android.support.v7.widget.RecyclerView>
+   </FrameLayout>
 </LinearLayout>

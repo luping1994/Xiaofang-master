@@ -77,7 +77,7 @@ public class EditCompanyInfo_activity extends BasedActivity {
     private void setupToolBar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle("修改重点单位信息");
+        toolbar.setTitle(R.string.title_modify_company);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);

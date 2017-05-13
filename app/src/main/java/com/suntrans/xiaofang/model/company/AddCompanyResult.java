@@ -13,4 +13,6 @@ public class  AddCompanyResult {
     @SerializedName("result")
     public String result;
     public String msg;
+
+    public String company_id;
 }

@@ -32,7 +32,9 @@ import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
 import com.suntrans.xiaofang.model.company.CompanyPassResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.DbHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
+import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.ActivityEvent;
 import com.trello.rxlifecycle.android.FragmentEvent;
 
@@ -87,7 +89,7 @@ public class Check_detail_Activity extends BaseActivity {
     protected void setUpView() {
         id = getIntent().getStringExtra("id");
         this.source_id = getIntent().getStringExtra("source_id");
-        this.special =getIntent().getStringExtra("special");
+        this.special = getIntent().getStringExtra("special");
         pass = (Button) findViewById(R.id.pass);
         unpass = (Button) findViewById(R.id.unpass);
         recyclerView = (RecyclerView) findViewById(R.id.recycleview);
@@ -102,11 +104,11 @@ public class Check_detail_Activity extends BaseActivity {
     @Override
     protected void setUpData() {
 
-        if (source_id!=null){
-            if (source_id.equals("1")){
+        if (source_id != null) {
+            if (source_id.equals("1")) {
                 pass.setText("保存");
                 unpass.setText("修改");
-            }else if (source_id.equals("3")){
+            } else if (source_id.equals("3")) {
                 pass.setText("通过");
                 unpass.setText("不通过");
             }
@@ -122,23 +124,27 @@ public class Check_detail_Activity extends BaseActivity {
         datas.add(array1);
 
 
-        SparseArray<String> array2 = new SparseArray<>();
-        array2.put(0, "消防管辖");
-        array2.put(1, "");
-        datas.add(array2);
-
-
         SparseArray<String> array3 = new SparseArray<>();
         array3.put(0, "火灾危险性");
         array3.put(1, "");
         datas.add(array3);
 
 
+        SparseArray<String> array8 = new SparseArray<>();
+        array8.put(0, "单位属性");
+        array8.put(1, "");
+        datas.add(array8);
+
+        SparseArray<String> array2 = new SparseArray<>();
+        array2.put(0, "消防管辖");
+        array2.put(1, "");
+        datas.add(array2);
+
+
         SparseArray<String> array4 = new SparseArray<>();
         array4.put(0, "建筑面积");
         array4.put(1, "");
         datas.add(array4);
-
 
         SparseArray<String> array5 = new SparseArray<>();
         array5.put(0, "安全出口数");
@@ -155,10 +161,10 @@ public class Check_detail_Activity extends BaseActivity {
         array7.put(1, "");
         datas.add(array7);
 
-        SparseArray<String> array8 = new SparseArray<>();
-        array8.put(0, "单位属性");
-        array8.put(1, "");
-        datas.add(array8);
+//        SparseArray<String> array8 = new SparseArray<>();
+//        array8.put(0, "单位属性");
+//        array8.put(1, "");
+//        datas.add(array8);
 
         SparseArray<String> array9 = new SparseArray<>();
         array9.put(0, "法定代表人");
@@ -346,61 +352,86 @@ public class Check_detail_Activity extends BaseActivity {
 
 
     private void refreshView(CompanyDetailnfo info) {
-
+        LogUtil.i(info.toString());
         datas.get(0).put(1, info.name);//名字
         datas.get(1).put(1, info.addr);//地址
-        datas.get(2).put(1, info.incharge == null ? "" : info.incharge);
-        String dangerlevels="";
-        if (info.dangerlevel!=null){
-            if (info.dangerlevel.equals("1")){
+        String dangerlevels = "";
+        if (info.dangerlevel != null) {
+            if (info.dangerlevel.equals("1")) {
                 dangerlevels = "火灾高危单位";
-            }else if (info.dangerlevel.equals("2")){
+            } else if (info.dangerlevel.equals("2")) {
                 dangerlevels = "一般消防安全重点单位";
-            }else if (info.dangerlevel.equals("3")){
-                dangerlevels =  "十小场所";
-            }else if (info.dangerlevel.equals("4")){
-                dangerlevels="其他非重点单位";
+            } else if (info.dangerlevel.equals("3")) {
+                dangerlevels = "十小场所";
+            } else if (info.dangerlevel.equals("4")) {
+                dangerlevels = "其他非重点单位";
             }
         }
-        datas.get(3).put(1, dangerlevels);
-        datas.get(4).put(1, info.buildarea == null ? "" : info.buildarea + "平方米");
-        datas.get(5).put(1, info.exitnum == null ? "" : info.exitnum + "个");
-        datas.get(6).put(1, info.stairnum == null ? "" : info.stairnum + "个");
-        datas.get(7).put(1, info.facility == null ? "" : info.facility);
+        datas.get(2).put(1, dangerlevels);
+        datas.get(4).put(1, info.incharge == null ? "" : info.incharge);
+
+        datas.get(5).put(1, info.buildarea == null ? "" : info.buildarea + "平方米");
+        datas.get(6).put(1, info.exitnum == null ? "" : info.exitnum + "个");
+        datas.get(7).put(1, info.stairnum == null ? "" : info.stairnum + "个");
+        datas.get(8).put(1, info.facility == null ? "" : info.facility);
 
         String mainId = info.mainattribute;
-        if (mainId!=null){
-            if (info.cmystate!=null){
-                if (info.cmystate.equals("0")){
-                    DbHelper helper = new DbHelper(this,"Fire",null,1);
-                    SQLiteDatabase db = helper.getReadableDatabase();
-                    db.beginTransaction();
-                    Cursor cursor = db.rawQuery("select Name from attr_main where Id=?",new String[]{mainId});
-                    if (cursor.getCount()>0){
-                        while (cursor.moveToNext()){
-                            datas.get(8).put(1, cursor.getString(0));
-                        }
+        String mainId_small = info.mainattribute_small;
+        if (info.special.equals("1")) {
+            if (mainId != null) {
+                StringBuilder sb = new StringBuilder();
+                DbHelper helper = new DbHelper(this, "Fire", null, 1);
+                SQLiteDatabase db = helper.getReadableDatabase();
+                db.beginTransaction();
+                Cursor cursor = db.rawQuery("select Name from attr_main where Id=?", new String[]{mainId});
+                if (cursor.getCount() > 0) {
+                    while (cursor.moveToNext()) {
+                        sb.append(cursor.getString(0));
                     }
-                    cursor.close();
-                    db.setTransactionSuccessful();
-                    db.endTransaction();
-                }else {
-                    DbHelper helper = new DbHelper(this,"Fire",null,1);
-                    SQLiteDatabase db = helper.getReadableDatabase();
-                    db.beginTransaction();
-                    Cursor cursor = db.rawQuery("select Name from attr_general where Id=?",new String[]{mainId});
-                    if (cursor.getCount()>0){
-                        while (cursor.moveToNext()){
-                            datas.get(8).put(1, cursor.getString(0));
-                        }
-                    }
-                    cursor.close();
-                    db.setTransactionSuccessful();
-                    db.endTransaction();
                 }
+                if (info.subattribute != null) {
+                    Cursor cursor2 = db.rawQuery("select Name from attr_sub where Id=?", new String[]{info.subattribute});
+                    if (cursor2.getCount() > 0) {
+                        while (cursor2.moveToNext()) {
+                            sb.append("(")
+                                    .append(cursor2.getString(0))
+                                    .append(")");
+                        }
+                    }
+                    cursor2.close();
+                }
+                String attr = sb.toString();
+                if (Utils.isVaild(attr))
+                    datas.get(3).put(1, attr);
+                cursor.close();
+                db.setTransactionSuccessful();
+                db.endTransaction();
             }
+        } else {
+            if (mainId_small != null) {
+                String[] ids = mainId_small.split("#");
+                String attr = "";
+                DbHelper helper = new DbHelper(this, "Fire", null, 1);
+                SQLiteDatabase db = helper.getReadableDatabase();
+                for (int i = 0; i < ids.length; i++) {
+                    if (info.special.equals("0")) {
 
+                        db.beginTransaction();
+                        Cursor cursor = db.rawQuery("select Name from attr_general where Id=?", new String[]{ids[i]});
+                        if (cursor.getCount() > 0) {
+                            while (cursor.moveToNext()) {
+                                attr += cursor.getString(0);
+                            }
+                        }
+                        cursor.close();
 
+                    }
+                }
+                db.setTransactionSuccessful();
+                db.endTransaction();
+                datas.get(3).put(1, attr);
+
+            }
         }
 
 
@@ -423,7 +454,7 @@ public class Check_detail_Activity extends BaseActivity {
         datas.get(18).put(1, info.leaderdepart == null ? "" : info.leaderdepart);
         datas.get(19).put(1, info.foundtime == null ? "" : info.foundtime);
         datas.get(20).put(1, info.phone == null ? "" : info.phone);
-        datas.get(21).put(1, info.staffnum==null?"":info.staffnum+ "人");
+        datas.get(21).put(1, info.staffnum == null ? "" : info.staffnum + "人");
         datas.get(22).put(1, info.area == null ? "" : info.area + "平方米");
         datas.get(23).put(1, info.firemannum == null ? "" : info.firemannum + "人");
         datas.get(24).put(1, info.lanenum == null ? "" : info.lanenum + "个");
@@ -437,29 +468,19 @@ public class Check_detail_Activity extends BaseActivity {
 //
 //            datas.get(30).put(1,"东:"+ info.east + "\n" + "西:" + info.west + "\n" + "南:" + info.south + "\n" + "北:" + info.north);
 //        }
-        if (info.nearby!=null){
-            datas.get(29).put(1,info.nearby);
+        if (info.nearby != null) {
+            datas.get(29).put(1, info.nearby);
         }
         datas.get(30).put(1, info.remark);
 
         adapter.notifyDataSetChanged();
     }
 
-//    final int REFRESH_VIEW = 0;
-//    Handler handler =new Handler(){
-//        @Override
-//        public void handleMessage(Message msg) {
-//            super.handleMessage(msg);
-//            if (msg.what==REFRESH_VIEW){
-//                CompanyDetailnfo info = (CompanyDetailnfo) msg.obj;
-//            }
-//        }
-//    };
-//
 
     public void passCheck(View view) {
         new AlertDialog.Builder(Check_detail_Activity.this)
                 .setMessage("是否通过/保存?")
+                .setTitle("提示")
                 .setPositiveButton("是", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -475,8 +496,8 @@ public class Check_detail_Activity extends BaseActivity {
     }
 
     private void passCheck() {
-        if (special.equals("1")){
-            RetrofitHelper.getApi().passCompany(id)
+        if (special.equals("1")) {
+            RetrofitHelper.getApi().passCompany(id, "1")
                     .compose(this.<CompanyPassResult>bindUntilEvent(ActivityEvent.DESTROY))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -495,18 +516,18 @@ public class Check_detail_Activity extends BaseActivity {
 
                         @Override
                         public void onNext(CompanyPassResult result) {
-                            if (result!=null){
-                                if (result.status.equals("1")){
+                            if (result != null) {
+                                if (result.status.equals("1")) {
                                     UiUtils.showToast(result.result);
                                     finish();
-                                }else {
+                                } else {
                                     UiUtils.showToast(result.msg);
                                 }
                             }
                         }
                     });
-        }else if (special.equals("0")){
-            RetrofitHelper.getApi().passCommCompany(id)
+        } else if (special.equals("0")) {
+            RetrofitHelper.getApi().passCommCompany(id, "1")
                     .compose(this.<CompanyPassResult>bindUntilEvent(ActivityEvent.DESTROY))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -525,11 +546,17 @@ public class Check_detail_Activity extends BaseActivity {
 
                         @Override
                         public void onNext(CompanyPassResult result) {
-                            if (result!=null){
-                                if (result.status.equals("1")){
-                                    UiUtils.showToast(result.result);
-                                    finish();
-                                }else {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    new AlertDialog.Builder(Check_detail_Activity.this)
+                                            .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    finish();
+                                                }
+                                            }).setMessage(result.result)
+                                            .create().show();
+                                } else {
                                     UiUtils.showToast(result.msg);
                                 }
                             }
@@ -540,28 +567,120 @@ public class Check_detail_Activity extends BaseActivity {
 
 
     public void unpassCheck(View view) {
-        if (source_id.equals("3")){
-            finish();
-        }else if (source_id.equals("1")){
-            Intent intent = new Intent();
-            intent.putExtra("info",myInfo);
+        if (source_id.equals("3")) {
+            new AlertDialog.Builder(Check_detail_Activity.this)
+                    .setMessage("不通过?")
+                    .setTitle("提示")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            unpass();
+                        }
+                    })
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 
-            if (special.equals("1")){
+                        }
+                    }).create().show();
+
+        } else if (source_id.equals("1")) {
+            Intent intent = new Intent();
+            intent.putExtra("info", myInfo);
+
+            if (special.equals("1")) {
                 intent.setClass(this, EditCompanyInfo_activity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }else if (special.equals("0")){
+            } else if (special.equals("0")) {
                 intent.setClass(this, EditCommcmyInfo_activity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
             finish();
         }
+
+    }
+
+    private void unpass() {
+        if (special.equals("1")) {
+            RetrofitHelper.getApi().passCompany(id, "2")
+                    .compose(this.<CompanyPassResult>bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<CompanyPassResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            UiUtils.showToast("服务器错误");
+
+                        }
+
+                        @Override
+                        public void onNext(CompanyPassResult result) {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    new AlertDialog.Builder(Check_detail_Activity.this)
+                                            .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    finish();
+                                                }
+                                            }).setMessage(result.result)
+                                            .create().show();
+                                } else {
+                                    UiUtils.showToast(result.msg);
+                                }
+                            }
+                        }
+                    });
+        } else {
+            RetrofitHelper.getApi().passCommCompany(id, "2")
+                    .compose(this.<CompanyPassResult>bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<CompanyPassResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            UiUtils.showToast("服务器错误");
+
+                        }
+
+                        @Override
+                        public void onNext(CompanyPassResult result) {
+                            if (result != null) {
+                                if (result.status.equals("1")) {
+                                    new AlertDialog.Builder(Check_detail_Activity.this)
+                                            .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    finish();
+                                                }
+                                            }).setMessage(result.result)
+                                            .create().show();
+                                } else {
+                                    UiUtils.showToast(result.msg);
+                                }
+                            }
+                        }
+                    });
+        }
     }
 
     //获取单位详情信息
     private void getData() {
-        if (special.equals("1")){
+        if (special.equals("1")) {
             RetrofitHelper.getApi().getCompanyDetail(id)
                     .compose(this.<CompanyDetailnfoResult>bindUntilEvent(ActivityEvent.DESTROY))
                     .observeOn(AndroidSchedulers.mainThread())
@@ -594,7 +713,7 @@ public class Check_detail_Activity extends BaseActivity {
                             }
                         }
                     });
-        }else if (special.equals("0")){
+        } else if (special.equals("0")) {
             RetrofitHelper.getApi().getCommcmyDetail(id)
                     .compose(this.<CompanyDetailnfoResult>bindUntilEvent(ActivityEvent.DESTROY))
                     .observeOn(AndroidSchedulers.mainThread())

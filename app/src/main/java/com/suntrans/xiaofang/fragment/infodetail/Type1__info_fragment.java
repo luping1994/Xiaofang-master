@@ -41,6 +41,7 @@ import com.suntrans.xiaofang.model.company.AddCompanyResult;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfo;
 import com.suntrans.xiaofang.model.company.CompanyDetailnfoResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
@@ -77,6 +78,7 @@ public class Type1__info_fragment extends BasedFragment {
 
 
     LatLng to;
+    private boolean isFristShowLicense;
 
     @Nullable
     @Override
@@ -100,15 +102,7 @@ public class Type1__info_fragment extends BasedFragment {
 
 
     private void initView(View view) {
-//        menuRed = (FloatingActionMenu) view.findViewById(R.id.menu_red);
-//        menuRed.setClosedOnTouchOutside(true);
-//        fab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
-//        fab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
-//        fab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
-//
-//        fab1.setOnClickListener(this);
-//        fab2.setOnClickListener(this);
-//        fab3.setOnClickListener(this);
+
         pager = (ViewPager) view.findViewById(R.id.pager);
         tabLayout = (TabLayout) view.findViewById(R.id.tablayout);
 
@@ -116,9 +110,17 @@ public class Type1__info_fragment extends BasedFragment {
         pager.setAdapter(adapter);
         pager.setOffscreenPageLimit(3);
         pager.setVisibility(View.INVISIBLE);
+
 //        progressBar.setVisibility(View.VISIBLE);
 //        error.setVisibility(View.GONE);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setupWithViewPager(pager);
+        isFristShowLicense = false;
+        isFristShowLicense = getActivity().getIntent().getBooleanExtra("isFristShowLicense", false);
+        if (isFristShowLicense) {
+            pager.setCurrentItem(1);
+        }
     }
 
     public Toolbar toolbar;
@@ -127,8 +129,11 @@ public class Type1__info_fragment extends BasedFragment {
     private void setupToolbar(View view) {
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        title = getActivity().getIntent().getStringExtra("name").split("#")[0];
-        toolbar.setTitle(title);
+        title = getActivity().getIntent().getStringExtra("name");
+        if (title != null)
+            toolbar.setTitle(title.split("#")[0]);
+        else
+            toolbar.setTitle("");
         ((InfoDetail_activity) getActivity()).setSupportActionBar(toolbar);
         ActionBar actionBar = ((InfoDetail_activity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -137,12 +142,11 @@ public class Type1__info_fragment extends BasedFragment {
 
     @Override
     public void reLoadData(View view) {
-
         getData();
     }
 
     class PagerAdapter extends FragmentStatePagerAdapter {
-        String[] titles = new String[]{"基本信息", "行政审批", "单位监督", "单位事件"};
+        String[] titles = new String[]{"基本信息", "行政审批", "单位事件", "单位监督"};
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
@@ -154,18 +158,18 @@ public class Type1__info_fragment extends BasedFragment {
             switch (position) {
                 case 0:
                     if (detailInfoFragment0 == null)
-                        detailInfoFragment0 = DetailInfoFragment.newInstance(MarkerHelper.S0CIETY);
+                        detailInfoFragment0 = DetailInfoFragment.newInstance();
                     return detailInfoFragment0;
                 case 1:
                     if (govApproal_fragment == null)
-                        govApproal_fragment = GovApproal_fragment.newInstance(MarkerHelper.S0CIETY);
+                        govApproal_fragment = GovApproal_fragment.newInstance();
                     return govApproal_fragment;
-                case 2:
+                case 3:
                     if (superviseFragment == null) {
                         superviseFragment = new SuperviseFragment();
                     }
                     return superviseFragment;
-                case 3:
+                case 2:
                     if (eventFragment == null) {
                         eventFragment = new EventFragment();
                     }
@@ -236,6 +240,8 @@ public class Type1__info_fragment extends BasedFragment {
                                     }
                                 }
                                 myInfo = info;
+                                if (myInfo!=null)
+                                    LogUtil.i(myInfo.url);
                                 if (detailInfoFragment0 != null)
                                     detailInfoFragment0.setData(info);
                                 if (eventFragment != null)
@@ -243,7 +249,7 @@ public class Type1__info_fragment extends BasedFragment {
                                 if (superviseFragment != null)
                                     superviseFragment.setId(info.id);
                                 if (govApproal_fragment != null)
-                                    govApproal_fragment.setId(info.id);
+                                    govApproal_fragment.setId(info.id, info.special);
                                 handler.sendMessageDelayed(Message.obtain(handler, 100, info.name), 500);
                             } else {
                                 UiUtils.showToast(result.msg);
@@ -265,61 +271,16 @@ public class Type1__info_fragment extends BasedFragment {
                 String name = (String) msg.obj;
                 if (name != null && !name.equals("")) {
                     if (toolbar != null)
-                        if (toolbar.getTitle().toString().equals(""))
-                            toolbar.setTitle(name);
+                        toolbar.setTitle(name);
                 }
                 progressBar.setVisibility(View.INVISIBLE);
                 pager.setVisibility(View.VISIBLE);
                 error.setVisibility(View.GONE);
+                if (isFristShowLicense)
+                    govApproal_fragment.addCompanyLicense();
             }
         }
     };
-
-
-    private void delete() {
-        RetrofitHelper.getApi().deleteCompany(myInfo.id)
-                .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<AddCompanyResult>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        UiUtils.showToast(UiUtils.getContext(), "删除失败");
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(AddCompanyResult result) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        if (result != null) {
-                            if (result.status.equals("1")) {
-                                builder.setMessage(result.result).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        getActivity().finish();
-                                    }
-                                });
-                                builder.create().show();
-                            } else {
-                                builder.setMessage(result.msg).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                });
-                                builder.create().show();
-                            }
-                        } else {
-                            UiUtils.showToast( "删除失败");
-                        }
-                    }
-                });
-    }
 
 
     @Override

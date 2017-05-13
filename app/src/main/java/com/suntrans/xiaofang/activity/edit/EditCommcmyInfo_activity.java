@@ -78,7 +78,7 @@ public class EditCommcmyInfo_activity extends BasedActivity {
     private void setupToolBar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle("修改一般单位信息");
+        toolbar.setTitle(getResources().getString(R.string.title_modify_commcmy));
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);

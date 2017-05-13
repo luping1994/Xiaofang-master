@@ -79,6 +79,7 @@ public class RouteNavi_Activity extends BasedActivity implements AMapNaviListene
 		super.onDestroy();
 		mAMapNaviView.onDestroy();
 		mAMapNavi.stopNavi();
+		mAMapNavi.removeAMapNaviListener(mTtsManager);
 //		mAMapNavi.destroy();
 		mTtsManager.destroy();
 	}

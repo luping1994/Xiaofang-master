@@ -1,13 +1,11 @@
 package com.suntrans.xiaofang.activity;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,16 +16,10 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Process;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -39,7 +31,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -74,7 +65,6 @@ import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.journeyapps.barcodescanner.Util;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.add.Add_activity;
@@ -95,24 +85,18 @@ import com.suntrans.xiaofang.utils.MarkerHelper;
 import com.suntrans.xiaofang.utils.SensorEventHelper;
 import com.suntrans.xiaofang.utils.ThreadManager;
 import com.suntrans.xiaofang.utils.UiUtils;
-import com.tencent.bugly.Bugly;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.nio.channels.NonReadableChannelException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static com.amap.api.maps.AMapUtils.calculateLineDistance;
-import static com.iflytek.thirdparty.u.f;
-import static com.suntrans.xiaofang.R.id.addr;
-import static com.suntrans.xiaofang.R.id.ll_bottom2;
+import static com.suntrans.xiaofang.R.id.check;
 
 public class Main_Activity extends BasedActivity implements LocationSource, View.OnClickListener, AMap.OnMarkerClickListener, AMapLocationListener, MarkerHelper.onGetInfoFinishListener, ClusterClickListener {
     private static final String TAG = "Main_Activity";
@@ -206,6 +190,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         xiaofangshi.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
         xingzhenshenpi.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
         smartxiaofan.setSupportButtonTintList(ColorStateList.valueOf(Color.WHITE));
+        zhongdiandanwei.setChecked(true);
 
         zhongdiandanwei.setOnCheckedChangeListener(listener);
         yibandanwei.setOnCheckedChangeListener(listener);
@@ -240,6 +225,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
         getDataDialog = new ProgressDialog(Main_Activity.this);
         getDataDialog.setCancelable(false);
+
     }
 
     //初始化map
@@ -250,23 +236,21 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         mapView.onCreate(savedInstanceState);
         if (aMap == null) {
             aMap = mapView.getMap();
+            //先把地图视角移动到武汉市
+            LatLng localLatLng = new LatLng(30.5810841269, 114.316200103);
+            aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(localLatLng, 13));
             mUiSettings = aMap.getUiSettings();
             aMap.setLocationSource(this);// 设置定位资源。如果不设置此定位资源则定位按钮不可点击。并且实现activate激活定位,停止定位的回调方法
-//            aMap.setMyLocationEnabled(true);// 可触发定位并显示定位层
             mUiSettings.setScaleControlsEnabled(true);//显示比例尺控件
-//            aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-//            mUiSettings.setCompassEnabled(true);
-//            mUiSettings.setMyLocationButtonEnabled(true);
+
+
             mUiSettings.setZoomPosition(AMapOptions.ZOOM_POSITION_RIGHT_CENTER);
             mUiSettings.setRotateGesturesEnabled(false);//设置地图是否可以旋转
-//            mUiSettings.setLogoBottomMargin(UiUtils.dip2px(0));
             aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
             aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-            aMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+//            aMap.moveCamera(CameraUpdateFactory.zoomTo(16));
 //            aMap.setMinZoomLevel(15);
             aMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
-
-
                 @Override
                 public void onCameraChange(CameraPosition cameraPosition) {
 
@@ -280,7 +264,6 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng) {
-//                    LogUtil.i("点击的坐标为:" + latLng.latitude + "," + latLng.longitude);
                     closeBottomMenu();
                     closeDanwei();
 
@@ -290,6 +273,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                 @Override
                 public void onMapLoaded() {
                     aMap.showBuildings(true);
+
+
                     MarkerOptions options = new MarkerOptions();
                     LatLng latLng = new LatLng(30.542522, 114.358749);
                     options.position(latLng)
@@ -300,7 +285,6 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     smartFireMarker.setObject(cluster);
                     smartFireMarker.setVisible(false);
                     getData(1);
-
                 }
             });
         }
@@ -310,30 +294,33 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         }
         geocodeSearch = new GeocodeSearch(getApplicationContext());
         aMap.setOnMarkerClickListener(this);
+
+
     }
 
 
+    private boolean isRefreshing = false;
+    private int currentRefreshtype = 1;
+
     private void getData(int type) {
-
-//        zhongdiandanwei.setChecked(true);
-//        yibandanwei.setChecked(false);
-//        dadui.setChecked(false);
-//        zhongdui.setChecked(false);
-//        xiaoxingzhan.setChecked(false);
-//        xiangcun.setChecked(false);
-//        xiaofangshi.setChecked(false);
-//        xingzhenshenpi.setChecked(false);
-//        smartxiaofan.setChecked(false);
-        if (type == 1) {
-            getDataDialog.setMessage("正在加载请稍后");
-        } else if (type == 2) {
-            getDataDialog.setMessage("正在刷新数据,请稍后..");
-
+        currentRefreshtype = type;
+        if (isRefreshing) {
+            UiUtils.showToast("正在努力获取数据~");
+            return;
         }
-        getDataDialog.show();
-        destroyoverlay();
         final LatLng latLng = new LatLng(30.54260, 114.358693);
         final String dis = "1000000";
+        count = 0;
+        isRefreshing = true;
+
+        if (type == 1) {
+            getDataDialog.setMessage("正在加载,请稍后..");
+        } else if (type == 2) {
+            getDataDialog.setMessage("正在刷新数据,请稍后..");
+        }
+        getDataDialog.show();
+        destroyoverlay(-1);
+
         helper.getCompanyList(latLng, dis, "1");
         helper.getCommcmyList(latLng, dis);
         helper.getFireRoomList(latLng, dis);
@@ -342,11 +329,11 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         helper.getFireAdminStationList(latLng, dis);
         helper.getFireStationList(latLng, dis);
         helper.getLicenseList(latLng, dis);
+
     }
 
 
     private boolean mFirstFix = false;//是否第一次修展示我的位置图标
-    private boolean isFristGet = true;
 
     @Override
     public void onLocationChanged(AMapLocation amapLocation) {
@@ -355,19 +342,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     && amapLocation.getErrorCode() == 0) {
                 LogUtil.i("我当前的坐标为:(" + amapLocation.getLatitude() + "," + amapLocation.getLongitude() + ")");
                 LatLng location = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
-//                Intent intent = new Intent();
-//                intent.setAction("com.suntrans.addr.RECEIVE");
-//                intent.putExtra("myLocation",location);
-//                intent.putExtra("addrdes",amapLocation.getAddress());
-//                sendBroadcast(intent);
-//                SharedPreferences.Editor editor = App.getSharedPreferences().edit();
-//                editor.putString("lng", location.longitude + "");
-//                editor.putString("lat", location.latitude + "");
-//                editor.putString("addr", amapLocation.getAddress() + "");
-//                editor.commit();
+
 
                 if (!mFirstFix) {
-//                    mMyLocation_pre = mMyLocation;x`
                     mMyLocation = null;
                     mMyLocation = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
                     mFirstFix = true;
@@ -392,7 +369,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             } else {
                 String errText = "定位失败," + amapLocation.getErrorCode() + ": " + amapLocation.getErrorInfo();
                 Log.e("AmapErr", errText);
-                UiUtils.showToast("定位失败,请确认打开GPS/WIFI和网络连接");
+                UiUtils.showToast("定位失败,请打开GPS/WIFI和网络连接");
             }
 
 
@@ -440,7 +417,6 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     public void activate(OnLocationChangedListener onLocationChangedListener) {
         mListener = onLocationChangedListener;
         if (mLocationClient == null) {
-            LogUtil.i("开始定位");
             //初始化定位
             mLocationClient = new AMapLocationClient(getApplicationContext());
             //设置定位回调监听
@@ -576,6 +552,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            closeDanwei();
             if (bottomMenu.getVisibility() == View.VISIBLE) {
                 closeBottomMenu();
                 return true;
@@ -646,7 +623,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
-            case R.id.check:
+            case check:
                 startActivity(new Intent(this, Check_Activity.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
@@ -717,7 +694,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         }
         deactivate();
         mFirstFix = false;
-        destroyoverlay();
+        destroyoverlay(-1);
 
 
         if (myNetReceiver != null) {
@@ -726,15 +703,51 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         super.onDestroy();
     }
 
-    private void destroyoverlay() {
-        destroy(mClusterOverlay);
-        destroy(mFireRoomClusterOverlay);
-        destroy(mFireStationClusterOverlay);
-        destroy(mFireAdminStationClusterOverlay);
-        destroy(mFireBrigadeClusterOverlay);
-        destroy(mFireGroupClusterOverlay);
-        destroy(mLicenseClusterOverlay);
-        destroy(mCommCmyClusterOverlay);
+    private void destroyoverlay(int firetype) {
+        switch (firetype) {
+            case MarkerHelper.S0CIETY:
+                destroy(mClusterOverlay);
+                break;
+            case MarkerHelper.COMMONCOMPANY:
+                destroy(mCommCmyClusterOverlay);
+
+                break;
+            case MarkerHelper.FIREROOM:
+                destroy(mFireRoomClusterOverlay);
+                break;
+            case MarkerHelper.FIREBRIGADE:
+                destroy(mFireBrigadeClusterOverlay);
+
+                break;
+            case MarkerHelper.FIREGROUP:
+                destroy(mFireGroupClusterOverlay);
+
+                break;
+            case MarkerHelper.FIREADMINSTATION:
+                destroy(mFireAdminStationClusterOverlay);
+
+                break;
+            case MarkerHelper.FIRESTATION:
+                destroy(mFireStationClusterOverlay);
+
+                break;
+            case MarkerHelper.LICENSE:
+                destroy(mLicenseClusterOverlay);
+
+                break;
+            case -1:
+                destroy(mClusterOverlay);
+                destroy(mFireRoomClusterOverlay);
+                destroy(mFireStationClusterOverlay);
+                destroy(mFireAdminStationClusterOverlay);
+                destroy(mFireBrigadeClusterOverlay);
+                destroy(mFireGroupClusterOverlay);
+                destroy(mLicenseClusterOverlay);
+                destroy(mCommCmyClusterOverlay);
+                break;
+
+        }
+
     }
 
     private void destroy(ClusterOverlay overlay) {
@@ -808,6 +821,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         flag = flag | 0x01;
                         if (mClusterOverlay != null)
                             mClusterOverlay.setVisible(true);
+                        else {
+//                            getData(1,MarkerHelper.S0CIETY);
+                        }
                     } else {
                         flag = flag & 0xfe;
                         if (mClusterOverlay != null)
@@ -819,6 +835,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         flag = flag | 0x02;
                         if (mCommCmyClusterOverlay != null) {
                             mCommCmyClusterOverlay.setVisible(true);
+                        } else {
+//                            getData(1,MarkerHelper.COMMONCOMPANY);
+
                         }
                     } else {
                         flag = flag & 0xfd;
@@ -832,6 +851,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         flag = flag | 0x04;
                         if (mFireBrigadeClusterOverlay != null) {
                             mFireBrigadeClusterOverlay.setVisible(true);
+                        } else {
+//                            getData(1,MarkerHelper.FIREBRIGADE);
+
                         }
                     } else {
 
@@ -846,6 +868,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         flag = flag | 0x08;
                         if (mFireGroupClusterOverlay != null) {
                             mFireGroupClusterOverlay.setVisible(true);
+                        } else {
+//                            getData(1,MarkerHelper.FIREGROUP);
+
                         }
                     } else {
                         flag = flag & 0xf7;
@@ -856,31 +881,26 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
 
                     break;
                 case R.id.xiaoxingzhan:
-                    if (mFireAdminStationClusterOverlay == null) {
-                        break;
-                    }
+
                     if (isChecked) {
                         flag = flag | 0x10;
-
-                        mFireAdminStationClusterOverlay.setVisible(true);
+                        if (mFireAdminStationClusterOverlay != null)
+                            mFireAdminStationClusterOverlay.setVisible(true);
                     } else {
                         flag = flag & 0xef;
-                        mFireAdminStationClusterOverlay.setVisible(false);
-
+                        if (mFireAdminStationClusterOverlay != null)
+                            mFireAdminStationClusterOverlay.setVisible(false);
                     }
                     break;
                 case R.id.xiangcun:
-                    if (mFireStationClusterOverlay == null) {
-                        break;
-                    }
                     if (isChecked) {
                         flag = flag | 0x20;
-
-                        mFireStationClusterOverlay.setVisible(true);
+                        if (mFireStationClusterOverlay != null)
+                            mFireStationClusterOverlay.setVisible(true);
                     } else {
                         flag = flag & 0xdf;
-
-                        mFireStationClusterOverlay.setVisible(false);
+                        if (mFireStationClusterOverlay != null)
+                            mFireStationClusterOverlay.setVisible(false);
                     }
                     break;
                 case R.id.xiaofangshi:
@@ -888,6 +908,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         flag = flag | 0x40;
                         if (mFireRoomClusterOverlay != null)
                             mFireRoomClusterOverlay.setVisible(true);
+                        else {
+//                            getData(1,MarkerHelper.FIREROOM);
+                        }
                     } else {
                         flag = flag & 0xbf;
 
@@ -897,15 +920,19 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     break;
 
                 case R.id.xingzhenshenpi:
-                    if (mLicenseClusterOverlay == null) {
-                        return;
-                    }
+
                     if (isChecked) {
                         flag = flag | 0x80;
-                        mLicenseClusterOverlay.setVisible(true);
+                        if (mLicenseClusterOverlay != null)
+                            mLicenseClusterOverlay.setVisible(true);
+                        else {
+//                            getData(1,MarkerHelper.LICENSE);
+
+                        }
                     } else {
                         flag = flag & 0x7f;
-                        mLicenseClusterOverlay.setVisible(false);
+                        if (mLicenseClusterOverlay != null)
+                            mLicenseClusterOverlay.setVisible(false);
 
                     }
                     break;
@@ -916,16 +943,14 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                         smartFireMarker.setVisible(false);
                     }
                     break;
-
             }
         }
     };
 
 
     boolean isrun = true;
-
-
     private ClusterOverlay mClusterOverlay;
+    private int toumingdu = 200;
 
     private final int clusterRadius = 100;
     int fireGroupClusterRadius = 30;
@@ -933,7 +958,6 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     int drawableSize = UiUtils.dip2px(20);
     private SparseArray<Drawable> mCompanyDrawables = new SparseArray<>();
 
-    private CountDownLatch countDownLatch = new CountDownLatch(8);
 
     @Override
     public void onCompanyDataFinish(final List<RegionItem> items) {
@@ -966,7 +990,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mCompanyDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(220, 0, 0xa1, 0xe9)));
+                                        Color.argb(toumingdu, 0, 0x17, 0xf0)));
                                 mCompanyDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -974,9 +998,9 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     }
                 });
                 mClusterOverlay.setOnClusterClickListener(Main_Activity.this);
+                checkDownLoad();
             }
         });
-        dismissDialog();
     }
 
 
@@ -1013,7 +1037,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mCommCmyDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(220, 0x00, 237, 240)));
+                                        Color.argb(toumingdu, 0x00, 237, 240)));
                                 mCommCmyDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1021,6 +1045,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     }
                 });
                 mCommCmyClusterOverlay.setOnClusterClickListener(Main_Activity.this);
+                checkDownLoad();
+
             }
         });
     }
@@ -1039,7 +1065,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     mFireRoomClusterOverlay.onDestroy();
                 }
                 boolean a = (flag & 0x40) == 0x40;
-                LogUtil.i("fireroom是否开始显示:"+a);
+                LogUtil.i("fireroom是否开始显示:" + a);
                 mFireRoomClusterOverlay = new ClusterOverlay(aMap, items2,
                         UiUtils.dip2px(clusterRadius, getApplicationContext()),
                         getApplicationContext(), a);
@@ -1058,7 +1084,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireroomDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(220, 0x93, 0x00, 0xf0)));
+                                        Color.argb(toumingdu, 0x93, 0x00, 0xf0)));
                                 mFireroomDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1066,6 +1092,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     }
                 });
                 mFireRoomClusterOverlay.setOnClusterClickListener(Main_Activity.this);
+                checkDownLoad();
+
             }
         });
     }
@@ -1104,7 +1132,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireBrigadeDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(220, 0x96, 0x58, 0x2a)));
+                                        Color.argb(toumingdu, 0x96, 0x58, 0x2a)));
                                 mFireBrigadeDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1112,6 +1140,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     }
                 });
                 mFireBrigadeClusterOverlay.setOnClusterClickListener(Main_Activity.this);
+                checkDownLoad();
+
             }
         });
     }
@@ -1148,7 +1178,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireGroupDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(220, 0xf0, 0x88, 0x00)));
+                                        Color.argb(toumingdu, 0xf0, 0x88, 0x00)));
                                 mFireGroupDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1156,6 +1186,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     }
                 });
                 mFireGroupClusterOverlay.setOnClusterClickListener(Main_Activity.this);
+                checkDownLoad();
+
             }
         });
     }
@@ -1194,7 +1226,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireAdminStationDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(220, 0xf0, 0xdc, 0x00)));
+                                        Color.argb(toumingdu, 0xf0, 0xdc, 0x00)));
                                 mFireAdminStationDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1202,6 +1234,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     }
                 });
                 mFireAdminStationClusterOverlay.setOnClusterClickListener(Main_Activity.this);
+                checkDownLoad();
             }
         });
     }
@@ -1239,7 +1272,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mFireStationDrawables.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(220, 0xa9, 0xf0, 0x00)));
+                                        Color.argb(toumingdu, 0xa9, 0xf0, 0x00)));
                                 mFireStationDrawables.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1247,6 +1280,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     }
                 });
                 mFireStationClusterOverlay.setOnClusterClickListener(Main_Activity.this);
+                checkDownLoad();
             }
         });
     }
@@ -1284,7 +1318,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                             Drawable bitmapDrawable = mLicenseDrawablse.get(2);
                             if (bitmapDrawable == null) {
                                 bitmapDrawable = new BitmapDrawable(null, drawCircle(radius,
-                                        Color.argb(220, 0x00, 0x78, 0x11)));
+                                        Color.argb(toumingdu, 0x00, 0x78, 0x11)));
                                 mLicenseDrawablse.put(2, bitmapDrawable);
                             }
                             return bitmapDrawable;
@@ -1292,24 +1326,41 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     }
                 });
                 mLicenseClusterOverlay.setOnClusterClickListener(Main_Activity.this);
+                checkDownLoad();
             }
         });
     }
 
     @Override
-    public void onLoadFailure(int code) {
-        dismissDialog();
+    public void onLoadFailure(final int code, final int firetype) {
+        new Thread() {
+            @Override
+            public void run() {
+                checkDownLoad();
+            }
+        }.start();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (code == MarkerHelper.ERROR_FAILED) {
+                    String msg = "";
+                    msg = "获取" + MarkerHelper.com.get(firetype) + "数据失败";
+                    UiUtils.showToast(msg);
+
+                }
+            }
+        });
     }
 
     private void dismissDialog() {
 
         if (getDataDialog.isShowing()) {
-            handler.postDelayed(new Runnable() {
+            handler.post(new Runnable() {
                 @Override
                 public void run() {
                     getDataDialog.dismiss();
                 }
-            }, 500);
+            });
         }
     }
 
@@ -1328,7 +1379,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             }
         }
         if (clusterItems.size() == 1) {
-
+//            marker.showInfoWindow();
             final String addr = ((RegionItem) clusterItems.get(0)).getAddr();
             String name1 = ((RegionItem) clusterItems.get(0)).getName();
 
@@ -1530,10 +1581,12 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            int type = intent.getIntExtra("type", 0);
+            int type = intent.getIntExtra("type", -1);
             if (action.equals("net.suntrans.xiaofang.lp")) {
                 closeBottomMenu();
                 getData(2);
+
+//                getData(1, type);
             }
         }
     };
@@ -1542,4 +1595,16 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         getData(2);
     }
 
+
+    private int count = 0;
+    private final int totalCount = 8;
+
+    private synchronized void checkDownLoad() {
+        count++;
+        if (count >= totalCount) {
+            isRefreshing = false;
+            dismissDialog();
+        }
+        LogUtil.i("mainactivity","count="+count);
+    }
 }

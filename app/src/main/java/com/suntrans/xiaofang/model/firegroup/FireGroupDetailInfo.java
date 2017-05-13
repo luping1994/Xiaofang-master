@@ -24,6 +24,7 @@ public class FireGroupDetailInfo implements Serializable{
     public String street;
     public String community;
     public String group;
+    public String powderweight;
     public String brigade_path;
     public String brigade_name;
 
@@ -46,6 +47,11 @@ public class FireGroupDetailInfo implements Serializable{
                 ", street='" + street + '\'' +
                 ", community='" + community + '\'' +
                 ", group='" + group + '\'' +
+                ", powderweight='" + powderweight + '\'' +
+                ", brigade_path='" + brigade_path + '\'' +
+                ", brigade_name='" + brigade_name + '\'' +
                 '}';
     }
+
+
 }

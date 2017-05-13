@@ -46,19 +46,20 @@ public class MarkerHelper {
     public static final int ERROR_EMPTY = 0;
     public static final int ERROR_FAILED = 1;
 
-    public SparseArray<String> com = new SparseArray<>();
+    public static SparseArray<String> com = new SparseArray<>();
     Main_Activity activity;
     private onGetInfoFinishListener listener;
 
     public MarkerHelper(Main_Activity activity) {
         this.activity = activity;
         com.put(MarkerHelper.S0CIETY, "重点单位");
-        com.put(MarkerHelper.FIREROOM, "消防室");
-        com.put(MarkerHelper.FIRESTATION, "消防队");
-        com.put(MarkerHelper.FIREGROUP, "中队");
-        com.put(MarkerHelper.LICENSE, "审批");
-        com.put(MarkerHelper.FIREADMINSTATION, "小型站");
-        com.put(MarkerHelper.COMMONCOMPANY, "一般单位");
+        com.put(MarkerHelper.FIREROOM, "社区消防室");
+        com.put(MarkerHelper.FIRESTATION, "消防大队");
+        com.put(MarkerHelper.FIREGROUP, "消防中队");
+        com.put(MarkerHelper.LICENSE, "行政审批");
+        com.put(MarkerHelper.FIREADMINSTATION, "政府专职小型站");
+        com.put(MarkerHelper.COMMONCOMPANY, "一般社会单位");
+        com.put(MarkerHelper.FIRESTATION, "乡镇专职消防队");
     }
 
 
@@ -84,7 +85,7 @@ public class MarkerHelper {
 
         void onLicenseDataFinish(List<RegionItem> items);
 
-        void onLoadFailure(int code);
+        void onLoadFailure(int code,int type);
     }
 
 
@@ -101,7 +102,7 @@ public class MarkerHelper {
 
                         if (result == null) {
                             LogUtil.e(TAG, "重点单位数据为空");
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,S0CIETY);
                             return;
                         }
                         if (!result.status.equals("0") && result != null) {
@@ -127,14 +128,14 @@ public class MarkerHelper {
 
                         } else {
                             LogUtil.e("company:", result.msg);
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,S0CIETY);
                         }
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         throwable.printStackTrace();
-                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED,S0CIETY);
 
                     }
                 });
@@ -154,7 +155,7 @@ public class MarkerHelper {
 
                         if (result == null) {
                             LogUtil.e(TAG, "一般单位数据为空");
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,COMMONCOMPANY);
                             return;
                         }
                         if (!result.status.equals("0") && result != null) {
@@ -180,8 +181,7 @@ public class MarkerHelper {
 
                         } else {
                             LogUtil.e("commCmy:", result.msg);
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
-
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,COMMONCOMPANY);
 
                         }
                     }
@@ -189,7 +189,7 @@ public class MarkerHelper {
                     @Override
                     public void call(Throwable throwable) {
                         throwable.printStackTrace();
-                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED,COMMONCOMPANY);
 
                     }
                 });
@@ -213,14 +213,14 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED,FIREROOM);
                     }
 
                     @Override
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
                             LogUtil.e(TAG, "fireroom数据为空");
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIREROOM);
                             return;
                         }
                         if (list.status.equals("1")) {
@@ -245,7 +245,7 @@ public class MarkerHelper {
 //
                         } else {
                             LogUtil.e("fireroom", list.msg);
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIREROOM);
 
                         }
                     }
@@ -271,14 +271,14 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED,FIREBRIGADE);
                     }
 
                     @Override
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
                             LogUtil.e(TAG, "firebrigade数据为空");
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIREBRIGADE);
                             return;
                         }
                         if (list.status.equals("1")) {
@@ -301,7 +301,7 @@ public class MarkerHelper {
                             listener.onFireBrigadeDataFinish(items);
                         } else {
                             LogUtil.e("FIREBrigade", list.msg);
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIREBRIGADE);
 
                         }
                     }
@@ -329,14 +329,14 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED,FIREGROUP);
                     }
 
                     @Override
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
                             LogUtil.e(TAG, "firegroup数据为空");
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIREGROUP);
 
                             return;
                         }
@@ -363,7 +363,7 @@ public class MarkerHelper {
                             listener.onFireGroupDataFinish(items);
                         } else {
                             LogUtil.e("firegroup", list.msg);
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIREGROUP);
                         }
                     }
                 });
@@ -388,7 +388,7 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED,FIREADMINSTATION);
 
                     }
 
@@ -396,7 +396,7 @@ public class MarkerHelper {
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
                             LogUtil.e(TAG, "获取政府station数据为空");
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIREADMINSTATION);
 
                             return;
                         }
@@ -420,7 +420,7 @@ public class MarkerHelper {
                             listener.onFireAdminStationDataFinish(items);
                         } else {
                             LogUtil.i("FIREADMINSTATION", list.msg);
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIREADMINSTATION);
                         }
                     }
                 });
@@ -445,7 +445,7 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED,FIRESTATION);
 
                     }
 
@@ -453,7 +453,7 @@ public class MarkerHelper {
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
                             LogUtil.e(TAG, "firestation数据为空");
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIRESTATION);
 
                             return;
                         }
@@ -477,7 +477,7 @@ public class MarkerHelper {
                             listener.onFireStationDataFinish(items);
                         } else {
                             LogUtil.e("firestation", list.msg);
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,FIRESTATION);
                         }
                     }
                 });
@@ -502,15 +502,14 @@ public class MarkerHelper {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED);
+                        listener.onLoadFailure(MarkerHelper.ERROR_FAILED,LICENSE);
 
                     }
 
                     @Override
                     public void onNext(FireComponentGeneralInfoList list) {
                         if (list == null) {
-                            UiUtils.showToast(App.getApplication(), "获取数据失败");
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,LICENSE);
 
                             return;
                         }
@@ -534,7 +533,7 @@ public class MarkerHelper {
                             }
                             listener.onLicenseDataFinish(items);
                         } else {
-                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY);
+                            listener.onLoadFailure(MarkerHelper.ERROR_EMPTY,LICENSE);
                             LogUtil.e("LICENSE", list.msg);
                         }
                     }

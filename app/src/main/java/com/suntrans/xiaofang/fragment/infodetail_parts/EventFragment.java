@@ -57,6 +57,7 @@ public class EventFragment extends RxFragment {
             public void onItemClick(int position) {
                 Intent intent = new Intent();
                 intent.putExtra("id",datas.get(position).get(4));
+                intent.putExtra("url",datas.get(position).get(5));
                 intent.setClass(getActivity(), EventDetail_activity.class);
                 startActivity(intent);
             }
@@ -107,9 +108,10 @@ public class EventFragment extends RxFragment {
                                 SparseArray<String> array = new SparseArray<String>();
                                 array.put(0,info.contents);
                                 array.put(1,info.user_id);
-                                array.put(2,info.status);
+                                array.put(2,info.is_done);
                                 array.put(3,info.created_at);
                                 array.put(4,info.id);
+                                array.put(5,info.url);
                                 datas.add(array);
                             }
                             adapter.notifyDataSetChanged();

@@ -40,8 +40,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.tencent.bugly.beta.ui.h.u;
-
 /**
  * Created by Looney on 2016/12/13.
  * <p>

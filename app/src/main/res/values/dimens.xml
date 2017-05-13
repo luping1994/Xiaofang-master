@@ -11,4 +11,5 @@
     <dimen name="mintextwidth">100dp</dimen>
     <dimen name="maxtextwidth">150dp</dimen>
     <dimen name="detailinfo_textview_size">150dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

@@ -63,14 +63,9 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
     private FloatingActionButton fab3;
     private CompanyDetailnfo myInfo;
 
-    private int companyType;
 
-
-    public static DetailInfoFragment newInstance(int companyType) {
+    public static DetailInfoFragment newInstance() {
         DetailInfoFragment fragment = new DetailInfoFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt("companyType", companyType);
-        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -79,8 +74,6 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detailinfo, container, false);
         initData();
-        companyType = getArguments().getInt("companyType");
-        System.out.println("onCreateView");
         return view;
     }
 
@@ -377,11 +370,22 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
         datas.get(5).put(1, info.buildarea == null ? "" : info.buildarea + "平方米");
         datas.get(6).put(1, info.exitnum == null ? "" : info.exitnum + "个");
         datas.get(7).put(1, info.stairnum == null ? "" : info.stairnum + "个");
-        datas.get(8).put(1, info.facility == null ? "" : info.facility);
+
+        if (info.facility != null) {
+            String s = "";
+            s = info.facility;
+            if (s.startsWith("#")) {
+                s = s.substring(1, s.length());
+            }
+            if (s.endsWith("#")) {
+                s = s.substring(0, s.length() - 1);
+            }
+            datas.get(8).put(1, s.replace("#","、"));//数据库暂无该字段
+        }
 
         String mainId = info.mainattribute;
         String mainId_small = info.mainattribute_small;
-        if (info.special.equals("1")){
+        if (info.special.equals("1")) {
             if (mainId != null) {
                 if (info.special != null) {
                     if (info.special.equals("1")) {
@@ -416,15 +420,16 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
                 }
 
             }
-        }else {
+        } else {
             if (mainId_small != null) {
                 String[] ids = mainId_small.split("#");
                 String attr = "";
+                DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
+                SQLiteDatabase db = helper.getReadableDatabase();
+                db.beginTransaction();
                 for (int i = 0; i < ids.length; i++) {
                     if (info.special.equals("0")) {
-                        DbHelper helper = new DbHelper(getActivity(), "Fire", null, 1);
-                        SQLiteDatabase db = helper.getReadableDatabase();
-                        db.beginTransaction();
+
                         Cursor cursor = db.rawQuery("select Name from attr_general where Id=?", new String[]{ids[i]});
                         if (cursor.getCount() > 0) {
                             while (cursor.moveToNext()) {
@@ -432,16 +437,15 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
                             }
                         }
                         cursor.close();
-                        db.setTransactionSuccessful();
-                        db.endTransaction();
+
                     }
                 }
+                db.setTransactionSuccessful();
+                db.endTransaction();
                 datas.get(3).put(1, attr);
 
             }
         }
-
-
 
 
         datas.get(9).put(1, info.artiname == null ? "" : info.artiname);
@@ -468,8 +472,19 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
         datas.get(23).put(1, info.firemannum == null ? "" : info.firemannum + "人");
         datas.get(24).put(1, info.lanenum == null ? "" : info.lanenum + "个");
         datas.get(25).put(1, info.elevatornum == null ? "" : info.elevatornum + "个");
-        datas.get(26).put(1, info.lanepos);//数据库暂无该字段
-        datas.get(27).put(1, info.refugenum == null ? "" : info.refugenum + "个");
+
+        if (info.lanepos != null) {
+            String s = "";
+            s = info.lanepos;
+            if (s.startsWith("#")) {
+                s = s.substring(1, s.length());
+            }
+            if (s.endsWith("#")) {
+                s = s.substring(0, s.length() - 1);
+            }
+            datas.get(26).put(1, s.replace("#","、"));//数据库暂无该字段
+        }
+        datas.get(27).put(1, info.refugenum == null ? "" : info.refugenum + "层");
         datas.get(28).put(1, info.refugepos == null ? "" : info.refugepos + "");
 //        if (info.east == null && info.west == null && info.south == null && info.north == null) {
 //            datas.get(30).put(1, "");
@@ -591,7 +606,7 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
                             }
                         }
                     });
-        } else if(myInfo.special.equals("0")) {
+        } else if (myInfo.special.equals("0")) {
             RetrofitHelper.getApi().deleteCommCompany(myInfo.id)
                     .compose(this.<AddCompanyResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                     .observeOn(AndroidSchedulers.mainThread())
@@ -648,10 +663,10 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
         if (myInfo.special.equals("1")) {
 
             intent.setClass(getActivity(), EditCompanyInfo_activity.class);
-        } else if (myInfo.special.equals("0")){
+        } else if (myInfo.special.equals("0")) {
             intent.setClass(getActivity(), EditCommcmyInfo_activity.class);
 
-        }else {
+        } else {
             UiUtils.showToast("单位未添加单位属性");
             return;
         }
@@ -666,7 +681,12 @@ public class DetailInfoFragment extends RxFragment implements View.OnClickListen
     private void sendBroadcast() {
         Intent intent = new Intent();
         intent.setAction("net.suntrans.xiaofang.lp");
-        intent.putExtra("type",companyType);
+        if (myInfo.special.equals("1")) {
+            intent.putExtra("type", MarkerHelper.S0CIETY);
+        } else {
+            intent.putExtra("type", MarkerHelper.COMMONCOMPANY);
+
+        }
         getActivity().sendBroadcast(intent);
     }
 }

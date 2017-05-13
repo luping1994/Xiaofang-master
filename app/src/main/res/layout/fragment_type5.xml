@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content1"
-    android:background="@color/bg_color"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_color"
     android:orientation="vertical">
 
     <ScrollView
-        android:layout_weight="1"
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/ll_content"
@@ -35,9 +35,10 @@
                     android:textSize="@dimen/text_size" />
 
                 <RelativeLayout
-                    android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
                     <EditText
                         android:id="@+id/buildcompany"
                         android:layout_width="match_parent"
@@ -68,9 +69,10 @@
                     android:textSize="@dimen/text_size" />
 
                 <RelativeLayout
-                    android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
                     <EditText
                         android:id="@+id/name"
                         android:layout_width="match_parent"
@@ -102,9 +104,10 @@
                     android:textSize="@dimen/text_size" />
 
                 <RelativeLayout
-                    android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
                     <EditText
                         android:id="@+id/addr"
                         android:layout_width="match_parent"
@@ -116,11 +119,12 @@
                         android:textColor="@color/balck"
                         android:textSize="@dimen/text_size1" />
                 </RelativeLayout>
+
                 <Button
                     android:id="@+id/getposition"
-                    android:text="@string/chooseAddr"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:text="@string/chooseAddr" />
             </LinearLayout>
 
             <LinearLayout
@@ -140,9 +144,10 @@
                     android:textSize="@dimen/text_size" />
 
                 <RelativeLayout
-                    android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
                     <EditText
                         android:id="@+id/contact"
                         android:layout_width="match_parent"
@@ -173,11 +178,11 @@
                     android:textSize="@dimen/text_size" />
 
                 <RelativeLayout
-                    android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
                     <EditText
-                        android:inputType="phone"
                         android:id="@+id/phone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -185,6 +190,7 @@
                         android:background="@null"
                         android:gravity="left|center"
                         android:hint="请输入"
+                        android:inputType="phone"
                         android:textColor="@color/balck"
                         android:textSize="@dimen/text_size1" />
                 </RelativeLayout>
@@ -193,26 +199,39 @@
     </ScrollView>
 
 
-    <RelativeLayout
-        android:id="@+id/bottom_rl"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp">
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/bottom_rl"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:layout_marginBottom="5dp"-->
+        <!--android:layout_marginTop="5dp">-->
 
-        <Button
-            android:gravity="center"
-            android:id="@+id/addItem"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/bg_bt"
-            android:paddingLeft="100dp"
-            android:paddingRight="100dp"
-            android:text="添加行政审批信息"
-            android:textColor="@color/white" />
+        <!--<Button-->
+            <!--android:id="@+id/addItem"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="45dp"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:background="@drawable/bg_bt"-->
+            <!--android:gravity="center"-->
+            <!--android:paddingLeft="100dp"-->
+            <!--android:paddingRight="100dp"-->
+            <!--android:text="添加行政审批信息"-->
+            <!--android:textColor="@color/white" />-->
 
-    </RelativeLayout>
+    <!--</RelativeLayout>-->
 
 
-</LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        app:backgroundTint="@color/colorPrimary"
+        app:rippleColor="@color/colorPrimaryDark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:elevation="6dp"
+        android:layout_gravity="right|bottom"
+        app:pressedTranslationZ="12dp"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_add_black_36dp"/>
+</RelativeLayout>

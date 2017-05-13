@@ -285,7 +285,7 @@ public class Type5__info_fragment extends BasedFragment {
         datas.add(array0);
 
         SparseArray<String> array4 = new SparseArray<>();
-        array4.put(0, "名称");
+        array4.put(0, "项目名称");
         array4.put(1, info.name);
         array4.put(2, "name");
         datas.add(array4);
@@ -488,6 +488,7 @@ public class Type5__info_fragment extends BasedFragment {
                                 );
                             }
                         }, mYear, mMonth, mDay);
+                        pickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                         pickerDialog.show();
                     }
                 });

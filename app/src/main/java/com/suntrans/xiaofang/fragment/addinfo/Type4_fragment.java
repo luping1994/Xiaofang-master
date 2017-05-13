@@ -17,10 +17,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.amap.api.services.core.PoiItem;
 import com.google.common.collect.ImmutableMap;
-import com.iflytek.msc.MSC;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.others.MapChoose_Activity;
@@ -50,12 +50,6 @@ import butterknife.ButterKnife;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import static com.suntrans.xiaofang.R.id.incharge_dadui;
-import static com.suntrans.xiaofang.R.id.lng;
-import static com.suntrans.xiaofang.R.id.map;
-import static com.suntrans.xiaofang.R.id.membernum;
-import static com.suntrans.xiaofang.R.id.number;
 
 /**
  * Created by Looney on 2016/12/13.
@@ -106,6 +100,10 @@ public class Type4_fragment extends RxFragment {
     EditText shibing;
     @BindView(R.id.zhuanzhi)
     EditText zhuanzhi;
+    @BindView(R.id.add)
+    TextView add;
+    @BindView(R.id.powderweight)
+    EditText powderweight;
 
     private String district1;
     private AlertDialog dialog;
@@ -155,7 +153,19 @@ public class Type4_fragment extends RxFragment {
                 item.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        llCondition.removeView(item);
+                        new AlertDialog.Builder(getActivity()).setMessage("是否删除")
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        llCondition.removeView(item);
+                                        dialog.dismiss();
+                                    }
+                                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        }).create().show();
                     }
                 });
                 llCondition.addView(item);
@@ -229,6 +239,8 @@ public class Type4_fragment extends RxFragment {
 
         String waterweight1 = waterweight.getText().toString();
         String soapweight1 = soapweight.getText().toString();
+        String powderweight1 = powderweight.getText().toString();
+
         String cardisp1 = "";
         if (!Utils.isVaild(name1)) {
             UiUtils.showToast("名称不能为空!");
@@ -257,6 +269,32 @@ public class Type4_fragment extends RxFragment {
             UiUtils.showToast("请输入消防车总数");
             return;
         }
+
+
+        JSONObject jsonObject2 = new JSONObject();
+        for (int i = 0; i < llCondition.getChildCount(); i++) {
+            if (i == 0)
+                continue;
+            View view = llCondition.getChildAt(i);
+            EditText conType = (EditText) view.findViewById(R.id.con_type);
+            EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
+            String type = conType.getText().toString();
+            String detail = conDetail.getText().toString();
+            try {
+                if (Utils.isVaild(type) && Utils.isVaild(detail))
+                    jsonObject2.put(type, detail);
+                else {
+                    UiUtils.showToast("请输入完整的车辆配置情况!");
+                    return;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (jsonObject2.length()==0){
+            UiUtils.showToast("请至少添加一条车辆配置情况信息!");
+            return;
+        }
         if (!Utils.isVaild(waterweight1)) {
             UiUtils.showToast("请输入车载水总量");
             return;
@@ -264,6 +302,10 @@ public class Type4_fragment extends RxFragment {
 
         if (!Utils.isVaild(soapweight1)) {
             UiUtils.showToast("请输入车载泡沫总量");
+            return;
+        }
+        if (!Utils.isVaild(powderweight1)) {
+            UiUtils.showToast("请输入车载干粉总量");
             return;
         }
 
@@ -282,22 +324,7 @@ public class Type4_fragment extends RxFragment {
 
         membernum1 = jsonObject.toString();
 
-        JSONObject jsonObject2 = new JSONObject();
-        for (int i = 0; i < llCondition.getChildCount(); i++) {
-            if (i == 0)
-                continue;
-            View view = llCondition.getChildAt(i);
-            EditText conType = (EditText) view.findViewById(R.id.con_type);
-            EditText conDetail = (EditText) view.findViewById(R.id.con_detail);
-            String type = conType.getText().toString();
-            String detail = conDetail.getText().toString();
-            try {
-                if (Utils.isVaild(type) && Utils.isVaild(detail))
-                    jsonObject2.put(type, detail);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+
 
         cardisp1 = jsonObject2.toString();
 
@@ -333,13 +360,15 @@ public class Type4_fragment extends RxFragment {
         if (Utils.isVaild(soapweight1)) {
             builder.put("soapweight", soapweight1.replace(" ", ""));
         }
+        builder.put("powderweight",powderweight1.replace(" ",""));
+
         builder.put("pid", pid);
         map = builder.build();
 
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             String value = entry.getValue().toString();
-           LogUtil.i(key + "," + value);
+            LogUtil.i(key + "," + value);
         }
         final ProgressDialog dialog1 = new ProgressDialog(getActivity());
         dialog1.setMessage("正在添加,请稍后...");
@@ -377,7 +406,7 @@ public class Type4_fragment extends RxFragment {
                                         })
                                         .create();
                                 dialog.show();
-                            } else if (result.status.equals("0")){
+                            } else if (result.status.equals("0")) {
                                 UiUtils.showToast(result.msg);
                             }
                         } else {
@@ -409,7 +438,7 @@ public class Type4_fragment extends RxFragment {
 
         String waterweight1 = waterweight.getText().toString();
         String soapweight1 = soapweight.getText().toString();
-
+        String powderweight1 = powderweight.getText().toString();
         String cardisp1 = "";
         if (!Utils.isVaild(name1)) {
             UiUtils.showToast("名称不能为空!");
@@ -435,34 +464,6 @@ public class Type4_fragment extends RxFragment {
         if (!Utils.isVaild(carnum1)) {
             UiUtils.showToast("请输入消防车总数");
         }
-        if (!Utils.isVaild(waterweight1)) {
-            UiUtils.showToast("请输入车载水总量");
-            return;
-        }
-
-        if (!Utils.isVaild(soapweight1)) {
-            UiUtils.showToast("请输入车载泡沫总量");
-            return;
-        }
-        if (!Utils.isVaild(carnum1)) {
-            UiUtils.showToast("请输入消防车辆总数");
-            return;
-        }
-
-        if (daduiId.get(0).equals("请选择")) {
-            UiUtils.showToast("请选择消防大队!");
-            return;
-        }
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("干部", ganbunum);
-            jsonObject.put("士兵", shibingnum);
-            jsonObject.put("专职", zhuanzhinum);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        membernum1 = jsonObject.toString();
 
         JSONObject jsonObject2 = new JSONObject();
         for (int i = 0; i < llCondition.getChildCount(); i++) {
@@ -476,10 +477,50 @@ public class Type4_fragment extends RxFragment {
             try {
                 if (Utils.isVaild(type) && Utils.isVaild(detail))
                     jsonObject2.put(type, detail);
+                else if (!Utils.isVaild(type)){
+                    UiUtils.showToast("请输入车辆型号");
+                    return;
+                }else if (!Utils.isVaild(detail)){
+                    UiUtils.showToast("请输入车辆数量");
+                    return;
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        if (jsonObject2.length()==0){
+            UiUtils.showToast("请至少添加一条车辆配置情况信息!");
+            return;
+        }
+        if (!Utils.isVaild(waterweight1)) {
+            UiUtils.showToast("请输入车载水总量");
+            return;
+        }
+
+        if (!Utils.isVaild(soapweight1)) {
+            UiUtils.showToast("请输入车载泡沫总量");
+            return;
+        }
+        if (!Utils.isVaild(powderweight1)) {
+            UiUtils.showToast("请输入车载干粉总量");
+            return;
+        }
+
+        if (!Utils.isVaild(pid)) {
+            UiUtils.showToast("请选择所属大队!");
+            return;
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("干部", ganbunum);
+            jsonObject.put("士兵", shibingnum);
+            jsonObject.put("专职", zhuanzhinum);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        membernum1 = jsonObject.toString();
+
 
         cardisp1 = jsonObject2.toString();
 
@@ -499,6 +540,8 @@ public class Type4_fragment extends RxFragment {
         builder.put("waterweight", waterweight1.replace(" ", ""));
 
         builder.put("soapweight", soapweight1.replace(" ", ""));
+        builder.put("powderweight",powderweight1.replace(" ",""));
+
         if (Utils.isVaild(pid)) {
             builder.put("pid", pid.replace(" ", ""));
         }
@@ -540,7 +583,7 @@ public class Type4_fragment extends RxFragment {
                                 dialog.dismiss();
                                 UiUtils.showToast("修改单位信息失败!");
                             } else {
-                                if (result.status.equals("1")){
+                                if (result.status.equals("1")) {
                                     sendBroadcast(UPDATE);
                                     final AlertDialog dialog1;
                                     dialog1 = new AlertDialog.Builder(getActivity())
@@ -559,13 +602,13 @@ public class Type4_fragment extends RxFragment {
                                             dialog1.show();
                                         }
                                     }, 500);
-                                }else if (result.status.equals("0")){
+                                } else if (result.status.equals("0")) {
                                     dialog.dismiss();
                                     UiUtils.showToast(result.msg);
-                                }else if (result.status.equals("-1")){
+                                } else if (result.status.equals("-1")) {
                                     dialog.dismiss();
                                     UiUtils.showToast(result.msg);
-                                }else {
+                                } else {
                                     dialog.dismiss();
                                 }
 
@@ -576,6 +619,8 @@ public class Type4_fragment extends RxFragment {
                     }
                 });
     }
+
+    int pos = -1;
 
     private void getIncharge(String pid, final int type, String vtype) {
         RetrofitHelper.getApi().getFireChargeArea(pid, vtype)
@@ -598,17 +643,12 @@ public class Type4_fragment extends RxFragment {
 
                         if (inchargeInfos != null) {
                             if (type == 0) {
+                                pos = -1;
                                 daduiName.clear();
                                 daduiId.clear();
                                 daduiIdPath.clear();
-                                if (info != null) {
-                                    if (Utils.isVaild(info.brigade_name))
-                                        daduiName.add("已选择(" + info.brigade_name + ")");
-                                    else
-                                        daduiName.add("请选择");
-                                } else {
-                                    daduiName.add("请选择");
-                                }
+                                daduiName.add("请选择");
+
                                 for (InchargeInfo info :
                                         inchargeInfos) {
                                     daduiName.add(info.name);
@@ -617,6 +657,22 @@ public class Type4_fragment extends RxFragment {
                                 }
                                 daduiAdapter.notifyDataSetChanged();
                                 flag = 1;
+                                if (info != null) {
+                                    for (int i = 0; i < daduiName.size(); i++) {
+                                        if (daduiName.get(i).equals(info.brigade_name)) {
+                                            pos = i;
+                                            break;
+                                        }
+                                    }
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (pos != -1) {
+                                                dadui.setSelection(pos);
+                                            }
+                                        }
+                                    }, 300);
+                                }
                             } else if (type == 1) {
 
                             }
@@ -633,17 +689,18 @@ public class Type4_fragment extends RxFragment {
     public void setData(FireGroupDetailInfo info) {
         this.info = info;
         isAdd = false;
-        name.setText(info.name == null ? "--" : info.name);
-        addr.setText(info.addr == null ? "--" : info.addr);
+        name.setText(info.name == null ? "" : info.name);
+        addr.setText(info.addr == null ? "" : info.addr);
         lng.setText(info.lng == null ? "" : info.lng);
         lat.setText(info.lat == null ? "" : info.lat);
 
-        area.setText(info.area == null ? "--" : info.area);
-        phone.setText(info.phone == null ? "--" : info.phone);
+        area.setText(info.area == null ? "" : info.area);
+        phone.setText(info.phone == null ? "" : info.phone);
 
-        carnum.setText(info.carnum == null ? "--" : info.carnum);
-        waterweight.setText(info.waterweight == null ? "--" : info.waterweight);
-        soapweight.setText(info.soapweight == null ? "--" : info.soapweight);
+        carnum.setText(info.carnum == null ? "" : info.carnum);
+        waterweight.setText(info.waterweight == null ? "" : info.waterweight);
+        soapweight.setText(info.soapweight == null ? "" : info.soapweight);
+        powderweight.setText(info.powderweight==null?"":info.powderweight);
         String membernum = info.membernum;
         if (membernum != null) {
             try {
@@ -690,7 +747,19 @@ public class Type4_fragment extends RxFragment {
             item.findViewById(R.id.bt_delete).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    llCondition.removeView(item);
+                    new AlertDialog.Builder(getActivity()).setMessage("是否删除")
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    llCondition.removeView(item);
+                                    dialog.dismiss();
+                                }
+                            }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    }).create().show();
                 }
             });
             llCondition.addView(item);
@@ -699,15 +768,16 @@ public class Type4_fragment extends RxFragment {
 
     private final int UPDATE = 2;
     private final int CREATE = 1;
+
     private void sendBroadcast(int type) {
-        if (type==CREATE){
+        if (type == CREATE) {
             Intent intent = new Intent();
             intent.setAction("net.suntrans.xiaofang.lp");
             intent.putExtra("type", MarkerHelper.FIREGROUP);
             getActivity().sendBroadcast(intent);
-        }else if (type == UPDATE){
-            if (info!=null){
-                if (!info.lat.equals(lat.getText().toString())||!info.lng.equals(lng.getText().toString())){
+        } else if (type == UPDATE) {
+            if (info != null) {
+                if (!info.lat.equals(lat.getText().toString()) || !info.lng.equals(lng.getText().toString())) {
                     Intent intent = new Intent();
                     intent.setAction("net.suntrans.xiaofang.lp");
                     intent.putExtra("type", MarkerHelper.FIREGROUP);

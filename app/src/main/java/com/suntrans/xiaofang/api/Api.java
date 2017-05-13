@@ -51,7 +51,7 @@ public interface Api {
      * @return
      */
     @FormUrlEncoded
-    @POST("/oauth/token")
+        @POST("/oauth/token")
     Call<LoginInfo> login(@Field("grant_type") String grant_type,
                           @Field("client_id") String client_id,
                           @Field("client_secret") String client_secret,
@@ -269,7 +269,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/company/verify")
-    Observable<CompanyPassResult> passCompany(@Field("id") String id);
+    Observable<CompanyPassResult> passCompany(@Field("id") String id,@Field("status") String status);
 
 
 
@@ -280,7 +280,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/commcmy/verify")
-    Observable<CompanyPassResult> passCommCompany(@Field("id") String id);
+    Observable<CompanyPassResult> passCommCompany(@Field("id") String id,@Field("status") String status);
 
 
     /**
@@ -572,12 +572,12 @@ public interface Api {
     /**
      *
      *根据单位id获取监督详情
-     * @param contents
+     * @param password
      * @return
      */
     @FormUrlEncoded
     @POST("/api/v1/user/password")
-    Observable<CPasswordResult> changedPassword(@Field("password") String contents);
+    Observable<CPasswordResult> changedPassword(@Field("password") String password,@Field("old_password") String oldpassword);
 
     @FormUrlEncoded
     @POST("/api/v1/admindivi/subarea")
@@ -763,7 +763,8 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/company/deleteLicense")
-    Observable<AddCompanyResult> deleteCompanyLicnese(@Field("license_id") String id);
+    Observable<AddCompanyResult> deleteCompanyLicnese(@Field("license_id") String id,
+                                                      @Field("company_id") String company_id);
 
     /**
      *
@@ -772,7 +773,8 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("/api/v1/commcmy/deleteLicense")
-    Observable<AddCompanyResult> deleteCommcmyLicnese(@Field("license_id") String id);
+    Observable<AddCompanyResult> deleteCommcmyLicnese(@Field("license_id") String id,
+                                                      @Field("company_id") String company_id);
 
     /**
      *

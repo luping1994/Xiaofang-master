@@ -1,10 +1,6 @@
 package com.suntrans.xiaofang.activity.add;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,9 +21,7 @@ import com.suntrans.xiaofang.fragment.addinfo.Type3_fragment;
 import com.suntrans.xiaofang.fragment.addinfo.Type4_fragment;
 import com.suntrans.xiaofang.fragment.addinfo.Type5_fragment;
 import com.suntrans.xiaofang.fragment.addinfo.Type6_fragment;
-import com.suntrans.xiaofang.fragment.addinfo.Type7_fragment;
 import com.suntrans.xiaofang.utils.MarkerHelper;
-import com.suntrans.xiaofang.utils.StatusBarCompat;
 
 /**
  * Created by Looney on 2016/12/1.

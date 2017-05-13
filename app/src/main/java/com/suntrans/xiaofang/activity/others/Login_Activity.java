@@ -97,7 +97,4 @@ public class Login_Activity extends BasedActivity implements View.OnClickListene
             }
         }
     }
-
-
-
 }

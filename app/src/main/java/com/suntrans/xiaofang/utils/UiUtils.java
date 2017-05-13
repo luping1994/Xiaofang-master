@@ -22,7 +22,6 @@ import com.suntrans.xiaofang.App;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tencent.bugly.crashreport.inner.InnerApi.context;
 
 
 public class UiUtils {

@@ -53,7 +53,7 @@
 
     <string-array name="type">
         <item>重点单位</item>
-        <item>一般单位</item>
+        <item>普通单位</item>
         <item>消防大队</item>
         <item>消防中队</item>
         <item>政府专职小型站</item>

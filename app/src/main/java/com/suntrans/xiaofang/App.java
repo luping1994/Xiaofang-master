@@ -1,6 +1,5 @@
 package com.suntrans.xiaofang;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -16,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static com.suntrans.xiaofang.BuildConfig.ENABLE_DEBUG;
+
 /**
  * Created by Looney on 2016/8/11.
  * Des:代表当前应用.
@@ -29,7 +30,7 @@ public class App extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        Bugly.init(getApplicationContext(), "7d01f61d8c", false);
+        Bugly.init(getApplicationContext(), "7d01f61d8c", ENABLE_DEBUG);
 
 ////        PgyCrashManager.register(this);
 //        if (LeakCanary.isInAnalyzerProcess(this)) {

@@ -7,13 +7,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.fragment.infodetail.Type1__info_fragment;
-import com.suntrans.xiaofang.fragment.infodetail.Type1__info_yiban_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type2__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type3__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type4__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type5__info_fragment;
 import com.suntrans.xiaofang.fragment.infodetail.Type6__info_fragment;
-import com.suntrans.xiaofang.fragment.infodetail.Type7__info_fragment;
 import com.suntrans.xiaofang.model.company.UnitInfo;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.MarkerHelper;
@@ -85,7 +83,7 @@ public class InfoDetail_activity extends BasedActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, type3__info_fragment_admin).commit();
                 break;
             case MarkerHelper.COMMONCOMPANY:
-                Type1__info_yiban_fragment fragment = new Type1__info_yiban_fragment();
+                Type1__info_fragment fragment = new Type1__info_fragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, fragment).commit();
                 break;
         }

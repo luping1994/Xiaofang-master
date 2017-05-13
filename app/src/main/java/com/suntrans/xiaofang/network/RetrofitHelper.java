@@ -17,7 +17,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.tencent.bugly.crashreport.inner.InnerApi.context;
 
 /**
  * Created by Looney on 2016/12/15.
@@ -25,7 +24,9 @@ import static com.tencent.bugly.crashreport.inner.InnerApi.context;
 
 public class RetrofitHelper {
 
-    public static final String BASE_URL = "http://api.91yunpan.com";
+//    public static final String BASE_URL = "http://api.91yunpan.com";
+//    public static final String BASE_URL = "http://api.whxfwgh.wang";
+    public static final String BASE_URL = "http://whxfapp.suntrans-cloud.com";
 
     private static OkHttpClient mOkHttpClient;
 
@@ -80,7 +81,7 @@ public class RetrofitHelper {
             public Response intercept(Chain chain) throws IOException {
                 String header = App.getSharedPreferences().getString("access_token","-1");
                 header = "Bearer "+header;
-                LogUtil.i(header);
+//                LogUtil.i(header);
                 Request original = chain.request();
                 Request request= original.newBuilder()
                         .header("Authorization", header)
@@ -152,8 +153,6 @@ public class RetrofitHelper {
 
 
     }
-
-
 
 
 

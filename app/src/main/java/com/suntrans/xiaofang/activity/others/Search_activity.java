@@ -268,6 +268,8 @@ public class Search_activity extends BasedActivity {
     }
 
     private void search(String text) {
+        datas.clear();
+        adapter.notifyDataSetChanged();
         dialog.show();
         switch (type) {
             case MarkerHelper.S0CIETY:

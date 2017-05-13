@@ -68,7 +68,7 @@
 
         <activity android:name=".activity.mapnav.RouteNavi_Activity" android:screenOrientation="portrait"/>
 
-        <activity android:name=".activity.others.Login_Activity" android:screenOrientation="portrait">
+        <activity android:name=".activity.others.Login_Activity" android:screenOrientation="portrait" >
 
         </activity>
 
@@ -112,7 +112,6 @@
         </activity>
         <activity android:name=".activity.edit.EditFireBrigadeinfo_activity" android:screenOrientation="portrait"/>
 
-        <activity android:name=".activity.edit.EditFireAdminStationInfo_activity" android:screenOrientation="portrait"/>
         <activity android:name=".activity.others.Search_license_activity" android:screenOrientation="portrait"/>
         <activity android:name=".activity.others.Attachlicense_activity" android:screenOrientation="portrait">
 

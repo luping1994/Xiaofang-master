@@ -51,7 +51,6 @@
                 android:id="@+id/zhongdiandanwei"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
                 android:text="重点单位"
                 android:textColor="@color/white" />
 
@@ -59,7 +58,7 @@
                 android:id="@+id/yibandanwei"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="一般单位"
+                android:text="@string/commcmy"
                 android:textColor="@color/white" />
 
             <android.support.v7.widget.AppCompatCheckBox

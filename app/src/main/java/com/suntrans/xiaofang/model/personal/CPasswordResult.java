@@ -7,4 +7,6 @@ package com.suntrans.xiaofang.model.personal;
 public class CPasswordResult {
 
     public String status;
+    public String result;
+    public String msg;
 }

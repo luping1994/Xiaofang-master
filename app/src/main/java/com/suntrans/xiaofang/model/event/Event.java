@@ -32,6 +32,7 @@ public class Event {
 
     public String type_ids;
 
+    public String url;
     @Override
     public String toString() {
         return "Event{" +

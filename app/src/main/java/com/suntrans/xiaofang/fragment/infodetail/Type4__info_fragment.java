@@ -150,6 +150,11 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
         array10.put(1, "");
         datas.add(array10);
 
+        SparseArray<String> array11 = new SparseArray<>();
+        array11.put(0, "车载干粉总量（吨）");
+        array11.put(1, "");
+        datas.add(array11);
+
 //        SparseArray<String> array11 = new SparseArray<>();
 //        array11.put(0, "所属区");
 //        array11.put(1, "");
@@ -279,6 +284,8 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
         if (a!=null){
             renyuan=Utils.parseJson(a);
             datas.get(4).put(1,renyuan==null?a:renyuan);
+        }else {
+            datas.get(4).put(1,"");
         }
         datas.get(5).put(1,info.carnum==null?"":info.carnum);
 
@@ -287,11 +294,15 @@ public class Type4__info_fragment extends BasedFragment implements View.OnClickL
         if (b!=null){
             cardis = Utils.parseJson(b);
             datas.get(6).put(1,cardis==null?"":cardis);
+        }else {
+            datas.get(6).put(1,"");
+
         }
 
         datas.get(7).put(1,info.waterweight==null?"":info.waterweight);
         datas.get(8).put(1,info.soapweight==null?"":info.soapweight);
-        datas.get(9).put(1,info.brigade_name==null?"":info.brigade_name);
+        datas.get(9).put(1,info.powderweight==null?"":info.powderweight);
+        datas.get(10).put(1,info.brigade_name==null?"":info.brigade_name);
         myAdapter.notifyDataSetChanged();
     }
 

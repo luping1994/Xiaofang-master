@@ -24,6 +24,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.animation.AlphaAnimation;
 import com.amap.api.maps.model.animation.Animation;
 import com.suntrans.xiaofang.R;
+import com.suntrans.xiaofang.utils.UiUtils;
 
 import java.util.ArrayList;
 import java.util.List;
