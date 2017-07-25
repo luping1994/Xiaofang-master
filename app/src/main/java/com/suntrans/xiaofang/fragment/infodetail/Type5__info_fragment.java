@@ -564,11 +564,11 @@ public class Type5__info_fragment extends BasedFragment {
         builder.put("id", info.id);
         builder.put("info", info1);
         map = builder.build();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            String key = entry.getKey().toString();
-            String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
-        }
+//        for (Map.Entry<String, String> entry : map.entrySet()) {
+//            String key = entry.getKey().toString();
+//            String value = entry.getValue().toString();
+//            System.out.println(key + "," + value);
+//        }
         final ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("正在新增,请稍后...");
         progressDialog.show();

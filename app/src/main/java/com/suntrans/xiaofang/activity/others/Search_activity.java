@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -28,16 +29,19 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.amap.api.maps.model.LatLng;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.BasedActivity;
 import com.suntrans.xiaofang.adapter.RecyclerViewDivider;
+import com.suntrans.xiaofang.model.A;
 import com.suntrans.xiaofang.model.company.CompanyLicenseInfo;
 import com.suntrans.xiaofang.model.company.CompanyList;
 import com.suntrans.xiaofang.model.company.CompanyListResult;
 import com.suntrans.xiaofang.model.license.LicenseSearchResult;
 import com.suntrans.xiaofang.network.RetrofitHelper;
 import com.suntrans.xiaofang.utils.MarkerHelper;
+import com.suntrans.xiaofang.utils.RxBus;
 import com.suntrans.xiaofang.utils.StatusBarCompat;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.trello.rxlifecycle.android.ActivityEvent;
@@ -49,6 +53,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.suntrans.xiaofang.R.id.dadui;
 import static com.suntrans.xiaofang.R.id.marker;
 
 /**
@@ -106,6 +111,7 @@ public class Search_activity extends BasedActivity {
             @Override
             public void onClick(View v) {
                 finish();
+                overridePendingTransition(0,0);
             }
         });
         recyclerView = (RecyclerView) findViewById(R.id.recycleview);
@@ -124,28 +130,28 @@ public class Search_activity extends BasedActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        type=MarkerHelper.S0CIETY;
+                        type = MarkerHelper.S0CIETY;
                         break;
                     case 1:
-                        type=MarkerHelper.COMMONCOMPANY;
+                        type = MarkerHelper.COMMONCOMPANY;
                         break;
                     case 2:
-                        type=MarkerHelper.FIREBRIGADE;
+                        type = MarkerHelper.FIREBRIGADE;
                         break;
                     case 3:
-                        type=MarkerHelper.FIREGROUP;
+                        type = MarkerHelper.FIREGROUP;
                         break;
                     case 4:
-                        type=MarkerHelper.FIREADMINSTATION;
+                        type = MarkerHelper.FIREADMINSTATION;
                         break;
                     case 5:
-                        type=MarkerHelper.FIRESTATION;
+                        type = MarkerHelper.FIRESTATION;
                         break;
                     case 6:
-                        type=MarkerHelper.FIREROOM;
+                        type = MarkerHelper.FIREROOM;
                         break;
                     case 7:
-                        type=MarkerHelper.LICENSE;
+                        type = MarkerHelper.LICENSE;
                         break;
                 }
             }
@@ -223,16 +229,44 @@ public class Search_activity extends BasedActivity {
                     @Override
                     public void onClick(View v) {
                         int position = getAdapterPosition();
-                        Intent intent = new Intent();
-                        intent.putExtra("companyID", datas.get(position).get(0) + "#" + type);
-                        intent.putExtra("name", datas.get(position).get(1));
-                        intent.putExtra("from", getIntent().getParcelableExtra("from"));
-//                        companyType = getIntent().getStringExtra("companyID").split("#")[1];
-//                        intent.putExtra("to",to);
-                        intent.setClass(Search_activity.this, InfoDetail_activity.class);
-                        startActivity(intent);
+                        handleItemClick(position);
                     }
                 });
+            }
+
+            private void handleItemClick(final int position) {
+                String latS = datas.get(position).get(4);
+                String lngS = datas.get(position).get(5);
+                if (TextUtils.isEmpty(latS)||TextUtils.isEmpty(lngS)){
+                    new AlertDialog.Builder(Search_activity.this)
+                            .setMessage("该单位没有添加位置坐标信息,是否查看详细信息?")
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra("companyID", datas.get(position).get(0) + "#" + type);
+                                    intent.putExtra("name", datas.get(position).get(1));
+                                    intent.putExtra("from", getIntent().getParcelableExtra("from"));
+//                        companyType = getIntent().getStringExtra("companyID").split("#")[1];
+//                        intent.putExtra("to",to);
+                                    intent.setClass(Search_activity.this, InfoDetail_activity.class);
+                                    startActivity(intent);
+                                }
+                            }).setNegativeButton("取消",null).create().show();
+
+                }else {
+                    double lat = Double.parseDouble(latS);
+                    double lng = Double.parseDouble(lngS);
+                    LatLng latLng = new LatLng(lat,lng);
+                    A a = new A();
+                    a.latLng=latLng;
+                    a.type =type;
+                    a.title = datas.get(position).get(1);
+                    a.id =datas.get(position).get(0);
+                    RxBus.getInstance().post(a);
+                    finish();
+                }
+
             }
 
             public void setData(final int position) {
@@ -336,8 +370,8 @@ public class Search_activity extends BasedActivity {
 //                            System.out.println("我的id是:====>"+info.id);
                                     map.put(0, info.id);
                                     map.put(1, info.name);
-//                            map.put(2,info.lat);
-//                            map.put(3,info.lng);
+                                    map.put(4, info.lat);
+                                    map.put(5, info.lng);
                                     datas.add(map);
                                 }
                                 adapter.notifyDataSetChanged();
@@ -392,8 +426,8 @@ public class Search_activity extends BasedActivity {
 //                            System.out.println("我的id是:====>"+info.id);
                                     map.put(0, info.id);
                                     map.put(1, info.name);
-//                            map.put(2,info.lat);
-//                            map.put(3,info.lng);
+                                    map.put(4, info.lat);
+                                    map.put(5, info.lng);
                                     datas.add(map);
                                 }
                                 adapter.notifyDataSetChanged();
@@ -447,8 +481,8 @@ public class Search_activity extends BasedActivity {
 //                            System.out.println("我的id是:====>"+info.id);
                                     map.put(0, info.id);
                                     map.put(1, info.name);
-//                            map.put(2,info.lat);
-//                            map.put(3,info.lng);
+                                    map.put(4, info.lat);
+                                    map.put(5, info.lng);
                                     datas.add(map);
                                 }
                                 adapter.notifyDataSetChanged();
@@ -502,6 +536,8 @@ public class Search_activity extends BasedActivity {
                                     SparseArray<String> map = new SparseArray<String>();
                                     map.put(0, info.id);
                                     map.put(1, info.name);
+                                    map.put(4, info.lat);
+                                    map.put(5, info.lng);
                                     datas.add(map);
                                 }
                                 adapter.notifyDataSetChanged();
@@ -557,6 +593,8 @@ public class Search_activity extends BasedActivity {
                                     SparseArray<String> map = new SparseArray<String>();
                                     map.put(0, info.id);
                                     map.put(1, info.name);
+                                    map.put(4, info.lat);
+                                    map.put(5, info.lng);
                                     datas.add(map);
                                 }
                                 adapter.notifyDataSetChanged();
@@ -612,8 +650,9 @@ public class Search_activity extends BasedActivity {
 //                            System.out.println("我的id是:====>"+info.id);
                                     map.put(0, info.id);
                                     map.put(1, info.name);
-//                            map.put(2,info.lat);
-//                            map.put(3,info.lng);
+
+                                    map.put(4, info.lat);
+                                    map.put(5, info.lng);
                                     datas.add(map);
                                 }
                             } else {
@@ -682,6 +721,8 @@ public class Search_activity extends BasedActivity {
                                         map.put(1, info.name);
                                         map.put(2, "建设单位:" + info.cmyname);
                                         map.put(3, "地址:" + info.addr);
+                                        map.put(4, info.lat);
+                                        map.put(5, info.lng);
                                         datas.add(map);
                                         adapter.notifyDataSetChanged();
                                     }
@@ -727,8 +768,8 @@ public class Search_activity extends BasedActivity {
 //                            System.out.println("我的id是:====>"+info.id);
                                     map.put(0, info.id);
                                     map.put(1, info.name);
-//                            map.put(2,info.lat);
-//                            map.put(3,info.lng);
+                                    map.put(4, info.lat);
+                                    map.put(5, info.lng);
                                     datas.add(map);
                                 }
                             } else {
@@ -754,5 +795,11 @@ public class Search_activity extends BasedActivity {
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(0,0);
     }
 }

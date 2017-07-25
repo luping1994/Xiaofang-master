@@ -12,8 +12,8 @@ android {
         applicationId "com.suntrans.xiaofang"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 30
-        versionName "1.0.6"
+        versionCode 34
+        versionName "1.0.9"
         multiDexEnabled true//这行
         ndk {
             //设置支持的SO库架构 ,'x86'//, , 'x86_64', 'arm64-v8a'
@@ -30,7 +30,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 //            shrinkResources true
 //            zipAlignEnabled true
-
             buildConfigField "boolean","ENABLE_DEBUG","false"
         }
         debug {
@@ -44,6 +43,20 @@ android {
 //            jniLibs.srcDir = ['jnilibs'];
 //        }
 //    }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def outputFile = output.outputFile
+            def fileName
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                if (variant.buildType.name.equals('release')) {
+                    fileName = "xiaofan${defaultConfig.versionName}_${defaultConfig.versionCode}.apk"
+                } else if (variant.buildType.name.equals('debug')) {
+                    fileName = "xiaofan${defaultConfig.versionName}_${defaultConfig.versionCode}_debug.apk"
+                }
+                output.outputFile = new File(outputFile.parent, fileName)
+            }
+        }
+    }
 }
 
 dependencies {
@@ -72,14 +85,18 @@ dependencies {
     //其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.2.0
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    //    compile files('libs/pgyer_sdk_2.4.5.jar')
     compile 'com.trello:rxlifecycle-components:1.0'
     compile 'com.android.support:multidex:1.0.0'
     //这行
 
-
     //注释掉原有bugly的仓库
+
     //compile 'com.tencent.bugly:crashreport:latest.release'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.3.2
-    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.2.0
-    compile 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+//    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
+    //其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.2.0
+//    compile 'com.tencent.bugly:nativecrashreport:latest.release'
+    //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+//    compile files('libs/pgyer_sdk_2.5.6.jar')
+    compile 'com.pgyersdk:sdk:2.5.6'
+
 }

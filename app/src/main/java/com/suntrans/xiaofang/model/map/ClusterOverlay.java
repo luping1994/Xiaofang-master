@@ -393,8 +393,14 @@ public class ClusterOverlay implements
 
         @Override
         public void onAnimationEnd() {
-            for (Marker marker : mRemoveMarkers) {
-                marker.remove();
+            for (final Marker marker : mRemoveMarkers) {
+                UiUtils.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        marker.remove();
+                        marker.hideInfoWindow();
+                    }
+                });
             }
             mRemoveMarkers.clear();
         }

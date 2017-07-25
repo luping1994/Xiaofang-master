@@ -155,7 +155,7 @@ public class Check_Activity extends BaseActivity {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        handler.sendEmptyMessageDelayed(ERROR,500);
+                        handler.sendEmptyMessageDelayed(ERROR, 500);
                     }
 
                     @Override
@@ -163,23 +163,26 @@ public class Check_Activity extends BaseActivity {
                         if (result != null) {
                             if (result.status.equals("1")) {
                                 List<CompanyList> lists = result.results;
-                                for (CompanyList info : lists) {
-                                    if (info.id == null || info.name == null) {
-                                        continue;
+                                if (lists!=null){
+                                    for (CompanyList info : lists) {
+                                        if (info.id == null || info.name == null) {
+                                            continue;
+                                        }
+                                        HashMap<String, String> map1 = new HashMap<String, String>();
+                                        map1.put("state", "0");
+                                        map1.put("name", info.name);
+                                        map1.put("id", info.id);
+                                        map1.put("source_id", info.source_id);
+                                        map1.put("special", info.special);
+                                        datas.add(map1);
                                     }
-                                    HashMap<String, String> map1 = new HashMap<String, String>();
-                                    map1.put("state", "0");
-                                    map1.put("name", info.name);
-                                    map1.put("id", info.id);
-                                    map1.put("source_id", info.source_id);
-                                    map1.put("special", info.special);
-                                    datas.add(map1);
                                 }
+
                             } else {
 
                             }
                         } else {
-                            handler.sendEmptyMessageDelayed(ERROR,500);
+                            handler.sendEmptyMessageDelayed(ERROR, 500);
                         }
                         getCommcmyData(source_id);
                     }
@@ -199,20 +202,31 @@ public class Check_Activity extends BaseActivity {
     class ViewHolder1 extends RecyclerView.ViewHolder {
         TextView name;
         CardView cardView;
-
+        TextView state;
         public ViewHolder1(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.name);
+            state = (TextView) itemView.findViewById(R.id.state);
             cardView = (CardView) itemView.findViewById(R.id.cardview);
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Check_Activity.this, Check_detail_Activity.class);
-                    intent.putExtra("id", datas.get(getAdapterPosition()).get("id"));
-                    intent.putExtra("source_id", datas.get(getAdapterPosition()).get("source_id"));
-                    intent.putExtra("special", datas.get(getAdapterPosition()).get("special"));
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    if (datas.get(getAdapterPosition()).get("source_id").equals("4")){
+                        Intent intent = new Intent(Check_Activity.this, CheckBindDetailActivity.class);
+                        intent.putExtra("id", datas.get(getAdapterPosition()).get("id"));
+                        intent.putExtra("source_id", datas.get(getAdapterPosition()).get("source_id"));
+                        intent.putExtra("special", datas.get(getAdapterPosition()).get("special"));
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }else {
+                        Intent intent = new Intent(Check_Activity.this, Check_detail_Activity.class);
+                        intent.putExtra("id", datas.get(getAdapterPosition()).get("id"));
+                        intent.putExtra("source_id", datas.get(getAdapterPosition()).get("source_id"));
+                        intent.putExtra("special", datas.get(getAdapterPosition()).get("special"));
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }
+
                 }
             });
         }
@@ -248,11 +262,15 @@ public class Check_Activity extends BaseActivity {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             if (holder instanceof ViewHolder1) {
                 String name = datas.get(position).get("name");
-                String subname ="";
-                if (datas.get(position).get("source_id").equals("3")){
-                    subname="微信录入";
-                }else if (datas.get(position).get("source_id").equals("1")){
-                    subname="综治录入";
+                if (datas.get(position).get("source_id").equals("3")) {
+                    ((ViewHolder1) holder).state.setText("待审核信息");
+
+                } else if (datas.get(position).get("source_id").equals("1")) {
+                    ((ViewHolder1) holder).state.setText("待审核信息");
+
+                }else if (datas.get(position).get("source_id").equals("4")){
+                    ((ViewHolder1) holder).state.setText("待审核绑定");
+
                 }
                 ((ViewHolder1) holder).name.setText(name);
 
@@ -302,7 +320,7 @@ public class Check_Activity extends BaseActivity {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        handler.sendEmptyMessageDelayed(ERROR,500);
+                        handler.sendEmptyMessageDelayed(ERROR, 500);
                     }
 
                     @Override
@@ -311,22 +329,71 @@ public class Check_Activity extends BaseActivity {
                         if (result != null) {
                             if (result.status.equals("1")) {
                                 List<CompanyList> lists = result.results;
-                                for (CompanyList info : lists) {
-                                    if (info.id == null || info.name == null) {
-                                        continue;
+                                if (lists!=null)
+                                {
+                                    for (CompanyList info : lists) {
+                                        if (info.id == null || info.name == null) {
+                                            continue;
+                                        }
+                                        HashMap<String, String> map1 = new HashMap<String, String>();
+                                        map1.put("state", "0");
+                                        map1.put("name", info.name);
+                                        map1.put("id", info.id);
+                                        map1.put("source_id", info.source_id);
+                                        map1.put("special", info.special);
+                                        datas.add(map1);
+                                        //                            handler.sendEmptyMessage(1);
                                     }
-                                    HashMap<String, String> map1 = new HashMap<String, String>();
-                                    map1.put("state", "0");
-                                    map1.put("name", info.name);
-                                    map1.put("id", info.id);
-                                    map1.put("source_id", info.source_id);
-                                    map1.put("special", info.special);
-                                    datas.add(map1);
-                                    //                            handler.sendEmptyMessage(1);
                                 }
                             }
                         }
-                        handler.sendEmptyMessageDelayed(SUCCESS,500);
+                        getCompanyBind();
+                    }
+                });
+    }
+
+    private void getCompanyBind() {
+        RetrofitHelper.getApi().getCheckBind()
+                .compose(this.<CompanyListResult>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CompanyListResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        handler.sendEmptyMessageDelayed(ERROR, 500);
+                    }
+
+                    @Override
+                    public void onNext(CompanyListResult result) {
+
+                        if (result != null) {
+                            if (result.status.equals("0")) {
+                                List<CompanyList> lists = result.results;
+                                if (lists!=null){
+                                    for (CompanyList info : lists) {
+                                        if (info.id == null || info.name == null) {
+                                            continue;
+                                        }
+                                        HashMap<String, String> map1 = new HashMap<String, String>();
+                                        map1.put("state", "0");
+                                        map1.put("name", info.name);
+                                        map1.put("id", info.id);
+                                        map1.put("source_id", "4");
+//                                        System.out.println(info.source_id);
+                                        map1.put("special", info.special);
+                                        datas.add(map1);
+                                        //                            handler.sendEmptyMessage(1);
+                                    }
+                                }
+                            }
+                        }
+                        handler.sendEmptyMessageDelayed(SUCCESS, 500);
                     }
                 });
     }

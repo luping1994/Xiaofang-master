@@ -831,5 +831,19 @@ public interface Api {
     @FormUrlEncoded
     @POST("/api/v1/commcmy/updateLicense")
     Observable<AddCompanyResult> updateCommcmyLicense(@FieldMap Map<String,String> map) ;
+
+
+    @POST("/api/v1/company/checkBind")
+    Observable<CompanyListResult> getCheckBind();
+
+    /**审核绑定
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/api/v1/company/verifyBind")
+    Observable<CompanyPassResult> verifyBind(@Field("company_id") String id,@Field("status") String status);
+
+
 }
 

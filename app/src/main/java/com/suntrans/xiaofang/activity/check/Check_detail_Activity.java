@@ -377,6 +377,7 @@ public class Check_detail_Activity extends BaseActivity {
 
         String mainId = info.mainattribute;
         String mainId_small = info.mainattribute_small;
+//        System.out.println("special=" + info.special + ",属性=" + mainId);
         if (info.special.equals("1")) {
             if (mainId != null) {
                 StringBuilder sb = new StringBuilder();

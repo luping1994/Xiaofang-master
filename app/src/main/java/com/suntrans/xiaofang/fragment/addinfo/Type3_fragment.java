@@ -838,11 +838,11 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
 
         map = builder.build();
 
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            String key = entry.getKey().toString();
-            String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
-        }
+//        for (Map.Entry<String, String> entry : map.entrySet()) {
+//            String key = entry.getKey().toString();
+//            String value = entry.getValue().toString();
+//            System.out.println(key + "," + value);
+//        }
         if (type == MarkerHelper.FIRESTATION) {
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
             progressDialog.setCancelable(false);
@@ -1047,7 +1047,7 @@ public class Type3_fragment extends RxFragment implements View.OnClickListener {
             intent.putExtra("type", type);
             getActivity().sendBroadcast(intent);
         } else if (contype == UPDATE) {
-            if (info != null) {
+            if (info != null&&info.lat!=null&&info.lng!=null) {
                 if (!info.lat.equals(lat.getText().toString()) || !info.lng.equals(lng.getText().toString())) {
                     Intent intent = new Intent();
                     intent.setAction("net.suntrans.xiaofang.lp");

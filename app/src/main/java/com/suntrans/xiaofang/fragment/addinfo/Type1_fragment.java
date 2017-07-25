@@ -1178,17 +1178,23 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
         if (info.facility != null) {
             String[] fire = info.facility.split("#");
+
             for (int i = 0; i < fire.length; i++) {
                 int s = 0;
                 for (int j = 0; j < hasFire.length; j++) {
                     if (fire[i].equals(hasFire[j])) {
                         autofire[j].setChecked(true);
                         s++;
+                    }else {
+
                     }
                 }
-                if (s ==0) {
+                if (s==0){
                     qitatext.setText(fire[i]);
                     autofire[8].setChecked(true);
+                }else {
+                    autofire[8].setChecked(false);
+
                 }
             }
         }
@@ -1719,11 +1725,11 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
         builder.put("id", info.id);
         map = builder.build();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            String key = entry.getKey().toString();
-            String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
-        }
+//        for (Map.Entry<String, String> entry : map.entrySet()) {
+//            String key = entry.getKey().toString();
+//            String value = entry.getValue().toString();
+//            System.out.println(key + "," + value);
+//        }
         final ProgressDialog dialog = new ProgressDialog(getActivity());
         dialog.setCancelable(false);
         dialog.setMessage("请稍后...");
@@ -1841,7 +1847,7 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
 
     private void sendBroadcast(int companyType) {
 
-        if (info != null) {
+        if (info != null&&info.dangerlevel!=null&&info.lat!=null&&info.lng!=null) {
             if (!dangerlevels.equals(info.dangerlevel) || !info.lng.equals(lng.getText().toString())
                     || !info.lat.equals(lat.getText().toString())) {
 
@@ -1850,7 +1856,9 @@ public class Type1_fragment extends RxFragment implements View.OnClickListener {
                 intent.setAction("net.suntrans.xiaofang.lp");
                 getActivity().sendBroadcast(intent);
             }
-        } else {
+        }
+
+        else {
             Intent intent = new Intent();
             intent.putExtra("type", companyType);
             intent.setAction("net.suntrans.xiaofang.lp");

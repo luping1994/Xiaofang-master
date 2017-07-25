@@ -553,13 +553,13 @@
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="代表人身份证"
+                    android:text="法定人身份证"
                     android:textColor="@color/balck"
                     android:textSize="@dimen/text_size" />
 
@@ -647,7 +647,7 @@
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -741,7 +741,7 @@
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/infoitem_pading"
                 android:paddingRight="@dimen/infoitem_pading"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/textView11"

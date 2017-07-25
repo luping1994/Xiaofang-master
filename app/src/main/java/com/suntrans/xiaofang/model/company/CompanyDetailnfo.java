@@ -94,4 +94,15 @@ public class CompanyDetailnfo implements Serializable{
 
     public String url;
 
+    public Binder binder;
+
+
+    public static class Binder implements Serializable{
+        public String id;
+        public String username;
+        public String truename;
+        public String nickname;
+        public String mobile;
+    }
+
 }

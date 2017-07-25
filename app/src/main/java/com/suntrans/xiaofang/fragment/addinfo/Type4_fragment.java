@@ -549,11 +549,11 @@ public class Type4_fragment extends RxFragment {
 
         map1 = builder.build();
 
-        for (Map.Entry<String, String> entry : map1.entrySet()) {
-            String key = entry.getKey().toString();
-            String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
-        }
+//        for (Map.Entry<String, String> entry : map1.entrySet()) {
+//            String key = entry.getKey().toString();
+//            String value = entry.getValue().toString();
+//            System.out.println(key + "," + value);
+//        }
 
         final ProgressDialog dialog = new ProgressDialog(getActivity());
         dialog.setMessage("正在修改请稍后");

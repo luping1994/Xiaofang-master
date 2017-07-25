@@ -318,11 +318,11 @@ public class Type6_fragment extends RxFragment {
         }
         map = builder.build();
 
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            String key = entry.getKey().toString();
-            String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
-        }
+//        for (Map.Entry<String, String> entry : map.entrySet()) {
+//            String key = entry.getKey().toString();
+//            String value = entry.getValue().toString();
+//            System.out.println(key + "," + value);
+//        }
 
         RetrofitHelper.getApi().createFirebrigade(map)
                 .compose(this.<AddFireGroupResult>bindUntilEvent(FragmentEvent.DESTROY_VIEW))

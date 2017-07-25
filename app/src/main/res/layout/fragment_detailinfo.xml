@@ -54,5 +54,14 @@
             app:fab_label="到这去"
             app:fab_size="mini" />
 
+        <com.github.clans.fab.FloatingActionButton
+
+            android:id="@+id/fab4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_qrcode"
+            app:fab_label="分享二维码"
+            app:fab_size="mini" />
+
     </com.github.clans.fab.FloatingActionMenu>
 </RelativeLayout>

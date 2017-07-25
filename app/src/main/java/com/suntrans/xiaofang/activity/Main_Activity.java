@@ -24,6 +24,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
@@ -65,6 +66,7 @@ import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.pgyersdk.update.PgyUpdateManager;
 import com.suntrans.xiaofang.App;
 import com.suntrans.xiaofang.R;
 import com.suntrans.xiaofang.activity.add.Add_activity;
@@ -74,6 +76,8 @@ import com.suntrans.xiaofang.activity.others.InfoDetail_activity;
 import com.suntrans.xiaofang.activity.others.Personal_activity;
 import com.suntrans.xiaofang.activity.others.Search_activity;
 import com.suntrans.xiaofang.activity.others.Smarfire_tActivity;
+import com.suntrans.xiaofang.adapter.InfoWinAdapter;
+import com.suntrans.xiaofang.model.A;
 import com.suntrans.xiaofang.model.map.Cluster;
 import com.suntrans.xiaofang.model.map.ClusterClickListener;
 import com.suntrans.xiaofang.model.map.ClusterItem;
@@ -82,6 +86,7 @@ import com.suntrans.xiaofang.model.map.ClusterRender;
 import com.suntrans.xiaofang.model.map.RegionItem;
 import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.MarkerHelper;
+import com.suntrans.xiaofang.utils.RxBus;
 import com.suntrans.xiaofang.utils.SensorEventHelper;
 import com.suntrans.xiaofang.utils.ThreadManager;
 import com.suntrans.xiaofang.utils.UiUtils;
@@ -94,9 +99,14 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static com.amap.api.maps.AMapUtils.calculateLineDistance;
 import static com.suntrans.xiaofang.R.id.check;
+import static com.suntrans.xiaofang.R.id.marker;
 
 public class Main_Activity extends BasedActivity implements LocationSource, View.OnClickListener, AMap.OnMarkerClickListener, AMapLocationListener, MarkerHelper.onGetInfoFinishListener, ClusterClickListener {
     private static final String TAG = "Main_Activity";
@@ -226,6 +236,109 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         getDataDialog = new ProgressDialog(Main_Activity.this);
         getDataDialog.setCancelable(false);
 
+
+        RxBus.getInstance().toObserverable(A.class)
+                .compose(this.<A>bindToLifecycle())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<A>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(final A a) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                handleSearchResult(a);
+                            }
+                        },500);
+                    }
+                });
+
+        PgyUpdateManager.register(this,"com.suntrans.xiaofang.fileProvider");
+
+    }
+
+    private void handleSearchResult(A a) {
+        int type = a.type;
+        switch (type) {
+            case MarkerHelper.S0CIETY:
+                zhongdiandanwei.setChecked(true);
+                break;
+            case MarkerHelper.COMMONCOMPANY:
+                yibandanwei.setChecked(true);
+                break;
+            case MarkerHelper.FIREROOM:
+                xiaofangshi.setChecked(true);
+                break;
+            case MarkerHelper.FIREBRIGADE:
+                dadui.setChecked(true);
+                break;
+            case MarkerHelper.FIREGROUP:
+                zhongdui.setChecked(true);
+                break;
+            case MarkerHelper.FIREADMINSTATION:
+                xiaoxingzhan.setChecked(true);
+                break;
+            case MarkerHelper.FIRESTATION:
+                xiangcun.setChecked(true);
+                break;
+            case MarkerHelper.LICENSE:
+                xingzhenshenpi.setChecked(true);
+                break;
+        }
+        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(a.latLng, 18, 0, 0)));
+        name.setText(a.title);
+        addrDes.setText("");
+        currentmarkerOptions.title(a.title)
+                .snippet(a.id+"#"+a.type)
+                .position(a.latLng);
+        showBottom2Menu();
+//        query = new RegeocodeQuery(new LatLonPoint(a.latLng.latitude,a.latLng.longitude), 200, GeocodeSearch.AMAP);
+//        geocodeSearch.getFromLocationAsyn(query);
+//        geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
+//            @Override
+//            public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
+//                if (rCode == 1000) {
+//                    if (result != null && result.getRegeocodeAddress() != null
+//                            && result.getRegeocodeAddress().getFormatAddress() != null) {
+//                        addressName = result.getRegeocodeAddress().getFormatAddress();
+//                        if (addrDes != null) {
+//                            handler.postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    String dist;
+//                                    if (distance > 1000) {
+//                                        dist = distance / 1000 + "千米";
+//                                    } else {
+//                                        dist = distance + "米";
+//                                    }
+//                                    addrDes.setText("距离您" + dist + "| " + addressName);
+//                                    showBottom2Menu();
+//                                }
+//                            }, 500);
+//                        }
+//                    } else {
+//
+//                    }
+//                } else {
+//                }
+//            }
+//
+//            @Override
+//            public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
+//
+//            }
+//        });
+//        List<Marker> mapScreenMarkers = aMap.getMapScreenMarkers();
     }
 
     //初始化map
@@ -294,7 +407,8 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         }
         geocodeSearch = new GeocodeSearch(getApplicationContext());
         aMap.setOnMarkerClickListener(this);
-
+//        InfoWinAdapter adapter = new InfoWinAdapter(this) ;
+//        aMap.setInfoWindowAdapter(adapter);
 
     }
 
@@ -634,7 +748,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
                     intent1.putExtra("from", mLocMarker.getPosition());
                 }
                 startActivity(intent1);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                overridePendingTransition(0, 0);
                 break;
             case R.id.danwei:
                 if (isShowDanweiMenu) {
@@ -700,6 +814,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
         if (myNetReceiver != null) {
             unregisterReceiver(myNetReceiver);   //注销接收网络变化的广播通知的广播接收器
         }
+        PgyUpdateManager.unregister();
         super.onDestroy();
     }
 
@@ -1365,7 +1480,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
     }
 
 
-    MarkerOptions currentmarkerOptions = null;
+    MarkerOptions currentmarkerOptions = new MarkerOptions();
 
     @Override
     public void onClusterItemClick(Marker marker, final List<ClusterItem> clusterItems) {
@@ -1379,11 +1494,11 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             }
         }
         if (clusterItems.size() == 1) {
-//            marker.showInfoWindow();
             final String addr = ((RegionItem) clusterItems.get(0)).getAddr();
             String name1 = ((RegionItem) clusterItems.get(0)).getName();
 
             marker.setTitle(name1);
+            marker.showInfoWindow();
 
             String id = ((RegionItem) clusterItems.get(0)).getId();
             LatLng po = ((RegionItem) clusterItems.get(0)).getPosition();
@@ -1391,7 +1506,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             LogUtil.e("name=" + name1 + ",addr=" + addr + ",id=" + id + ",position=" + po.toString() + "type=" + type);
             String markerTitle = name1 + "#" + addr;
             String markerSnippet = id + "#" + type + "#" + "1";
-            currentmarkerOptions = new MarkerOptions();
+//            currentmarkerOptions = new MarkerOptions();
             currentmarkerOptions.title(markerTitle)
                     .snippet(markerSnippet)
                     .position(po);
@@ -1401,7 +1516,7 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             distance = Float.valueOf(df.format(distance));
 
             showBottom2Menu();
-
+//            UiUtils.showToast("我被点击了");
             query = new RegeocodeQuery(new LatLonPoint(marker.getPosition().latitude, marker.getPosition().longitude), 200, GeocodeSearch.AMAP);
             geocodeSearch.getFromLocationAsyn(query);
             geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
@@ -1605,6 +1720,6 @@ public class Main_Activity extends BasedActivity implements LocationSource, View
             isRefreshing = false;
             dismissDialog();
         }
-        LogUtil.i("mainactivity","count="+count);
+        LogUtil.i("mainactivity", "count=" + count);
     }
 }

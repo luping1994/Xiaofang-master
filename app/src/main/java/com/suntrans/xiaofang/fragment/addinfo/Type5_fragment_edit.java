@@ -26,6 +26,7 @@ import com.suntrans.xiaofang.model.license.AddLicenseResult;
 import com.suntrans.xiaofang.model.license.LicenseDetailInfo;
 import com.suntrans.xiaofang.model.license.LicenseItemInfo;
 import com.suntrans.xiaofang.network.RetrofitHelper;
+import com.suntrans.xiaofang.utils.LogUtil;
 import com.suntrans.xiaofang.utils.UiUtils;
 import com.suntrans.xiaofang.utils.Utils;
 import com.trello.rxlifecycle.android.FragmentEvent;
@@ -254,7 +255,7 @@ public class Type5_fragment_edit extends RxFragment implements View.OnClickListe
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             String value = entry.getValue().toString();
-            System.out.println(key + "," + value);
+            LogUtil.i(key + "," + value);
         }
 
         dialog.show();

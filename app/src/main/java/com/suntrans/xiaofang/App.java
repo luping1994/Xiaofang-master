@@ -6,16 +6,14 @@ import android.os.Handler;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
+import com.pgyersdk.crash.PgyCrashManager;
 import com.suntrans.xiaofang.utils.LogUtil;
-import com.tencent.bugly.Bugly;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import static com.suntrans.xiaofang.BuildConfig.ENABLE_DEBUG;
 
 /**
  * Created by Looney on 2016/8/11.
@@ -30,7 +28,7 @@ public class App extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        Bugly.init(getApplicationContext(), "7d01f61d8c", ENABLE_DEBUG);
+//        Bugly.init(getApplicationContext(), "7d01f61d8c", ENABLE_DEBUG);
 
 ////        PgyCrashManager.register(this);
 //        if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -41,6 +39,7 @@ public class App extends MultiDexApplication {
 //        LeakCanary.install(this);
 //        // Normal app init code...
 //        CrashReport.initCrashReport(getApplicationContext(), "7d01f61d8c", true);//初始化腾讯bug分析工具
+        PgyCrashManager.register(this);
         application=this;
         mainTid=android.os.Process.myTid();
         mHandler=new Handler();
